@@ -1,0 +1,5 @@
+rootProject.name = 'network-gozilla'
+include 'library'
+include 'node'
+include 'client'
+
