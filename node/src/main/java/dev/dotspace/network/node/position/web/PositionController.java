@@ -4,8 +4,6 @@ import dev.dotspace.network.library.position.IPosition;
 import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
-import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.node.position.db.PositionDatabase;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

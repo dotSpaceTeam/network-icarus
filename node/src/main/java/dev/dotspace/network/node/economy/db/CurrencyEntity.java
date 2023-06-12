@@ -1,5 +1,5 @@
 package dev.dotspace.network.node.economy.db;
-;
+
 import dev.dotspace.network.library.economy.ICurrency;
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,8 +1,6 @@
 package dev.dotspace.network.client;
 
 import dev.dotspace.network.client.profile.ProfileRequest;
-import dev.dotspace.network.client.web.Client;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;

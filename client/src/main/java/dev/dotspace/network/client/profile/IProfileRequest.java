@@ -1,7 +1,6 @@
 package dev.dotspace.network.client.profile;
 
 import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.library.profile.ICombinedProfile;
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.IProfileAttribute;
 import dev.dotspace.network.library.profile.ProfileType;
