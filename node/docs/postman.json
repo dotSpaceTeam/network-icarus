@@ -133,7 +133,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes/Terwewe",
+							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes/{{Attribute_Key}}",
 							"host": [
 								"{{Host}}"
 							],
@@ -142,7 +142,7 @@
 								"profile",
 								"{{Profile}}",
 								"attributes",
-								"Terwewe"
+								"{{Attribute_Key}}"
 							]
 						}
 					},
