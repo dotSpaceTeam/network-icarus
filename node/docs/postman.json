@@ -177,6 +177,121 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Position",
+			"item": [
+				{
+					"name": "Position",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/position",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"position"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Position",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{Host}}/v1/position/text",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"position",
+								"text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ViewPosition (Only update)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/position",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"position"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ViewPosition",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3,\r\n    \"yaw\": 5,\r\n    \"pitch\": 5\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/position/view",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"position",
+								"view"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
