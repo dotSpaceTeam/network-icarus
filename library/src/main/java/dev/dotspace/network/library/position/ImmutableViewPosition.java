@@ -8,7 +8,8 @@ import java.util.Objects;
 /**
  * Immutable instance of {@link IViewPosition}.
  */
-public record ImmutableViewPosition(long x,
+public record ImmutableViewPosition(@NotNull String key,
+                                    long x,
                                     long y,
                                     long z,
                                     long yaw,
@@ -23,6 +24,6 @@ public record ImmutableViewPosition(long x,
     //Null check
     Objects.requireNonNull(viewPosition);
 
-    return new ImmutableViewPosition(viewPosition.x(), viewPosition.y(), viewPosition.z(), viewPosition.yaw(), viewPosition.pitch());
+    return new ImmutableViewPosition(viewPosition.key(), viewPosition.x(), viewPosition.y(), viewPosition.z(), viewPosition.yaw(), viewPosition.pitch());
   }
 }

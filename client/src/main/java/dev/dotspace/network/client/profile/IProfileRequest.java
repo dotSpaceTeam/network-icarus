@@ -18,8 +18,6 @@ public interface IProfileRequest {
    */
   @NotNull CompletableResponse<IProfile> getProfile(@Nullable final String uniqueId);
 
-  @NotNull CompletableResponse<ICombinedProfile> getCombinedProfile(@Nullable final String uniqueId);
-
   @NotNull CompletableResponse<IProfile> insertProfile(@Nullable final String uniqueId,
                                                        @Nullable final ProfileType profileType);
 

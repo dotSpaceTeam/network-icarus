@@ -57,8 +57,11 @@ public class ClientDriver {
       });*/
 
     instance.profileRequest.getProfile("Test").ifPresent(iProfile -> {
-      System.out.println(iProfile);
-    })
+        System.out.println(iProfile);
+      })
+      .ifExceptionally(throwable -> {
+        System.out.println(throwable);
+      })
 
     ;
   }

@@ -8,7 +8,8 @@ import java.util.Objects;
 /**
  * Immutable instance of {@link IPosition}.
  */
-public record ImmutablePosition(long x,
+public record ImmutablePosition(@NotNull String key,
+                                long x,
                                 long y,
                                 long z) implements IPosition {
   /**
@@ -21,6 +22,6 @@ public record ImmutablePosition(long x,
     //Null check
     Objects.requireNonNull(position);
 
-    return new ImmutablePosition(position.x(), position.y(), position.z());
+    return new ImmutablePosition(position.key(), position.x(), position.y(), position.z());
   }
 }

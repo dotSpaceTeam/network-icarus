@@ -22,9 +22,9 @@ public final class MessageDatabase implements IMessageDatabase {
   private final static @NotNull Logger LOGGER = LogManager.getLogger(MessageDatabase.class);
 
   @Autowired
-  MessageRepository messageRepository;
+  private MessageRepository messageRepository;
   @Autowired
-  MessageKeyRepository messageKeyRepository;
+  private MessageKeyRepository messageKeyRepository;
 
   /**
    * See {@link IMessageDatabase#insertMessage(Locale, String, String)}.

@@ -30,17 +30,6 @@ public final class ProfileRequest implements IProfileRequest {
       return this.client.get("/v1/profile/%s".formatted(uniqueId), ImmutableProfile.class);
     });
   }
-
-  @Override
-  public @NotNull CompletableResponse<ICombinedProfile> getCombinedProfile(@Nullable String uniqueId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(uniqueId);
-
-      return this.client.get("/v1/profile/%s?attributes=true".formatted(uniqueId), ImmutableCombinedProfile.class);
-    });
-  }
-
   /**
    * See {@link IProfileRequest#insertProfile(String, ProfileType)}.
    */

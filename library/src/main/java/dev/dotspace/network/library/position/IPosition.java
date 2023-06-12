@@ -1,9 +1,11 @@
 package dev.dotspace.network.library.position;
 
+import dev.dotspace.network.library.key.IKey;
+
 /**
  * Position store x,y,z
  */
-public interface IPosition {
+public interface IPosition extends IKey {
   /**
    * Get x of position.
    *
