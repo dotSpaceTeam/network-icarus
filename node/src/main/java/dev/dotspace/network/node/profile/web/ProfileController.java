@@ -1,17 +1,16 @@
 package dev.dotspace.network.node.profile.web;
 
 import dev.dotspace.network.library.key.ImmutableKey;
-import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.IProfileAttribute;
-import dev.dotspace.network.library.profile.ImmutableProfile;
-import dev.dotspace.network.library.profile.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.*;
 import dev.dotspace.network.node.profile.db.ProfileDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,18 +25,35 @@ public final class ProfileController extends AbstractRestController {
 
   /**
    * Get an profile from unique id.
+   *
+   * @param attributes if true return {@link dev.dotspace.network.library.profile.ICombinedProfile}.
    */
   @GetMapping("/{uniqueId}")
   @ResponseBody
-  public ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(this.profileDatabase.getProfile(uniqueId).get(), "No profile for %s".formatted(uniqueId)));
+  public ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId,
+                                             @RequestParam(required = false) final boolean attributes) throws InterruptedException {
+    final IProfile profile = Objects
+      .requireNonNull(this.profileDatabase.getProfile(uniqueId).get(), "No profile for %s".formatted(uniqueId));
+
+    /*
+     * Read attributes if requested.
+     */
+    if (attributes) {
+      final List<IProfileAttribute> profileAttributes = this.profileDatabase.getAttributes(uniqueId).get();
+
+      return ResponseEntity.ok(new ImmutableCombinedProfile(
+        profile.uniqueId(),
+        profile.profileType(),
+        profileAttributes == null ? Collections.emptyList() : profileAttributes));
+    }
+
+    return ResponseEntity.ok(profile);
   }
 
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping("/")
+  @PutMapping()
   @ResponseBody
   public ResponseEntity<IProfile> insertProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) throws InterruptedException {
     return ResponseEntity.ok(

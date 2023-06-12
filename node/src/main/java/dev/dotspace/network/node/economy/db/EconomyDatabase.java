@@ -80,8 +80,10 @@ public final class EconomyDatabase implements IEconomyDatabase {
           return new NullPointerException();
         });
 
+      int transactionAmount = Math.abs(amount) * (transactionType == TransactionType.WITHDRAW ? -1 : 1);
+
       return ImmutableTransaction
-        .of(this.transactionRepository.save(new TransactionEntity(profile, currency, amount, transactionType.id())));
+        .of(this.transactionRepository.save(new TransactionEntity(profile, currency, transactionAmount, transactionType.id())));
 
     });
   }
