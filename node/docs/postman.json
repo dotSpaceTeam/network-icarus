@@ -1,0 +1,220 @@
+{
+	"info": {
+		"_postman_id": "3c3ccc46-35ec-4088-bf3c-d72627f31ecf",
+		"name": "Gozilla",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/v1/profile/{{Profile}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"v1",
+								"profile",
+								"{{Profile}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile Attributes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"{{Profile}}",
+								"attributes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile Attribute",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"key\": \"{{Attribute_Key}}\",\r\n        \"value\": \"4564567545645675456456754564567545645675\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"{{Profile}}",
+								"attributes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile Attribute Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"key\": \"{{Attribute_Key}}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"{{Profile}}",
+								"attributes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile Attribute",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "{{Host}}/v1/profile/{{Profile}}/attributes/Terwewe",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								"{{Profile}}",
+								"attributes",
+								"Terwewe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"uniqueId\": \"{{Profile}}\",\r\n    \"profileType\": \"BEDROCK\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/profile/",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"profile",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "Host",
+			"value": "http://localhost:8080",
+			"type": "default"
+		},
+		{
+			"key": "Profile",
+			"value": "Test",
+			"type": "default"
+		},
+		{
+			"key": "Attribute_Key",
+			"value": "TestKey",
+			"type": "default"
+		}
+	]
+}
