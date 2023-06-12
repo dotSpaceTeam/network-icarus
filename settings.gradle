@@ -1,4 +1,4 @@
-rootProject.name = 'network-gozilla'
+rootProject.name = 'network-icarus'
 include 'library'
 include 'node'
 include 'client'
