@@ -55,14 +55,13 @@ public final class ProfileController extends AbstractRestController {
   @PutMapping()
   @ResponseBody
   public ResponseEntity<IProfile> insertProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(
-        this.profileDatabase.createProfile(
-          Objects.requireNonNull(immutableProfile.uniqueId(), "UniqueId of body is null"),
-          Objects.requireNonNull(immutableProfile.profileType(), "ProfileType of body is null")).get(),
-        "Profile for '%s' already present!".formatted(immutableProfile.uniqueId())
-      )
-    );
+    return this.validateOkResponse(
+
+      this.profileDatabase.createProfile(
+        Objects.requireNonNull(immutableProfile.uniqueId(), "UniqueId of body is null"),
+        Objects.requireNonNull(immutableProfile.profileType(), "ProfileType of body is null")),
+
+      "Profile for '%s' already present!".formatted(immutableProfile.uniqueId()));
   }
 
   /**
@@ -71,9 +70,9 @@ public final class ProfileController extends AbstractRestController {
   @GetMapping("/{uniqueId}/attributes")
   @ResponseBody
   public ResponseEntity<List<IProfileAttribute>> getProfileAttributes(@PathVariable @NotNull final String uniqueId) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(this.profileDatabase.getAttributes(uniqueId).get(), "No attributes found for %s".formatted(uniqueId))
-    );
+    return this.validateOkResponse(
+      this.profileDatabase.getAttributes(uniqueId),
+      "No attributes found for %s".formatted(uniqueId));
   }
 
   /**
@@ -83,10 +82,9 @@ public final class ProfileController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IProfileAttribute> getProfileAttribute(@PathVariable @NotNull final String uniqueId,
                                                                @PathVariable @NotNull final String attribute) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(this.profileDatabase.getAttribute(uniqueId, attribute).get(),
-        "No attribute(%s) found for %s".formatted(attribute, uniqueId))
-    );
+    return this.validateOkResponse(
+      this.profileDatabase.getAttribute(uniqueId, attribute),
+      "No attribute(%s) found for %s".formatted(attribute, uniqueId));
   }
 
 
@@ -97,10 +95,9 @@ public final class ProfileController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IProfileAttribute> postProfileAttribute(@PathVariable @NotNull final String uniqueId,
                                                                 @RequestBody @NotNull final ImmutableProfileAttribute immutableProfileAttribute) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(this.profileDatabase.setAttribute(uniqueId, immutableProfileAttribute.key(), immutableProfileAttribute.value()).get(),
-        "No attribute(%s) found for %s".formatted(immutableProfileAttribute, uniqueId))
-    );
+    return this.validateOkResponse(
+      this.profileDatabase.setAttribute(uniqueId, immutableProfileAttribute.key(), immutableProfileAttribute.value()),
+      "No attribute(%s) found for %s".formatted(immutableProfileAttribute, uniqueId));
   }
 
   /**
@@ -110,9 +107,8 @@ public final class ProfileController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IProfileAttribute> deleteProfileAttribute(@PathVariable @NotNull final String uniqueId,
                                                                   @RequestBody @NotNull final ImmutableKey immutableKey) throws InterruptedException {
-    return ResponseEntity.ok(
-      Objects.requireNonNull(this.profileDatabase.setAttribute(uniqueId, immutableKey.key(), null).get(),
-        "No attribute(%s) found for %s to delete".formatted(immutableKey, uniqueId))
-    );
+    return this.validateOkResponse(
+      this.profileDatabase.setAttribute(uniqueId, immutableKey.key(), null),
+      "No attribute(%s) found for %s to delete".formatted(immutableKey, uniqueId));
   }
 }

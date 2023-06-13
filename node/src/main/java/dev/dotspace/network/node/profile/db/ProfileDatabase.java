@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Component("profileDatabase")
-public final class ProfileDatabase implements IProfileDatabase {
+public final class ProfileDatabase implements IProfileManipulator {
   /**
    * Logger
    */
@@ -34,7 +33,7 @@ public final class ProfileDatabase implements IProfileDatabase {
   private ProfileAttributeRepository profileAttributeRepository;
 
   /**
-   * See {@link IProfileDatabase#createProfile(String, ProfileType)}.
+   * See {@link IProfileManipulator#createProfile(String, ProfileType)}.
    */
   @Override
   public @NotNull CompletableResponse<IProfile> createProfile(@Nullable String uniqueId,

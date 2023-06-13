@@ -2,10 +2,7 @@ package dev.dotspace.network.node.position.db;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.library.position.IPosition;
-import dev.dotspace.network.library.position.IViewPosition;
-import dev.dotspace.network.library.position.ImmutablePosition;
-import dev.dotspace.network.library.position.ImmutableViewPosition;
+import dev.dotspace.network.library.position.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component("positionDatabase")
-public final class PositionDatabase implements IPositionDatabase {
+public final class PositionDatabase implements IPositionManipulator {
   /**
    * Logger
    */
@@ -29,7 +26,7 @@ public final class PositionDatabase implements IPositionDatabase {
   private ViewPositionRepository viewPositionRepository;
 
   /**
-   * See {@link IPositionDatabase#setPosition(String, long, long, long)}.
+   * See {@link IPositionManipulator#setPosition(String, long, long, long)}.
    */
   @Override
   public @NotNull CompletableResponse<IPosition> setPosition(@Nullable String key,
@@ -45,7 +42,7 @@ public final class PositionDatabase implements IPositionDatabase {
   }
 
   /**
-   * See {@link IPositionDatabase#setViewPosition(String, long, long)}.
+   * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
    */
   @Override
   public @NotNull CompletableResponse<IPosition> getPosition(@Nullable String key) {
@@ -68,12 +65,12 @@ public final class PositionDatabase implements IPositionDatabase {
       //Null check
       Objects.requireNonNull(key);
 
-      return ImmutableViewPosition.of(this.createViewPosition( this.createPosition(key, x, y, z), yaw,pitch));
+      return ImmutableViewPosition.of(this.createViewPosition(this.createPosition(key, x, y, z), yaw, pitch));
     });
   }
 
   /**
-   * See {@link IPositionDatabase#setViewPosition(String, long, long)}.
+   * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
    */
   @Override
   public @NotNull CompletableResponse<IViewPosition> setViewPosition(@Nullable String key,
@@ -91,6 +88,26 @@ public final class PositionDatabase implements IPositionDatabase {
         });
 
       return ImmutableViewPosition.of(this.createViewPosition(positionElement, yaw, pitch));
+    });
+  }
+
+  /**
+   * See {@link IPositionManipulator#getViewPosition(String)}.
+   */
+  @Override
+  public @NotNull CompletableResponse<IViewPosition> getViewPosition(@Nullable String key) {
+    return SpaceLibrary.completeResponseAsync(() -> {
+      //Null check
+      Objects.requireNonNull(key);
+
+      final PositionElement positionElement = this.positionRepository.findByKey(key)
+        .orElseThrow(() -> {
+          LOGGER.error("No key='{}' present, can't find base position.", key);
+          return new NullPointerException();
+        });
+
+
+      return ImmutableViewPosition.of(this.viewPositionRepository.findByPosition(positionElement).orElse(null));
     });
   }
 

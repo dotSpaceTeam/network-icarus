@@ -1,5 +1,6 @@
 package dev.dotspace.network.client;
 
+import dev.dotspace.network.client.position.PositionRequest;
 import dev.dotspace.network.client.profile.ProfileRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -13,6 +14,9 @@ public class ClientDriver {
 
   @Autowired
   private ProfileRequest profileRequest;
+
+  @Autowired
+  private PositionRequest positionRequest;
 
   {
     instance = this;
@@ -54,13 +58,14 @@ public class ClientDriver {
         System.out.println(throwable);
       });*/
 
-    instance.profileRequest.getProfile("Test").ifPresent(iProfile -> {
-        System.out.println(iProfile);
-      })
-      .ifExceptionally(throwable -> {
-        System.out.println(throwable);
-      })
+    instance.positionRequest.setViewPosition("Spawn", 100, 0, 0, 0, 0).ifPresent(viewPosition -> {
+      System.out.println(viewPosition);
+        instance.positionRequest.getViewPosition("Spawn").ifPresent(viewPosition2 -> {
+          System.out.println("GET: " + viewPosition2);
+        });
+      }
+     );
 
-    ;
+
   }
 }

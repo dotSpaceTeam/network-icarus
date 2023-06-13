@@ -76,18 +76,27 @@ public final class Client implements IClient {
     return this.response(apiEndpoint, HttpMethod.GET, typeClass, null);
   }
 
+  /**
+   * See {@link IClient#put(String, Class, Object)}.
+   */
   public <RESPONSE, TYPE> @NotNull RESPONSE put(@Nullable String apiEndpoint,
                                                 @Nullable Class<RESPONSE> typeClass,
                                                 @Nullable TYPE type) {
     return this.response(apiEndpoint, HttpMethod.PUT, typeClass, type);
   }
 
+  /**
+   * See {@link IClient#post(String, Class, Object)}.
+   */
   public <RESPONSE, TYPE> @NotNull RESPONSE post(@Nullable String apiEndpoint,
                                                  @Nullable Class<RESPONSE> typeClass,
                                                  @Nullable TYPE type) {
     return this.response(apiEndpoint, HttpMethod.POST, typeClass, type);
   }
 
+  /**
+   * See {@link IClient#delete(String, Class, Object)}.
+   */
   public <RESPONSE, TYPE> @NotNull RESPONSE delete(@Nullable String apiEndpoint,
                                                    @Nullable Class<RESPONSE> typeClass,
                                                    @Nullable TYPE type) {
