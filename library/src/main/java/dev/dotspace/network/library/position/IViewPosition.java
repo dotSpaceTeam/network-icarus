@@ -1,20 +1,20 @@
 package dev.dotspace.network.library.position;
 
 /**
- * Base of {@link IPosition} and also yaw, pitch
+ * Extended {@link IPosition} with additional yaw and pitch parameters.
  */
 public interface IViewPosition extends IPosition {
   /**
-   * Get x of position.
+   * Get yaw of ViewPosition.
    *
-   * @return pos x.
+   * @return yaw
    */
   long yaw();
 
   /**
-   * Get y of position.
+   * Get pitch of ViewPosition.
    *
-   * @return pos y.
+   * @return pitch
    */
   long pitch();
 }
