@@ -4,6 +4,7 @@ import dev.dotspace.common.response.CompletableResponse;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,5 +67,15 @@ public abstract class AbstractRestController {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   private String nullPointerHandler(NullPointerException exception) {
     return "Requested resource is null, or parameter was null. (%s)".formatted(exception.getMessage());
+  }
+
+  /**
+   * Handle null pointer errors.
+   */
+  @ResponseBody
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  private String authenticationHandler(AuthenticationException exception) {
+    return "Not allowed! (%s)".formatted(exception.getMessage());
   }
 }

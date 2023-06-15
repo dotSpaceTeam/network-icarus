@@ -8,7 +8,6 @@ import java.util.Objects;
 public record ImmutableCurrency(@NotNull String symbol,
                                 @NotNull String name,
                                 @Nullable String pluralName) implements ICurrency {
-
   /**
    * Convert {@link ICurrency} to {@link ImmutableCurrency}.
    *

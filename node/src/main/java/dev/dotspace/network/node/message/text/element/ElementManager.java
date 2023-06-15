@@ -6,17 +6,14 @@ import org.reflections.Reflections;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 @Component("elementManager")
 public final class ElementManager {
-  private final @NotNull Map<String, ElementInfo> elementMap;
+ // private final @NotNull Map<String, Class<? extends AbstractElement>> elementMap;
 
   public ElementManager() {
-    this.elementMap = new HashMap<>();
+    //this.elementMap = new HashMap<>();
     this.registerElements(this.getClass().getPackageName());
   }
 
@@ -26,33 +23,36 @@ public final class ElementManager {
 
     new Reflections(path).getTypesAnnotatedWith(TextElement.class).forEach(aClass -> {
       final TextElement element = aClass.getAnnotation(TextElement.class);
+
       //this.elementMap.put(element.name().toUpperCase(),
-       // new ElementInfo(aClass, ReflectionHelper.field(aClass, "")));
-      System.out.println(this.elementMap.get(element.name().toUpperCase()));
-      System.out.println(element.name());
+      // new ElementInfo(aClass, ReflectionHelper.field(aClass, "")));
+      //System.out.println(this.elementMap.get(element.name().toUpperCase()));
+     // System.out.println(element.name());
     });
   }
 
   @SuppressWarnings("all")
-  public <TYPE extends AbstractElement> TYPE element(@Nullable final String name,
+  public  void element(@Nullable final String name,
                                                      @Nullable final String value,
                                                      @Nullable final String option) {
-    return (TYPE) Optional
+
+  /*  return (TYPE) Optional
       .ofNullable(this.elementMap.get(name.toUpperCase()))
       .map(elementInfo -> {
         try {
-          return elementInfo.elementClass().getConstructor().newInstance();
+          return elementInfo.getConstructor(String.class, String.class).newInstance(value, option);
         } catch (final Exception exception) {
+          exception.printStackTrace();
           throw new NullPointerException();
         }
       })
       .orElse(null);
+
+   */
   }
 
   private record ElementInfo(@NotNull Class<?> elementClass,
-                             @Nullable Field elementName,
-                             @Nullable Field elementValue,
-                             @Nullable Field elementOption) {
+                             @Nullable Field elementName) {
 
   }
 }

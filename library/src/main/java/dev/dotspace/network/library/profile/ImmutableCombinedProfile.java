@@ -16,8 +16,6 @@ import java.util.Objects;
 public record ImmutableCombinedProfile(@NotNull String uniqueId,
                                        @NotNull ProfileType profileType,
                                        @NotNull List<IProfileAttribute> attributes) implements ICombinedProfile {
-
-
   /**
    * Convert {@link ICombinedProfile} to {@link ImmutableCombinedProfile}.
    *

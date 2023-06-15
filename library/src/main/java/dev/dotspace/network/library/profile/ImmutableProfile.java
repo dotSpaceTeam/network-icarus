@@ -7,8 +7,6 @@ import java.util.Objects;
 
 public record ImmutableProfile(@NotNull String uniqueId,
                                @NotNull ProfileType profileType) implements IProfile {
-  //static
-
   /**
    * Convert {@link IProfile} to {@link ImmutableProfile}.
    *

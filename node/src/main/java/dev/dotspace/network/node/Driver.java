@@ -13,6 +13,7 @@ public class Driver {
 
   public static void main(String[] args) throws Exception {
     SpringApplication.run(Driver.class, args);
+    Node.load();
   }
 
   @Bean

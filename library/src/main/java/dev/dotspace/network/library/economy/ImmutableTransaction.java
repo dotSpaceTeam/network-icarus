@@ -8,7 +8,6 @@ import java.util.Objects;
 
 public record ImmutableTransaction(int amount,
                                    @NotNull TransactionType transactionType) implements ITransaction {
-
   /**
    * Convert {@link ITransaction} to {@link ImmutableTransaction}.
    *

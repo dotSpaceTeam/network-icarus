@@ -1,4 +1,4 @@
 package dev.dotspace.network.node.message.text.element;
 
-public @interface ElementName {
+public @interface ElementString {
 }
