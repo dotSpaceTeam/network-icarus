@@ -27,7 +27,7 @@ func main() {
 
 	selection := promptui.Select{
 		Label: "What do you want to do?",
-		Items: []string{"Quick setup", "Generate a new server certificate", "Generate a new client certificate"},
+		Items: []string{"Quick setup", "Generate a new server certificate", "Generate client certificates"},
 	}
 	actionIdx, _, err := selection.Run()
 	if err != nil {
@@ -39,6 +39,9 @@ func main() {
 	var fqdn string
 	var keystorePasswd string
 	var truststorePasswd string
+
+	caCertFile := "rootCA.crt"
+	caKeyFile := "rootCA.key"
 
 	if actionIdx == 0 {
 		var location string
@@ -106,78 +109,76 @@ func main() {
 		generateRootCA(location, caKeyPasswd)
 	}
 
+	if !fileExists(caKeyFile) || !fileExists(caCertFile) {
+		prompt := promptui.Prompt{
+			Label:     "Missing CA files - Do you want to use another authority",
+			IsConfirm: true,
+		}
+
+		_, err := prompt.Run()
+		if err != nil {
+			color.HiRed("Please provide valid rootCa.crt and rootCa.key files or complete the quick setup.")
+			color.HiRed("Exiting...")
+			os.Exit(-1)
+			return
+		}
+
+		// Cert file
+		prompt = promptui.Prompt{
+			Label: "Using own CA - Enter path to CA cert",
+			Validate: func(input string) error {
+				if !fileExists(input) {
+					return errors.New("file not found")
+				}
+				return nil
+			},
+		}
+		result, err := prompt.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+		caCertFile = result
+
+		// Key file
+		prompt = promptui.Prompt{
+			Label: "Using own CA - Enter path to CA key",
+			Validate: func(input string) error {
+				if !fileExists(input) {
+					return errors.New("file not found")
+				}
+				return nil
+			},
+		}
+		result, err = prompt.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+		caKeyFile = result
+	}
+
+	if len(caKeyPasswd) == 0 {
+		prompt := promptui.Prompt{
+			Label: "Enter CA pass phrase",
+			Mask:  '*',
+			Validate: func(input string) error {
+				if len(input) <= 4 && len(input) > 1024 {
+					return errors.New("you must type in 4 to 1024 characters")
+				}
+				return nil
+			},
+		}
+
+		result, err := prompt.Run()
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+		caKeyPasswd = result
+	}
+
 	if actionIdx < 2 {
-		caCertFile := "rootCa.crt"
-		caKeyFile := "rootCa.key"
-
-		if !fileExists(caKeyFile) || !fileExists(caCertFile) {
-			prompt := promptui.Prompt{
-				Label:     "Missing CA files - Do you want to use another authority",
-				IsConfirm: true,
-			}
-
-			result, err := prompt.Run()
-			if err != nil {
-				color.HiRed("Please provide valid rootCa.crt and rootCa.key files or complete the quick setup.")
-				color.HiRed("Exiting...")
-				os.Exit(-1)
-				return
-			}
-
-			// Cert file
-			prompt = promptui.Prompt{
-				Label: "Using own CA - Enter path to CA cert",
-				Validate: func(input string) error {
-					if !fileExists(input) {
-						return errors.New("file not found")
-					}
-					return nil
-				},
-			}
-			result, err = prompt.Run()
-			if err != nil {
-				fmt.Printf("Prompt failed %v\n", err)
-				return
-			}
-			caCertFile = result
-
-			// Key file
-			prompt = promptui.Prompt{
-				Label: "Using own CA - Enter path to CA key",
-				Validate: func(input string) error {
-					if !fileExists(input) {
-						return errors.New("file not found")
-					}
-					return nil
-				},
-			}
-			result, err = prompt.Run()
-			if err != nil {
-				fmt.Printf("Prompt failed %v\n", err)
-				return
-			}
-			caKeyFile = result
-		}
-
-		if len(caKeyPasswd) == 0 {
-			prompt := promptui.Prompt{
-				Label: "Enter CA pass phrase",
-				Mask:  '*',
-				Validate: func(input string) error {
-					if len(input) <= 4 && len(input) > 1024 {
-						return errors.New("you must type in 4 to 1024 characters")
-					}
-					return nil
-				},
-			}
-
-			result, err := prompt.Run()
-			if err != nil {
-				fmt.Printf("Prompt failed %v\n", err)
-				return
-			}
-			caKeyPasswd = result
-		}
 
 		// Server-side certificate CN & alias
 		fmt.Println()
@@ -283,26 +284,12 @@ func main() {
 		createTruststore(caCertFile)
 	}
 
-	if actionIdx == 0 {
+	if actionIdx == 0 || actionIdx == 2 {
 		fmt.Println()
-		color.Yellow("Please enter the username of the first client")
-		prompt := promptui.Prompt{
-			Label: "Enter the username",
-			Validate: func(input string) error {
-				match, _ := regexp.MatchString(`^([\w-.]+)$`, input)
-				if !match {
-					return errors.New("invalid username. Only alphanumeric '-' and '.' are allowed")
-				}
-				return nil
-			},
+		color.Yellow("Client Certificate Generation")
+		for {
+			addClientRoutine(caCertFile, caKeyFile, caKeyPasswd, actionIdx == 2)
 		}
-
-		result, err := prompt.Run()
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-			return
-		}
-		fmt.Println(result)
 	}
 
 }
@@ -334,7 +321,6 @@ func generateRootCA(location string, passwd string) {
 func generateServerSideCert(caCert string, caKey string, fqdn string, caKeyPass string) {
 	command := fmt.Sprintf(`openssl req -new -newkey rsa:4096 -keyout %s.key -out %[1]s.csr -nodes -subj "/CN=%[1]s/OU=\"%s\""`,
 		fqdn, CA_OU)
-	log.Println(command)
 	cmd := exec.Command("sh", "-c", command)
 	if err := cmd.Run(); err != nil {
 		log.Fatal(err)
@@ -394,4 +380,50 @@ func fileExists(filename string) bool {
 		return false
 	}
 	return !info.IsDir()
+}
+
+func addClientRoutine(caCert string, caKey string, caPasswd string, skipConfirm bool) {
+	if !skipConfirm {
+		prompt := promptui.Prompt{
+			Label:     "Do you want to generate a client Certificate",
+			IsConfirm: true,
+		}
+		_, err := prompt.Run()
+		if err != nil {
+			os.Exit(0)
+			return
+		}
+	}
+
+	prompt := promptui.Prompt{
+		Label: "Enter the username",
+		Validate: func(input string) error {
+			match, _ := regexp.MatchString(`^([\w-.]+)$`, input)
+			if !match {
+				return errors.New("invalid username. Only alphanumeric '-' and '.' are allowed")
+			}
+			return nil
+		},
+	}
+
+	result, err := prompt.Run()
+	if err != nil {
+		log.Fatalf("Aborted\n")
+		return
+	}
+	username := result
+
+	command := fmt.Sprintf(`openssl req -new -newkey rsa:4096 -nodes -keyout client%s.key -out client%[1]s.csr -subj "/CN=%[1]s"`, username)
+	cmd := exec.Command("sh", "-c", command)
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
+
+	command = fmt.Sprintf(`openssl x509 -req -CA %s -CAkey %s -in client%s.csr -out client%[3]s.crt -days 365 -CAcreateserial -passin pass:%s`,
+		caCert, caKey, username, caPasswd)
+	cmd = exec.Command("sh", "-c", command)
+	if err := cmd.Run(); err != nil {
+		log.Fatal(err)
+	}
+	color.Green(fmt.Sprintf("Success! Generated client%s.crt", username))
 }
