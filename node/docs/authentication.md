@@ -1,4 +1,7 @@
-[Add new client?](#5-generate-client-side-certificate)
+# Authentication Procedure
+
+---
+## DOCUMENTATION ONLY - Please ALWAYS use [node-setup](https://github.com/dotSpaceTeam/network-icarus/tree/master/node-setup)
 
 ### 1. Generate Certificate Authority
 
