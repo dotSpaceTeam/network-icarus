@@ -1,7 +1,7 @@
 package dev.dotspace.network.library.spring;
 
-import dev.dotspace.network.library.server.IRuntimeInfo;
-import dev.dotspace.network.library.server.ImmutableRuntimeInfo;
+import dev.dotspace.network.library.server.IHardwareInfo;
+import dev.dotspace.network.library.server.ImmutableHardwareInfo;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -44,18 +44,22 @@ public abstract class SpringRunner implements ISpringRunner {
 
     this.runnerType = runnerType;
 
+    //Define spring application.
     this.springApplication = new SpringApplication(applicationClass);
+
+    //Disable webserver if absent.
     if (runnerType != RunnerType.NODE) {
       log.info("Disabling tomcat web application.");
       this.springApplication.setWebApplicationType(WebApplicationType.NONE);
     }
+
     log.info("Run application.");
     this.springApplication.run(args);
 
     log.info("Runner(id={}, type={}) loaded.", this.id, this.runnerType);
 
     //Print system info.
-    final IRuntimeInfo runtimeInfo = ImmutableRuntimeInfo.now();
-    log.info("Allocated {} cores and {} mb of ram storage.", runtimeInfo.cores(), runtimeInfo.totalMemory());
+    final IHardwareInfo hardwareInfo = ImmutableHardwareInfo.get();
+    log.info("Allocated {} cores and {} mb of ram storage.", hardwareInfo.cores(), hardwareInfo.memory());
   }
 }

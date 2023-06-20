@@ -46,6 +46,9 @@ public abstract class AbstractRestController {
    */
   protected <TYPE> ResponseEntity<TYPE> validateOkResponse(@Nullable final CompletableResponse<TYPE> completableResponse,
                                                            @Nullable final String errorMessage) throws InterruptedException {
+    //Null check
+    Objects.requireNonNull(completableResponse, "Response is null");
+
     return this.validateOkResponse(completableResponse.get(), errorMessage);
   }
 
