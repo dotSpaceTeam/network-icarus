@@ -1,38 +1,52 @@
 package dev.dotspace.network.node;
 
-import dev.dotspace.network.library.server.IRuntimeInfo;
-import dev.dotspace.network.library.server.ImmutableRuntimeInfo;
+import dev.dotspace.network.library.spring.RunnerType;
+import dev.dotspace.network.library.spring.SpringRunner;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Log4j2
 @Accessors(fluent = true)
-public final class Node implements INode {
+public final class Node extends SpringRunner implements INode {
 
   /**
-   * See {@link INode#id()}.
+   * See {@link SpringRunner#SpringRunner(Class, String[], RunnerType)}.
    */
-  @Getter
-  private final @NotNull String id = UUID.randomUUID().toString();
+  public Node(@Nullable final Class<?> applicationClass,
+              @Nullable final String[] args) {
+    super(applicationClass, args, RunnerType.NODE);
+    instance = this;
+  }
+
+  @Bean
+  public WebMvcConfigurer webConfig() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addViewControllers(@NotNull final ViewControllerRegistry registry) {
+        registry
+          .addViewController("/")
+          .setViewName("forward:/index.html"); //Redirect to default registry.
+      }
+
+      @Override
+      public void addCorsMappings(@NotNull final CorsRegistry registry) {
+        registry
+          .addMapping("/**")
+          .allowedOrigins("*"); //Allow all origins
+      }
+    };
+  }
 
   //static
 
   @Getter
   @Accessors(fluent = true)
   private static INode instance;
-
-  static void load() {
-    log.info("Loading node...");
-    instance = new Node();
-
-    log.info("Node({}) loaded.", instance.id());
-
-    //Print system info.
-    final IRuntimeInfo runtimeInfo = ImmutableRuntimeInfo.now();
-    log.info("Allocated {} cores and {} mb of ram storage.", runtimeInfo.cores(), runtimeInfo.totalMemory());
-  }
 }
