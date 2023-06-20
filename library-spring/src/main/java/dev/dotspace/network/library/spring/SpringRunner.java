@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.spring;
 
+import dev.dotspace.network.library.runtime.RuntimeType;
 import dev.dotspace.network.library.server.IHardwareInfo;
 import dev.dotspace.network.library.server.ImmutableHardwareInfo;
 import lombok.Getter;
@@ -17,15 +18,15 @@ import java.util.UUID;
 @Accessors(fluent = true)
 public abstract class SpringRunner implements ISpringRunner {
   /**
-   * See {@link ISpringRunner#id()}.
+   * See {@link ISpringRunner#runtimeId()}.
    */
   @Getter
-  private final @NotNull String id = UUID.randomUUID().toString();
+  private final @NotNull String runtimeId = UUID.randomUUID().toString();
   /**
-   * See {@link ISpringRunner#runnerType()}.
+   * See {@link ISpringRunner#type()} ()}.
    */
   @Getter
-  private final @NotNull RunnerType runnerType;
+  private final @NotNull RuntimeType type;
   private final @NotNull SpringApplication springApplication;
 
   /**
@@ -36,19 +37,19 @@ public abstract class SpringRunner implements ISpringRunner {
    */
   public SpringRunner(@Nullable final Class<?> applicationClass,
                       @Nullable final String[] args,
-                      @Nullable final RunnerType runnerType) {
+                      @Nullable final RuntimeType type) {
     //Null check
     Objects.requireNonNull(applicationClass);
     Objects.requireNonNull(args);
-    Objects.requireNonNull(runnerType);
+    Objects.requireNonNull(type);
 
-    this.runnerType = runnerType;
+    this.type = type;
 
     //Define spring application.
     this.springApplication = new SpringApplication(applicationClass);
 
     //Disable webserver if absent.
-    if (runnerType != RunnerType.NODE) {
+    if (type != RuntimeType.NODE) {
       log.info("Disabling tomcat web application.");
       this.springApplication.setWebApplicationType(WebApplicationType.NONE);
     }
@@ -56,7 +57,7 @@ public abstract class SpringRunner implements ISpringRunner {
     log.info("Run application.");
     this.springApplication.run(args);
 
-    log.info("Runner(id={}, type={}) loaded.", this.id, this.runnerType);
+    log.info("Runner(id={}, type={}) loaded.", this.runtimeId, this.type);
 
     //Print system info.
     final IHardwareInfo hardwareInfo = ImmutableHardwareInfo.get();

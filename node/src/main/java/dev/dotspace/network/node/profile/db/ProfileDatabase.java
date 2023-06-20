@@ -51,12 +51,12 @@ public final class ProfileDatabase implements IProfileManipulator {
         return null;
       }
 
-      return ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, profileType.id())));
+      return ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, profileType)));
     });
   }
 
   /**
-   * See {@link IProfileDatabase#getProfile(String)}.
+   * See {@link IProfileManipulator#getProfile(String)}.
    */
   @Override
   public @NotNull CompletableResponse<IProfile> getProfile(@Nullable String uniqueId) {
@@ -71,7 +71,7 @@ public final class ProfileDatabase implements IProfileManipulator {
   }
 
   /**
-   * See {@link IProfileDatabase#setAttribute(String, String, String)}.
+   * See {@link IProfileManipulator#setAttribute(String, String, String)}.
    */
   @Override
   public @NotNull CompletableResponse<IProfileAttribute> setAttribute(@Nullable String uniqueId,
@@ -126,7 +126,7 @@ public final class ProfileDatabase implements IProfileManipulator {
   }
 
   /**
-   * See {@link IProfileDatabase#removeAttribute(String, String)}.
+   * See {@link IProfileManipulator#removeAttribute(String, String)}.
    */
   @Override
   public @NotNull CompletableResponse<IProfileAttribute> removeAttribute(@Nullable String uniqueId,
@@ -135,7 +135,7 @@ public final class ProfileDatabase implements IProfileManipulator {
   }
 
   /**
-   * See {@link IProfileDatabase#getAttributes(String)}.
+   * See {@link IProfileManipulator#getAttributes(String)}.
    */
   @Override
   public @NotNull CompletableResponse<List<IProfileAttribute>> getAttributes(@Nullable String uniqueId) {
@@ -163,7 +163,7 @@ public final class ProfileDatabase implements IProfileManipulator {
   }
 
   /**
-   * See {@link IProfileDatabase#getAttribute(String, String)}.
+   * See {@link IProfileManipulator#getAttribute(String, String)}.
    */
   @Override
   public @NotNull CompletableResponse<IProfileAttribute> getAttribute(@Nullable String uniqueId,

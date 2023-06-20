@@ -6,8 +6,6 @@ public final class KeyElement {
   @ElementString
   private String element;
 
-  public void t() {
-
-  }
+  private String text;
 
 }

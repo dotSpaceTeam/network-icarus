@@ -10,7 +10,7 @@ import java.util.Objects;
 
 @Component("elementManager")
 public final class ElementManager {
- // private final @NotNull Map<String, Class<? extends AbstractElement>> elementMap;
+  // private final @NotNull Map<String, Class<? extends AbstractElement>> elementMap;
 
   public ElementManager() {
     //this.elementMap = new HashMap<>();
@@ -27,14 +27,14 @@ public final class ElementManager {
       //this.elementMap.put(element.name().toUpperCase(),
       // new ElementInfo(aClass, ReflectionHelper.field(aClass, "")));
       //System.out.println(this.elementMap.get(element.name().toUpperCase()));
-     // System.out.println(element.name());
+      // System.out.println(element.name());
     });
   }
 
   @SuppressWarnings("all")
-  public  void element(@Nullable final String name,
-                                                     @Nullable final String value,
-                                                     @Nullable final String option) {
+  public void element(@Nullable final String name,
+                      @Nullable final String value,
+                      @Nullable final String option) {
 
   /*  return (TYPE) Optional
       .ofNullable(this.elementMap.get(name.toUpperCase()))
