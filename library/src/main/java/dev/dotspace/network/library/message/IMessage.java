@@ -4,12 +4,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public interface IMessage {
+public interface IMessage extends ITextMessage {
 
   @NotNull String key();
 
   @NotNull Locale locale();
-
-  @NotNull String message();
 
 }

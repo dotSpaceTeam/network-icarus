@@ -3,7 +3,7 @@ package dev.dotspace.network.client.web;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface IClient {
+public interface IRestClient {
   /**
    * Get component from endpoint.
    *

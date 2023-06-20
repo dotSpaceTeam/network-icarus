@@ -2,7 +2,7 @@ package dev.dotspace.network.client.profile;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.client.web.IClient;
+import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import java.util.Objects;
 public final class ProfileRequest implements IProfileManipulator {
 
   @Autowired
-  private IClient client;
+  private IRestClient client;
 
   /**
    * See {@link IProfileManipulator#getProfile(String)}.

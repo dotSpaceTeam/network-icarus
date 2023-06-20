@@ -19,9 +19,15 @@ public final class PositionDatabase implements IPositionManipulator {
    */
   private final static @NotNull Logger LOGGER = LogManager.getLogger(PositionDatabase.class);
 
+  /**
+   * Instance of {@link PositionRepository} with queries.
+   */
   @Autowired
   private PositionRepository positionRepository;
 
+  /**
+   * Instance of {@link ViewPositionRepository} with queries.
+   */
   @Autowired
   private ViewPositionRepository viewPositionRepository;
 

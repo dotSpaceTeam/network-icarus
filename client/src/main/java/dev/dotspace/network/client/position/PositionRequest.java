@@ -2,7 +2,7 @@ package dev.dotspace.network.client.position;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.client.web.IClient;
+import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.position.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,7 @@ import java.util.Objects;
 public final class PositionRequest implements IPositionManipulator {
 
   @Autowired
-  private IClient client;
+  private IRestClient client;
 
   /**
    * See {@link IPositionManipulator#setPosition(String, long, long, long)}.

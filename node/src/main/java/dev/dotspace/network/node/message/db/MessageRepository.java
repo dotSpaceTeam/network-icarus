@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Class to manipulate {@link MessageEntity}.
+ */
 public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   /**
    * Get value from key. (Key is sql key (message_key_id, locale))

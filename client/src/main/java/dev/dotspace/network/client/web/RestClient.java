@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import java.nio.charset.StandardCharsets;
@@ -22,19 +21,19 @@ import java.util.Objects;
 
 @Component
 @Accessors(fluent = true)
-public final class Client implements IClient {
+public final class RestClient implements IRestClient {
   /**
    * Logger.
    */
-  private final static Logger LOGGER = LogManager.getLogger(Client.class);
+  private final static Logger LOGGER = LogManager.getLogger(RestClient.class);
 
   /**
    * Spring webclient for request.
    */
-  private final @NotNull WebClient webClient;
+  private final @NotNull org.springframework.web.reactive.function.client.WebClient webClient;
 
-  public Client(@Nullable final String service,
-                @Nullable final Duration timeoutDuration) {
+  public RestClient(@Nullable final String service,
+                    @Nullable final Duration timeoutDuration) {
     //Null check
     Objects.requireNonNull(service);
     Objects.requireNonNull(timeoutDuration);
@@ -46,7 +45,7 @@ public final class Client implements IClient {
       .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(timeoutDuration.toMillis()))
       .responseTimeout(timeoutDuration);
 
-    this.webClient = WebClient.builder()
+    this.webClient = org.springframework.web.reactive.function.client.WebClient.builder()
       /*
        * Set base url.
        */
@@ -62,13 +61,13 @@ public final class Client implements IClient {
     LOGGER.info("Successfully created client to '{}'.", service);
   }
 
-  public Client() {
+  public RestClient() {
     this("http://localhost:8080", Duration.ofSeconds(5));
     LOGGER.info("Created default(test) client.");
   }
 
   /**
-   * See {@link IClient#get(String, Class)}.
+   * See {@link IRestClient#get(String, Class)}.
    */
   @Override
   public <RESPONSE> @NotNull RESPONSE get(@Nullable String apiEndpoint,
@@ -77,7 +76,7 @@ public final class Client implements IClient {
   }
 
   /**
-   * See {@link IClient#put(String, Class, Object)}.
+   * See {@link IRestClient#put(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE put(@Nullable String apiEndpoint,
                                                 @Nullable Class<RESPONSE> typeClass,
@@ -86,7 +85,7 @@ public final class Client implements IClient {
   }
 
   /**
-   * See {@link IClient#post(String, Class, Object)}.
+   * See {@link IRestClient#post(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE post(@Nullable String apiEndpoint,
                                                  @Nullable Class<RESPONSE> typeClass,
@@ -95,7 +94,7 @@ public final class Client implements IClient {
   }
 
   /**
-   * See {@link IClient#delete(String, Class, Object)}.
+   * See {@link IRestClient#delete(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE delete(@Nullable String apiEndpoint,
                                                    @Nullable Class<RESPONSE> typeClass,
@@ -117,11 +116,11 @@ public final class Client implements IClient {
     /*
      * Create request.
      */
-    final WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpec = this
+    final org.springframework.web.reactive.function.client.WebClient.UriSpec<org.springframework.web.reactive.function.client.WebClient.RequestBodySpec> requestBodySpec = this
       .webClient
       .method(httpMethod);
 
-    final WebClient.RequestBodySpec request = requestBodySpec
+    final org.springframework.web.reactive.function.client.WebClient.RequestBodySpec request = requestBodySpec
       .uri(apiEndpoint)
       .acceptCharset(StandardCharsets.UTF_8);
 

@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Manipulate {@link PositionElement}.
+ */
 public interface PositionRepository extends JpaRepository<PositionElement, Long> {
   /**
    * Get value from key.

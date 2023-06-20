@@ -5,6 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Manipulate {@link ViewPositionRepository}.
+ */
 public interface ViewPositionRepository extends JpaRepository<ViewPositionElement, Long> {
 
   /**

@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+/**
+ * Class to manipulate {@link MessageKeyEntity}.
+ */
 public interface MessageKeyRepository extends JpaRepository<MessageKeyEntity, Long> {
   /**
    * Check if key is present.
