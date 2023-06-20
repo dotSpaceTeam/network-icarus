@@ -1,4 +1,7 @@
-[Add new client?](#5-generate-client-side-certificate)
+# Authentication Procedure
+
+---
+## DOCUMENTATION ONLY - Please ALWAYS use [node-setup](https://github.com/dotSpaceTeam/network-icarus/tree/master/node-setup)
 
 ### 1. Generate Certificate Authority
 
@@ -40,7 +43,7 @@ keytool -importkeystore -srckeystore localhost.p12 -srcstoretype PKCS12 -destkey
 # Import Root CA into Truststore
 keytool -import -trustcacerts -noprompt -alias ca -ext san=dns:localhost,ip:127.0.0.1 -file rootCA.crt -keystore truststore.jks
 ```
-Only client certificates signed by the rootCA can access the server.
+Only client certificates signed by the rootCA can access the server. SAN doesnt really matter and should be ignored
 
 ### 5. Generate Client-side Certificate
 The ``CN``(Common Name) does represent the clients username! **Always change**!
