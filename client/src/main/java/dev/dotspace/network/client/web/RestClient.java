@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import java.nio.charset.StandardCharsets;
@@ -30,7 +31,7 @@ public final class RestClient implements IRestClient {
   /**
    * Spring webclient for request.
    */
-  private final @NotNull org.springframework.web.reactive.function.client.WebClient webClient;
+  private final @NotNull WebClient webClient;
 
   public RestClient(@Nullable final String service,
                     @Nullable final Duration timeoutDuration) {
@@ -116,11 +117,11 @@ public final class RestClient implements IRestClient {
     /*
      * Create request.
      */
-    final org.springframework.web.reactive.function.client.WebClient.UriSpec<org.springframework.web.reactive.function.client.WebClient.RequestBodySpec> requestBodySpec = this
+    final WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpec = this
       .webClient
       .method(httpMethod);
 
-    final org.springframework.web.reactive.function.client.WebClient.RequestBodySpec request = requestBodySpec
+    final WebClient.RequestBodySpec request = requestBodySpec
       .uri(apiEndpoint)
       .acceptCharset(StandardCharsets.UTF_8);
 

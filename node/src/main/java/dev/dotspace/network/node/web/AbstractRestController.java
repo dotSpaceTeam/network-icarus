@@ -77,7 +77,7 @@ public abstract class AbstractRestController {
    */
   @ResponseBody
   @ExceptionHandler(AuthenticationException.class)
-  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
   private String authenticationHandler(AuthenticationException exception) {
     return "Not allowed! (%s)".formatted(exception.getMessage());
   }

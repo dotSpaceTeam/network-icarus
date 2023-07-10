@@ -32,7 +32,10 @@ public class SecurityConfiguration {
     log.info("Setting up security.");
 
     if (this.environment.getProperty(ConfigField.DEV_MODE, Boolean.class, false)) {
-      http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+      http
+        .authorizeHttpRequests(auth -> {
+          auth.requestMatchers("/").permitAll();
+        });
       log.warn("Running in dev mode, security is disabled!");
     } else {
       // @formatter:off

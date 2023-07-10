@@ -11,6 +11,7 @@ public final class NodeListener {
   @EventListener
   public void handleEvent(@NotNull final RequestHandledEvent event) {
     System.out.println("-- RequestHandledEvent --");
+    System.out.println(event.wasFailure());
     System.out.println(event);
   }
 }
