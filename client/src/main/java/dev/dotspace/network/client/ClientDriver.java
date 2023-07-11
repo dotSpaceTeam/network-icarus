@@ -12,6 +12,9 @@ public class ClientDriver {
    * @param args given by user.
    */
   public static void main(String[] args) {
-    final Client client = new Client(ClientDriver.class, args);
+    new Client(ClientDriver.class, args);
+
+
+
   }
 }

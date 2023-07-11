@@ -23,7 +23,9 @@ import java.util.Collections;
 @EnableMethodSecurity
 @Log4j2
 public class SecurityConfiguration {
-
+  /**
+   * Get environment (config file)
+   */
   @Autowired
   private Environment environment;
 
@@ -34,8 +36,11 @@ public class SecurityConfiguration {
     if (this.environment.getProperty(ConfigField.DEV_MODE, Boolean.class, false)) {
       http
         .authorizeHttpRequests(auth -> {
-          auth.requestMatchers("/").permitAll();
-        });
+          auth.requestMatchers("/**").permitAll();
+        })
+        .formLogin(AbstractHttpConfigurer::disable)
+        .httpBasic(AbstractHttpConfigurer::disable)
+        .csrf(AbstractHttpConfigurer::disable);
       log.warn("Running in dev mode, security is disabled!");
     } else {
       // @formatter:off

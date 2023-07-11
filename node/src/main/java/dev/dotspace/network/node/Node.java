@@ -17,8 +17,6 @@ public final class Node extends SpringRunner implements INode {
   public Node(@Nullable final Class<?> applicationClass,
               @Nullable final String[] args) {
     super(applicationClass, args, RuntimeType.NODE);
-
-    //System.out.println(this.environment.getProperty(""));
     instance = this;
   }
 

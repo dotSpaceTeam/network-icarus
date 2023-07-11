@@ -6,6 +6,8 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.Date;
 
+import static dev.dotspace.network.library.server.MemoryCalculator.*;
+
 /**
  * Implementation of {@link IRuntimeInfo}.
  *
@@ -48,16 +50,11 @@ public record ImmutableRuntimeInfo(@NotNull Date timestamp,
 
   //static
   /**
-   * Memory multiplication to mb.
-   */
-  private final static long MEMORY_INDEX;
-  /**
    * Get info of operating system.
    */
   private final static @NotNull OperatingSystemMXBean OPERATING_SYSTEM_MX_BEAN;
 
   static {
-    MEMORY_INDEX = 1024 * 1024;
     OPERATING_SYSTEM_MX_BEAN = ManagementFactory.getOperatingSystemMXBean();
   }
 
@@ -71,8 +68,10 @@ public record ImmutableRuntimeInfo(@NotNull Date timestamp,
 
     return new ImmutableRuntimeInfo(
       new Date(System.currentTimeMillis()),
-      runtime.totalMemory() / MEMORY_INDEX,
-      runtime.freeMemory() / MEMORY_INDEX,
+
+      convertByteToMegabyte(runtime.totalMemory()),
+      convertByteToMegabyte(runtime.freeMemory()),
+
       runtime.availableProcessors(),
       ManagementFactory.getThreadMXBean().getThreadCount(),
       (float) OPERATING_SYSTEM_MX_BEAN.getSystemLoadAverage()

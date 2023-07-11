@@ -2,6 +2,8 @@ package dev.dotspace.network.library.server;
 
 import org.jetbrains.annotations.NotNull;
 
+import static dev.dotspace.network.library.server.MemoryCalculator.*;
+
 /**
  * Implementation of {@link IHardwareInfo}.
  *
@@ -19,8 +21,7 @@ public record ImmutableHardwareInfo(long memory,
    * @return instance of {@link IHardwareInfo}.
    */
   public static @NotNull IHardwareInfo get() {
-    //Todo: memory to mb.
     final Runtime runtime = Runtime.getRuntime();
-    return new ImmutableHardwareInfo(runtime.totalMemory(), runtime.availableProcessors());
+    return new ImmutableHardwareInfo(convertByteToMegabyte(runtime.totalMemory()), runtime.availableProcessors());
   }
 }

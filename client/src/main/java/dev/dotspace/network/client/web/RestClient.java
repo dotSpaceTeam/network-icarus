@@ -59,6 +59,7 @@ public final class RestClient implements IRestClient {
       .defaultHeader(HttpHeaders.ACCEPT_CHARSET)
       .clientConnector(new ReactorClientHttpConnector(httpClient))
       .build();
+
     LOGGER.info("Successfully created client to '{}'.", service);
   }
 

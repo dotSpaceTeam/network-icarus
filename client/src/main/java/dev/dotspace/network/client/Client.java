@@ -10,11 +10,15 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * Implementation for {@link IClient}.
  */
 @Log4j2
 public final class Client extends SpringRunner implements IClient {
+
+  private static @Nullable Client instance;
 
   /**
    * Create client instance with spring parameters.
@@ -25,6 +29,7 @@ public final class Client extends SpringRunner implements IClient {
   public Client(@Nullable final Class<?> applicationClass,
                 @Nullable final String[] args) {
     super(applicationClass, args, RuntimeType.CLIENT);
+    instance = this;
   }
 
   /**
@@ -41,5 +46,13 @@ public final class Client extends SpringRunner implements IClient {
   @Override
   public @NotNull IPositionManipulator positionRequest() {
     return new PositionRequest();
+  }
+
+  //static
+  /**
+   * Get instance of client.
+   */
+  public static @NotNull Client instance() {
+    return Objects.requireNonNull(instance, "No client present!");
   }
 }
