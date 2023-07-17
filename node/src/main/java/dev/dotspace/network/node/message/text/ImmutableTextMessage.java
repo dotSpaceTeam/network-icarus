@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.message.text;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,13 +14,9 @@ import java.util.Set;
  * @param plainText    message itself.
  * @param placeholders list of placeholders to use in message.
  */
+@Log4j2
 public record ImmutableTextMessage(@NotNull String plainText,
                                    @Nullable Set<IPlaceholder<?>> placeholders) implements ITextMessage {
-  /**
-   * Logger
-   */
-  private final static @NotNull Logger LOGGER = LogManager.getLogger(ImmutableTextMessage.class);
-
   /**
    * See {@link ITextMessage#replace(String, Object)}.
    */
@@ -67,7 +62,7 @@ public record ImmutableTextMessage(@NotNull String plainText,
       try {
         return Optional.of((IPlaceholder<TYPE>) placeholder); //Return found placeholder.
       } catch (final ClassCastException exception) {
-        LOGGER.error("Placeholder is not needed type! ({})", exception.getMessage());
+        log.error("Placeholder is not needed type! ({})", exception.getMessage());
       }
     }
     return Optional.empty();

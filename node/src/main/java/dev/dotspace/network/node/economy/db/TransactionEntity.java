@@ -17,11 +17,14 @@ import java.util.Date;
 @NoArgsConstructor
 @Accessors(fluent = true)
 final class TransactionEntity implements ITransaction {
-
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
+
   @ManyToOne
   @JoinColumn(name = "Profile", nullable = false)
   private ProfileEntity profile;

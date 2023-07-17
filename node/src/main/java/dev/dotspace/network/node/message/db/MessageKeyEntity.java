@@ -11,11 +11,13 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class MessageKeyEntity {
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
-
 
   @Column(name = "Key", nullable = false, unique = true)
   @Getter

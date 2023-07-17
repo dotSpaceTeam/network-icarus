@@ -14,12 +14,13 @@ import org.jetbrains.annotations.Nullable;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class CurrencyEntity implements ICurrency {
-
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
-
   /**
    * See {@link ICurrency#symbol()}.
    */

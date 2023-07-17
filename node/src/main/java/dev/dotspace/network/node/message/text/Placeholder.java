@@ -2,8 +2,7 @@ package dev.dotspace.network.node.message.text;
 
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,11 +13,8 @@ import java.util.Optional;
  * Abstract implementation for {@link IPlaceholder}.
  */
 @Accessors(fluent = true)
+@Log4j2
 public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
-  /**
-   * Logger.
-   */
-  private final static @NotNull Logger LOGGER = LogManager.getLogger(Placeholder.class);
   /**
    * See {@link IPlaceholder#replaceKey()}.
    */

@@ -3,8 +3,7 @@ package dev.dotspace.network.node.profile.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.profile.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,8 @@ import java.util.List;
 import java.util.Objects;
 
 @Component("profileDatabase")
+@Log4j2
 public final class ProfileDatabase implements IProfileManipulator {
-  /**
-   * Logger
-   */
-  private final static @NotNull Logger LOGGER = LogManager.getLogger(ProfileDatabase.class);
-
   /**
    * Instance to communicate tp profiles.
    */
@@ -47,7 +42,7 @@ public final class ProfileDatabase implements IProfileManipulator {
        * Check if uniqueId is already existing
        */
       if (this.profileRepository.existsByUniqueId(uniqueId)) {
-        LOGGER.info("Profile with uniqueId='{}', already present.", uniqueId);
+        log.info("Profile with uniqueId='{}', already present.", uniqueId);
         return null;
       }
 
@@ -85,7 +80,7 @@ public final class ProfileDatabase implements IProfileManipulator {
       final ProfileEntity profileEntity = this.profileRepository
         .findByUniqueId(uniqueId)
         .orElseThrow(() -> {
-          LOGGER.error("No profile with uniqueId='{}' found to set attribute.", uniqueId);
+          log.error("No profile with uniqueId='{}' found to set attribute.", uniqueId);
           return new NullPointerException();
         });
 

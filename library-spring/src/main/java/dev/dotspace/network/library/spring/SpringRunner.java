@@ -10,8 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -28,6 +30,7 @@ public abstract class SpringRunner implements ISpringRunner {
   @Getter
   private final @NotNull RuntimeType type;
   private final @NotNull SpringApplication springApplication;
+  private final @NotNull ConfigurableApplicationContext applicationContext;
 
   /**
    * Create client instance with spring parameters.
@@ -55,12 +58,41 @@ public abstract class SpringRunner implements ISpringRunner {
     }
 
     log.info("Run application.");
-    this.springApplication.run(args);
+    this.applicationContext = this.springApplication.run(args);
 
     log.info("Runner(id={}, type={}) loaded.", this.runtimeId, this.type);
 
     //Print system info.
     final IHardwareInfo hardwareInfo = ImmutableHardwareInfo.get();
     log.info("Allocated {} cores and {} mb of ram storage.", hardwareInfo.cores(), hardwareInfo.memory());
+  }
+
+  /**
+   * See {@link ISpringRunner#bean(Class)}.
+   */
+  @Override
+  public @NotNull <T> Optional<T> bean(@Nullable Class<T> beanClass) {
+    return Optional
+      //Wrap in optional
+      .ofNullable(beanClass)
+      //Get bean of class.
+      .map(this.applicationContext::getBean);
+  }
+
+  /**
+   * See {@link ISpringRunner#executeEvent(Object)}.
+   */
+  @Override
+  public @NotNull ISpringRunner executeEvent(@Nullable Object object) {
+    //Null check.
+    if (object == null) {
+      log.warn("No event to execute.");
+      return this;
+    }
+
+    //Run event.
+    this.applicationContext.publishEvent(object);
+    log.debug("Executed event {}.", object.getClass().getName());
+    return this;
   }
 }

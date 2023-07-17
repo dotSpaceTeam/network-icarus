@@ -20,7 +20,7 @@ public interface ITextMessage {
   /**
    * Format and create string from message.
    *
-   * @return
+   * @return text formatted.
    */
   @NotNull String formatted();
 }

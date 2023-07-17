@@ -17,7 +17,9 @@ import java.util.Objects;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class ProfileEntity implements IProfile {
-
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter

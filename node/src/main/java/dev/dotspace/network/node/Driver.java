@@ -13,15 +13,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class Driver {
 
   public static void main(String[] args) {
-    new Node(Driver.class, args);
+    final Node node = new Node(Driver.class, args);
+    node.init();
   }
 
   @Bean
   public WebMvcConfigurer webConfig() {
-
-    {
-      log.info("Created WebMvcConfigurer bean instance.");
-    }
+    log.info("Created WebMvcConfigurer bean instance.");
 
     return new WebMvcConfigurer() {
       @Override

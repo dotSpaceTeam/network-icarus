@@ -1,5 +1,10 @@
 package dev.dotspace.network.node;
 
-public interface INode {
+import dev.dotspace.network.library.runtime.IRuntime;
+import org.jetbrains.annotations.NotNull;
+
+public interface INode extends IRuntime {
+
+  @NotNull INode init();
 
 }

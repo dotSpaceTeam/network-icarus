@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class ViewPositionElement implements IViewPosition {
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter

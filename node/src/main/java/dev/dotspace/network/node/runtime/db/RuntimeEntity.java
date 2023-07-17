@@ -1,6 +1,5 @@
 package dev.dotspace.network.node.runtime.db;
 
-import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.runtime.IRuntime;
 import dev.dotspace.network.library.runtime.RuntimeType;
 import jakarta.persistence.*;
@@ -15,21 +14,23 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class RuntimeEntity implements IRuntime {
-
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
 
   /**
-   * See {@link IProfile#uniqueId()}.
+   * See {@link IRuntime#runtimeId()}.
    */
   @Column(name = "RuntimeId", nullable = false, unique = true)
   @Getter
   private String runtimeId;
 
   /**
-   * See {@link IProfile#profileType()}.
+   * See {@link IRuntime#type()}.
    */
   @Column(name = "Type", nullable = false)
   @Getter

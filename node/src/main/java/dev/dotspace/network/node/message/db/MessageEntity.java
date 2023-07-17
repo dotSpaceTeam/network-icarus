@@ -19,11 +19,13 @@ import java.util.Locale;
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class MessageEntity implements IMessage {
+  /**
+   * Identity of element
+   */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   private Long id;
-
   @ManyToOne
   @JoinColumn(name = "Key", nullable = false)
   private MessageKeyEntity key;

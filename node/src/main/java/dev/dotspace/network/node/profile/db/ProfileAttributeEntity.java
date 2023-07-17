@@ -11,34 +11,37 @@ import org.jetbrains.annotations.Nullable;
 
 @Entity
 @Table(name = "Profile_Attributes",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"Profile", "Key"})})
+  uniqueConstraints = {@UniqueConstraint(columnNames = {"Profile", "Key"})})
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class ProfileAttributeEntity implements IProfileAttribute {
+  /**
+   * Identity of element
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Getter
+  private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    private Long id;
-    @ManyToOne
-    @JoinColumn(name = "Profile", nullable = false)
-    private ProfileEntity profile;
+  @ManyToOne
+  @JoinColumn(name = "Profile", nullable = false)
+  private ProfileEntity profile;
 
-    @Column(nullable = false)
-    @Getter
-    private String key;
+  @Column(nullable = false)
+  @Getter
+  private String key;
 
-    @Column
-    @Getter
-    @Setter
-    private String value;
+  @Column
+  @Getter
+  @Setter
+  private String value;
 
 
-    public ProfileAttributeEntity(@NotNull final ProfileEntity profile,
-                                  @NotNull final String key,
-                                  @Nullable final String value) {
-        this.profile = profile;
-        this.key = key;
-        this.value = value;
-    }
+  public ProfileAttributeEntity(@NotNull final ProfileEntity profile,
+                                @NotNull final String key,
+                                @Nullable final String value) {
+    this.profile = profile;
+    this.key = key;
+    this.value = value;
+  }
 }
