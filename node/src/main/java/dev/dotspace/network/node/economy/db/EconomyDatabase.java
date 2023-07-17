@@ -75,10 +75,12 @@ public final class EconomyDatabase implements IEconomyDatabase {
           return new NullPointerException();
         });
 
-      int transactionAmount = Math.abs(amount) * (transactionType == TransactionType.WITHDRAW ? -1 : 1);
+      //Convert amount to positive if deposited, negative if withdrawn.
+      final int transactionAmount = Math.abs(amount) * (transactionType == TransactionType.WITHDRAW ? -1 : 1);
+      log.debug("Converted transaction amount from={} to={}.", amount, transactionAmount);
 
       return ImmutableTransaction
-        .of(this.transactionRepository.save(new TransactionEntity(profile, currency, transactionAmount, transactionType.id())));
+        .of(this.transactionRepository.save(new TransactionEntity(profile, currency, transactionAmount, transactionType)));
     });
   }
 }

@@ -44,7 +44,8 @@ final class TransactionEntity implements ITransaction {
    * See {@link IProfile#profileType()}.
    */
   @Column(name = "Type", nullable = false)
-  private Integer transactionType;
+  @Getter
+  private TransactionType transactionType;
 
   /**
    * Time transaction was inserted.
@@ -60,15 +61,10 @@ final class TransactionEntity implements ITransaction {
     this.created = new Date();
   }
 
-  @Override
-  public @NotNull TransactionType transactionType() {
-    return TransactionType.fromId(this.transactionType);
-  }
-
-  public TransactionEntity(ProfileEntity profile,
-                           CurrencyEntity currency,
-                           int amount,
-                           Integer transactionType) {
+  public TransactionEntity(@NotNull final ProfileEntity profile,
+                           @NotNull final CurrencyEntity currency,
+                           final int amount,
+                           @NotNull final TransactionType transactionType) {
     this.profile = profile;
     this.currency = currency;
     this.amount = amount;
