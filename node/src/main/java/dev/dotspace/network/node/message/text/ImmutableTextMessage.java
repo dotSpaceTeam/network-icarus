@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.message.text;
 
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.util.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,23 +22,12 @@ public record ImmutableTextMessage(@NotNull String plainText,
   @Override
   public @NotNull <TYPE> ITextMessage replace(@Nullable String string,
                                               @Nullable TYPE replace) {
-    /* Create new PlaceholderContext for a given object. */
-    return this.replace(string, () -> replace);
-  }
-
-  /**
-   * See {@link ITextMessage#replace(String, PlaceholderContext)}.
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public @NotNull <TYPE> ITextMessage replace(@Nullable String string,
-                                              @Nullable PlaceholderContext<@Nullable TYPE> replaceContext) {
     this
       .findPlaceholder(string) /* Find key in placeholders set. */
 
       /* If placeholder present replace context. */
-      .ifPresent(objectIPlaceholder -> objectIPlaceholder.replaceContext((PlaceholderContext<Object>) replaceContext));
-    return this;
+      .ifPresent(objectIPlaceholder -> objectIPlaceholder.replaceContext(replace));
+      return this;
   }
 
   /**
@@ -84,7 +72,6 @@ public record ImmutableTextMessage(@NotNull String plainText,
     for (final IPlaceholder<?> placeholder : this.placeholders) { //Loop trough every placeholder.
       preparedMessage = preparedMessage.replace(placeholder.replaceKey(), placeholder
         .replaceContext()
-        .map(Supplier::get /* Get the context of IPlaceholderContext. */)
         .map(Object::toString)
         .orElse(placeholder.code()));
     }

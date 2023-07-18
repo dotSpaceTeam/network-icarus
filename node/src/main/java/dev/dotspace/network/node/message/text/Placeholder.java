@@ -26,7 +26,7 @@ public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
   @Getter
   private final @NotNull String code;
 
-  private @Nullable PlaceholderContext<TYPE> replaceContext;
+  private @Nullable TYPE replaceContext;
 
   /**
    * Construct instance of {@link Placeholder}.
@@ -45,15 +45,15 @@ public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
    * See {@link IPlaceholder#replaceContext()}.
    */
   @Override
-  public @NotNull Optional<PlaceholderContext<TYPE>> replaceContext() {
+  public @NotNull Optional<TYPE> replaceContext() {
     return Optional.ofNullable(this.replaceContext);
   }
 
   /**
-   * See {@link IPlaceholder#replaceContext(PlaceholderContext)}.
+   * See {@link IPlaceholder#replaceContext(TYPE)}.
    */
   @Override
-  public @NotNull IPlaceholder<TYPE> replaceContext(@Nullable final PlaceholderContext<TYPE> replaceContext) {
+  public @NotNull IPlaceholder<TYPE> replaceContext(@Nullable final TYPE replaceContext) {
     this.replaceContext = replaceContext;
     return this;
   }

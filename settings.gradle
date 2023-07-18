@@ -3,6 +3,6 @@ include 'library'
 include 'node'
 include 'client'
 include 'node-setup'
-include 'game'
 include 'library-spring'
+include 'library-spigot'
 

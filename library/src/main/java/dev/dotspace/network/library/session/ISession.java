@@ -2,13 +2,17 @@ package dev.dotspace.network.library.session;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.time.Duration;
 import java.util.Date;
 
 /**
  * Session info.
  */
-public interface ISession {
+public interface ISession extends IPlaytime {
+  /**
+   * Session id.
+   */
+  @NotNull Long sessionId();
+
   /**
    * Time the session has started.
    *
@@ -22,11 +26,4 @@ public interface ISession {
    * @return time as {@link Date}.
    */
   @NotNull Date endDate();
-
-  /**
-   * Duration between two values.
-   *
-   * @return difference as {@link Duration}.
-   */
-  @NotNull Duration duration();
 }

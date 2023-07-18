@@ -22,7 +22,7 @@ public interface IPlaceholder<TYPE> {
 
   @NotNull String code();
 
-  @NotNull Optional<PlaceholderContext<TYPE>> replaceContext();
+  @NotNull Optional<TYPE> replaceContext();
 
-  @NotNull IPlaceholder<TYPE> replaceContext(@Nullable final PlaceholderContext<TYPE> replaceContext);
+  @NotNull IPlaceholder<TYPE> replaceContext(@Nullable final TYPE replaceContext);
 }

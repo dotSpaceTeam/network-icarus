@@ -3,9 +3,9 @@ package dev.dotspace.network.node.message.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.message.IMessage;
+import dev.dotspace.network.library.message.IMessageManipulator;
 import dev.dotspace.network.library.message.ImmutableMessage;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Component("messageDatabase")
-public final class MessageDatabase implements IMessageDatabase {
-  /**
-   * Logger
-   */
-  private final static @NotNull Logger LOGGER = LogManager.getLogger(MessageDatabase.class);
+@Log4j2
+public final class MessageDatabase implements IMessageManipulator {
 
   @Autowired
   private MessageRepository messageRepository;
@@ -27,7 +24,7 @@ public final class MessageDatabase implements IMessageDatabase {
   private MessageKeyRepository messageKeyRepository;
 
   /**
-   * See {@link IMessageDatabase#insertMessage(Locale, String, String)}.
+   * See {@link IMessageManipulator#insertMessage(Locale, String, String)}.
    */
   @Override
   public @NotNull CompletableResponse<Boolean> insertMessage(@Nullable Locale locale,
@@ -37,7 +34,7 @@ public final class MessageDatabase implements IMessageDatabase {
   }
 
   /**
-   * See {@link IMessageDatabase#updateMessage(Locale, String, String)}.
+   * See {@link IMessageManipulator#updateMessage(Locale, String, String)}.
    */
   @Override
   public @NotNull CompletableResponse<Boolean> updateMessage(@Nullable Locale locale,
@@ -90,7 +87,7 @@ public final class MessageDatabase implements IMessageDatabase {
 
 
   /**
-   * See {@link IMessageDatabase#message(Locale, String)}.
+   * See {@link IMessageManipulator#message(Locale, String)}.
    */
   @Override
   public @NotNull CompletableResponse<IMessage> message(@Nullable Locale locale,
@@ -103,7 +100,7 @@ public final class MessageDatabase implements IMessageDatabase {
       final MessageKeyEntity messageKey = this.messageKeyRepository
         .findByKey(key)
         .orElseThrow(() -> {
-          LOGGER.error("No key='{}' present, can't find message.", key);
+          log.error("No key='{}' present, can't find message.", key);
           return new NullPointerException();
         });
 
@@ -128,8 +125,6 @@ public final class MessageDatabase implements IMessageDatabase {
    * @param key to insert.
    */
   private @NotNull MessageKeyEntity insertIfAbsentAndGetLocale(@NotNull final String key) {
-
-
     return this.messageKeyRepository
       /*
        * Return this if present.

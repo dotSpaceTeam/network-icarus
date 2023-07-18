@@ -9,5 +9,4 @@ public interface ITextMessage {
    * @return String message.
    */
   @NotNull String message();
-
 }

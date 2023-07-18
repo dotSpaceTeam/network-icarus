@@ -12,9 +12,6 @@ public interface ITextMessage {
   @NotNull <TYPE> ITextMessage replace(@Nullable final String string,
                                        @Nullable final TYPE replace);
 
-  @NotNull <TYPE> ITextMessage replace(@Nullable final String string,
-                                       @Nullable final PlaceholderContext<@Nullable TYPE> replaceContext);
-
   @NotNull Set<IPlaceholder<?>> placeholders();
 
   /**

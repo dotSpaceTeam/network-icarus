@@ -1,13 +1,12 @@
-package dev.dotspace.network.node.message.db;
+package dev.dotspace.network.library.message;
 
 import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.library.message.IMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-public interface IMessageDatabase {
+public interface IMessageManipulator {
   @NotNull CompletableResponse<Boolean> insertMessage(@Nullable final Locale locale,
                                                       @Nullable final String key,
                                                       @Nullable final String message);

@@ -3,13 +3,13 @@ package dev.dotspace.network.library.session;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.Duration;
 import java.util.Date;
 import java.util.Objects;
 
-public record ImmutableSession(@NotNull Date startDate,
+public record ImmutableSession(@NotNull Long sessionId,
+                               @NotNull Date startDate,
                                @NotNull Date endDate,
-                               @NotNull Duration duration) implements ISession {
+                               long duration) implements ISession {
   /**
    * Convert {@link ISession} to {@link ImmutableSession}.
    *
@@ -20,6 +20,6 @@ public record ImmutableSession(@NotNull Date startDate,
     //Null check
     Objects.requireNonNull(session);
 
-    return new ImmutableSession(session.startDate(), session.endDate(), session.duration());
+    return new ImmutableSession(session.sessionId(), session.startDate(), session.endDate(), session.duration());
   }
 }
