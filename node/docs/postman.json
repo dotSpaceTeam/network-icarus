@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "3c3ccc46-35ec-4088-bf3c-d72627f31ecf",
-		"name": "Gozilla",
+		"name": "Core-Icarus",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -10,6 +10,9 @@
 			"item": [
 				{
 					"name": "Profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [
@@ -19,17 +22,25 @@
 								"type": "default"
 							}
 						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
 						"url": {
-							"raw": "http://localhost:8080/v1/profile/{{Profile}}",
-							"protocol": "http",
+							"raw": "{{Host}}/v1/profile/{{Profile}}?attributes=true",
 							"host": [
-								"localhost"
+								"{{Host}}"
 							],
-							"port": "8080",
 							"path": [
 								"v1",
 								"profile",
 								"{{Profile}}"
+							],
+							"query": [
+								{
+									"key": "attributes",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -194,7 +205,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3\r\n}"
+							"raw": "{\r\n    \"key\": \"test\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3\r\n}"
 						},
 						"url": {
 							"raw": "{{Host}}/v1/position",
@@ -221,14 +232,14 @@
 							}
 						],
 						"url": {
-							"raw": "{{Host}}/v1/position/text",
+							"raw": "{{Host}}/v1/position/test",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
 								"v1",
 								"position",
-								"text"
+								"test"
 							]
 						}
 					},
@@ -247,16 +258,23 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3\r\n}"
+							"raw": "{\r\n    \"key\": \"test\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3,\r\n    \"yaw\": 5,\r\n    \"pitch\": 5\r\n}"
 						},
 						"url": {
-							"raw": "{{Host}}/v1/position",
+							"raw": "{{Host}}/v1/position/view?updateView=true",
 							"host": [
 								"{{Host}}"
 							],
 							"path": [
 								"v1",
-								"position"
+								"position",
+								"view"
+							],
+							"query": [
+								{
+									"key": "updateView",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -275,7 +293,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"key\": \"text\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3,\r\n    \"yaw\": 5,\r\n    \"pitch\": 5\r\n}"
+							"raw": "{\r\n    \"key\": \"test\",\r\n    \"x\": 1,\r\n    \"y\": 2,\r\n    \"z\": 3,\r\n    \"yaw\": 5,\r\n    \"pitch\": 5\r\n}"
 						},
 						"url": {
 							"raw": "{{Host}}/v1/position/view",
@@ -292,6 +310,232 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Message",
+			"item": [
+				{
+					"name": "Key (Get)",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{Host}}/v1/message/key/test@key?lang=de-DE",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"message",
+								"key",
+								"test@key"
+							],
+							"query": [
+								{
+									"key": "lang",
+									"value": "de-DE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Key (Update Message)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key\": \"test@key\",\r\n    \"locale\": \"de_DE\",\r\n    \"message\": \"Test Message 2\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/message/key",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"message",
+								"key"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Message (Render Message)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"message\": \"Test Message {{ PLACEHOLDER:SECOND:THIRD }}\"\r\n}"
+						},
+						"url": {
+							"raw": "{{Host}}/v1/message/",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"message",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Session",
+			"item": [
+				{
+					"name": "Playtime",
+					"item": [
+						{
+							"name": "Playtime (Get)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{Host}}/v1/playtime{{Profile}}",
+									"host": [
+										"{{Host}}"
+									],
+									"path": [
+										"v1",
+										"playtime{{Profile}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Session (Create)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/v1/session/{{Profile}}",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"session",
+								"{{Profile}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Session (List all Sessions)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/v1/session/{{Profile}}",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"session",
+								"{{Profile}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Session (Close)",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/v1/session/{{Profile}}/2",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"session",
+								"{{Profile}}",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Session (Get)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{Host}}/v1/session/{{Profile}}/2",
+							"host": [
+								"{{Host}}"
+							],
+							"path": [
+								"v1",
+								"session",
+								"{{Profile}}",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Running",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Host}}/v1/running",
+					"host": [
+						"{{Host}}"
+					],
+					"path": [
+						"v1",
+						"running"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
@@ -317,7 +561,7 @@
 	"variable": [
 		{
 			"key": "Host",
-			"value": "http://localhost:8080",
+			"value": "http://localhost:8443",
 			"type": "default"
 		},
 		{
