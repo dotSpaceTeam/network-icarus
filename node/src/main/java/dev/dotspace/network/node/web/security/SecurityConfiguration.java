@@ -41,6 +41,10 @@ public class SecurityConfiguration {
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable);
+      System.out.println("DEV Mode");
+      System.out.println("DEV Mode");
+      System.out.println("DEV Mode");
+      System.out.println("DEV Mode");
       log.warn("Running in dev mode, security is disabled!");
     } else {
       // @formatter:off

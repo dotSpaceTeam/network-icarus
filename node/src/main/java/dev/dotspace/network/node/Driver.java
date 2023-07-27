@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Driver {
 
   public static void main(String[] args) {
-    final Node node = new Node(Driver.class, args);
-    node.init();
+    new Node(Driver.class, args);
   }
 }

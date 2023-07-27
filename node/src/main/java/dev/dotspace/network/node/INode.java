@@ -5,6 +5,4 @@ import org.jetbrains.annotations.NotNull;
 
 public interface INode extends IRuntime {
 
-  @NotNull INode init();
-
 }

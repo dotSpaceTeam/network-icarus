@@ -19,22 +19,16 @@ public final class Node extends SpringRunner implements INode {
   public Node(@Nullable final Class<?> applicationClass,
               @Nullable final String[] args) {
     super(applicationClass, args, RuntimeType.NODE);
-    instance = this;
-  }
-  @Override
-  public @NotNull INode init() {
     //Insert local runtime in database.
     this
       .bean(RuntimeDatabase.class)
       .ifPresent(runtimeDatabase -> runtimeDatabase.createRuntime(this.runtimeId(), this.type()));
     log.info("Initialized node.");
-    return this;
+    instance = this;
   }
 
   //static
-
   @Getter
   @Accessors(fluent = true)
   private static INode instance;
-
 }

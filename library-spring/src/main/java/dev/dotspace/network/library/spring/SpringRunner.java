@@ -46,6 +46,7 @@ public abstract class SpringRunner implements ISpringRunner {
     Objects.requireNonNull(args);
     Objects.requireNonNull(type);
 
+    //Set type of spring runner.
     this.type = type;
 
     //Define spring application.
@@ -59,7 +60,6 @@ public abstract class SpringRunner implements ISpringRunner {
 
     log.info("Run application.");
     this.applicationContext = this.springApplication.run(args);
-
     log.info("Runner(id={}, type={}) loaded.", this.runtimeId, this.type);
 
     //Print system info.
