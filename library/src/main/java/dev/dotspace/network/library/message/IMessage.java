@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public interface IMessage extends ITextMessage {
+public interface IMessage extends IMessageComponent {
 
   @NotNull String key();
 
