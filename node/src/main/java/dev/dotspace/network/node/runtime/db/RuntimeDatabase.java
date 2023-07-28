@@ -6,6 +6,7 @@ import dev.dotspace.network.library.runtime.IRuntime;
 import dev.dotspace.network.library.runtime.IRuntimeManipulator;
 import dev.dotspace.network.library.runtime.ImmutableRuntime;
 import dev.dotspace.network.library.runtime.RuntimeType;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 @Component("runtimeDatabase")
 @Log4j2
-public final class RuntimeDatabase implements IRuntimeManipulator {
+public final class RuntimeDatabase extends AbstractDatabase implements IRuntimeManipulator {
   /**
    * Manipulate data.
    */
@@ -52,7 +53,10 @@ public final class RuntimeDatabase implements IRuntimeManipulator {
       //Null check
       Objects.requireNonNull(id);
 
-      return this.runtimeRepository.findByRuntimeId(id).map(ImmutableRuntime::of).orElse(null);
+      return this.runtimeRepository
+        .findByRuntimeId(id)
+        .map(ImmutableRuntime::of)
+        .orElse(null);
     });
   }
 }

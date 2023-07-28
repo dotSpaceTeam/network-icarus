@@ -3,6 +3,7 @@ package dev.dotspace.network.node.session.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.session.*;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
@@ -20,8 +21,7 @@ import java.util.Objects;
  */
 @Component("sessionDatabase")
 @Log4j2
-public final class SessionDatabase implements ISessionManipulator {
-
+public final class SessionDatabase extends AbstractDatabase implements ISessionManipulator {
   /**
    * Repository to modify sessions.
    */
@@ -44,10 +44,7 @@ public final class SessionDatabase implements ISessionManipulator {
 
       final ProfileEntity profile = this.profileRepository
         .findByUniqueId(uniqueId)
-        .orElseThrow(() -> {
-          log.error("No profile={} found to list sessions from.", uniqueId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No profile='%s' found to list sessions from.".formatted(uniqueId)));
 
       return this.sessionRepository
         //Find all sessions entities.
@@ -79,25 +76,22 @@ public final class SessionDatabase implements ISessionManipulator {
         //Map session to ISession.
         .map(ImmutableSession::of)
         //Else error, no session or profile does not match.
-        .orElseThrow(() -> {
-          log.error("No session={} found for profile={}.", sessionId, uniqueId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No session='%s' found for profile='%s'.".formatted(sessionId, uniqueId)));
     });
   }
 
   @Override
   public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String uniqueId) {
     return SpaceLibrary.completeResponseAsync(() -> {
-        final ProfileEntity profile = this.profileRepository
-          .findByUniqueId(uniqueId)
-          .orElseThrow(() -> {
-            log.error("No profile={} to calculate playtime from..", uniqueId);
-            return new NullPointerException();
-          });
+      //Null check
+      Objects.requireNonNull(uniqueId);
 
-        return ImmutablePlaytime.with(this.sessionRepository.calculatePlaytime(profile.id()).orElseThrow());
-      });
+      final ProfileEntity profile = this.profileRepository
+        .findByUniqueId(uniqueId)
+        .orElseThrow(this.failOptional("No profile='%s' to calculate playtime from.".formatted(uniqueId)));
+
+      return ImmutablePlaytime.with(this.sessionRepository.calculatePlaytime(profile.id()).orElseThrow());
+    });
   }
 
   /**
@@ -111,10 +105,7 @@ public final class SessionDatabase implements ISessionManipulator {
 
       final ProfileEntity profile = this.profileRepository
         .findByUniqueId(uniqueId)
-        .orElseThrow(() -> {
-          log.error("No profile={} found to create session.", uniqueId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No profile='%s' found to create session.".formatted(uniqueId)));
 
       return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
     });
@@ -134,17 +125,16 @@ public final class SessionDatabase implements ISessionManipulator {
       //Get session of id.
       final SessionEntity session = this.sessionRepository
         .findById(sessionId)
+        //Check if unique id equal to given uniqueId.
         .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(uniqueId))
+        //Check if session is not closed.
         .filter(sessionEntity -> !sessionEntity.closed())
-        .orElseThrow(() -> {
-          log.error("No session={} found to close.", sessionId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No session='%s' found to close.".formatted(sessionId)));
 
       //Update end date.
       session.endDate(new Date());
 
-      //Return modified session.s
+      //Return modified session.
       return ImmutableSession.of(this.sessionRepository.save(session));
     });
   }

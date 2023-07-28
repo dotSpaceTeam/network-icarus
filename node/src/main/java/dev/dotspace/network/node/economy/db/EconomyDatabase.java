@@ -3,6 +3,7 @@ package dev.dotspace.network.node.economy.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.economy.*;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
@@ -15,19 +16,24 @@ import java.util.Objects;
 
 @Component("economyDatabase")
 @Log4j2
-public final class EconomyDatabase implements IEconomyDatabase {
+public final class EconomyDatabase extends AbstractDatabase implements IEconomyDatabase {
   /**
    * Instance to communicate tp profiles.
    */
   @Autowired
   private CurrencyRepository currencyRepository;
 
+  /**
+   * Repository to manipulates transaction.
+   */
   @Autowired
   private TransactionRepository transactionRepository;
 
+  /**
+   * Repository to manipulates profiles.
+   */
   @Autowired
   private ProfileRepository profileRepository;
-
 
   @Override
   public @NotNull CompletableResponse<ICurrency> createCurrency(@Nullable String symbol,
@@ -61,19 +67,15 @@ public final class EconomyDatabase implements IEconomyDatabase {
       Objects.requireNonNull(symbol);
       Objects.requireNonNull(transactionType);
 
+      //Get profile of transaction
       final ProfileEntity profile = this.profileRepository
         .findByUniqueId(uniqueId)
-        .orElseThrow(() -> {
-          log.error("No profile with uniqueId='{}' found to set transaction for.", uniqueId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No profile with uniqueId='%s' found to set transaction for.".formatted(uniqueId)));
 
+      //Get currency
       final CurrencyEntity currency = this.currencyRepository
         .findBySymbol(symbol)
-        .orElseThrow(() -> {
-          log.error("No currency with symbol='{}' found to set transaction for.", symbol);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No currency with symbol='%s' found to set transaction for.".formatted(symbol)));
 
       //Convert amount to positive if deposited, negative if withdrawn.
       final int transactionAmount = Math.abs(amount) * (transactionType == TransactionType.WITHDRAW ? -1 : 1);

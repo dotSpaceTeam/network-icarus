@@ -3,6 +3,9 @@ package dev.dotspace.network.node.position.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.position.*;
+import dev.dotspace.network.node.database.AbstractDatabase;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -13,11 +16,8 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component("positionDatabase")
-public final class PositionDatabase implements IPositionManipulator {
-  /**
-   * Logger
-   */
-  private final static @NotNull Logger LOGGER = LogManager.getLogger(PositionDatabase.class);
+@Log4j2
+public final class PositionDatabase extends AbstractDatabase implements IPositionManipulator {
 
   /**
    * Instance of {@link PositionRepository} with queries.
@@ -88,10 +88,7 @@ public final class PositionDatabase implements IPositionManipulator {
 
       final PositionElement positionElement = this.positionRepository
         .findByKey(key)
-        .orElseThrow(() -> {
-          LOGGER.error("No key='{}' present, can't find position.", key);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No key='%s' present, can't find position.".formatted(key)));
 
       return ImmutableViewPosition.of(this.createViewPosition(positionElement, yaw, pitch));
     });
@@ -107,10 +104,7 @@ public final class PositionDatabase implements IPositionManipulator {
       Objects.requireNonNull(key);
 
       final PositionElement positionElement = this.positionRepository.findByKey(key)
-        .orElseThrow(() -> {
-          LOGGER.error("No key='{}' present, can't find base position.", key);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No key='%s' present, can't find base position.".formatted(key)));
 
 
       return ImmutableViewPosition.of(this.viewPositionRepository.findByPosition(positionElement).orElse(null));

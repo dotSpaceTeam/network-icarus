@@ -3,6 +3,7 @@ package dev.dotspace.network.node.profile.db;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.profile.*;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import java.util.Objects;
 
 @Component("profileDatabase")
 @Log4j2
-public final class ProfileDatabase implements IProfileManipulator {
+public final class ProfileDatabase extends AbstractDatabase implements IProfileManipulator {
   /**
    * Instance to communicate tp profiles.
    */
@@ -79,10 +80,7 @@ public final class ProfileDatabase implements IProfileManipulator {
 
       final ProfileEntity profileEntity = this.profileRepository
         .findByUniqueId(uniqueId)
-        .orElseThrow(() -> {
-          log.error("No profile with uniqueId='{}' found to set attribute.", uniqueId);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No profile with uniqueId='%s' found to set attribute.".formatted(uniqueId)));
 
       /*
        * Get attribute else null.
@@ -116,7 +114,8 @@ public final class ProfileDatabase implements IProfileManipulator {
       /*
        * Otherwise if attribute is not present, insert.
        */
-      return ImmutableProfileAttribute.of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
+      return ImmutableProfileAttribute
+        .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
     });
   }
 
@@ -171,7 +170,8 @@ public final class ProfileDatabase implements IProfileManipulator {
       /*
        * Search in database.
        */
-      return this.profileRepository.findByUniqueId(uniqueId)
+      return this.profileRepository
+        .findByUniqueId(uniqueId)
         .flatMap(profileEntity -> this.profileAttributeRepository.findByProfileAndKey(profileEntity, key))
         .map(ImmutableProfileAttribute::of)
         .orElseThrow();

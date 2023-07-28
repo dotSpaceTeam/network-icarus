@@ -35,16 +35,12 @@ public class SecurityConfiguration {
 
     if (this.environment.getProperty(ConfigField.DEV_MODE, Boolean.class, false)) {
       http
-        .authorizeHttpRequests(auth -> {
-          auth.requestMatchers("/**").permitAll();
-        })
+        .authorizeHttpRequests(auth -> auth.requestMatchers("/**").permitAll())
+        //Disable configuration
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
         .csrf(AbstractHttpConfigurer::disable);
-      System.out.println("DEV Mode");
-      System.out.println("DEV Mode");
-      System.out.println("DEV Mode");
-      System.out.println("DEV Mode");
+
       log.warn("Running in dev mode, security is disabled!");
     } else {
       // @formatter:off

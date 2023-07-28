@@ -5,6 +5,7 @@ import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageManipulator;
 import dev.dotspace.network.library.message.ImmutableMessage;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 @Component("messageDatabase")
 @Log4j2
-public final class MessageDatabase implements IMessageManipulator {
+public final class MessageDatabase extends AbstractDatabase implements IMessageManipulator {
 
   @Autowired
   private MessageRepository messageRepository;
@@ -99,10 +100,7 @@ public final class MessageDatabase implements IMessageManipulator {
 
       final MessageKeyEntity messageKey = this.messageKeyRepository
         .findByKey(key)
-        .orElseThrow(() -> {
-          log.error("No key='{}' present, can't find message.", key);
-          return new NullPointerException();
-        });
+        .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
 
       final String localeTag = locale.toLanguageTag();
 

@@ -2,6 +2,7 @@ package dev.dotspace.network.node.runtime.db;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.network.node.database.AbstractDatabase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.util.Date;
 import java.util.Objects;
 
 @Component("restRequestDatabase")
-public final class RestRequestDatabase {
+public final class RestRequestDatabase extends AbstractDatabase {
   /**
    * Manipulate {@link IRestRequest}.
    */
