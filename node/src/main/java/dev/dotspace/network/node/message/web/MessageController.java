@@ -87,6 +87,7 @@ public final class MessageController extends AbstractRestController {
     return Optional
       .ofNullable(lang)
       .map(s -> s.replaceAll("_", "-"))
+      //Convert string to locale tag.
       .map(Locale::forLanguageTag)
       .orElseGet(() -> {
         log.warn("Can't parse locale tag '{}', using default instead.", lang);

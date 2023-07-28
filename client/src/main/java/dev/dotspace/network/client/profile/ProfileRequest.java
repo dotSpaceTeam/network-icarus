@@ -55,8 +55,7 @@ public final class ProfileRequest implements IProfileManipulator {
       //Null check
       Objects.requireNonNull(uniqueId);
 
-      return this.client.get("/v1/profile/%s/attributes".formatted(uniqueId),
-        AttributeList.class);
+      return this.client.get("/v1/profile/%s/attributes".formatted(uniqueId), AttributeList.class);
     });
   }
 

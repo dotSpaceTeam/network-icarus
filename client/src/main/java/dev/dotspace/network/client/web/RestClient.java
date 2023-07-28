@@ -2,6 +2,7 @@ package dev.dotspace.network.client.web;
 
 import io.netty.channel.ChannelOption;
 import lombok.experimental.Accessors;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +23,8 @@ import java.util.Objects;
 
 @Component
 @Accessors(fluent = true)
+@Log4j2
 public final class RestClient implements IRestClient {
-  /**
-   * Logger.
-   */
-  private final static Logger LOGGER = LogManager.getLogger(RestClient.class);
-
   /**
    * Spring webclient for request.
    */
@@ -60,12 +57,12 @@ public final class RestClient implements IRestClient {
       .clientConnector(new ReactorClientHttpConnector(httpClient))
       .build();
 
-    LOGGER.info("Successfully created client to '{}'.", service);
+    log.info("Successfully created client to '{}'.", service);
   }
 
   public RestClient() {
-    this("http://localhost:8080", Duration.ofSeconds(5));
-    LOGGER.info("Created default(test) client.");
+    this("http://localhost:8443", Duration.ofSeconds(5));
+    log.info("Created default(test) client.");
   }
 
   /**
@@ -113,7 +110,7 @@ public final class RestClient implements IRestClient {
     Objects.requireNonNull(httpMethod);
     Objects.requireNonNull(typeClass);
 
-    LOGGER.debug("Creating '{}' request to '{}'.", httpMethod, apiEndpoint);
+    log.debug("Creating '{}' request to '{}'.", httpMethod, apiEndpoint);
 
     /*
      * Create request.
@@ -138,7 +135,7 @@ public final class RestClient implements IRestClient {
         if (clientResponse.statusCode().equals(HttpStatus.OK)) {
           return clientResponse.bodyToMono(typeClass);
         }
-        LOGGER.warn("Request error.");
+        log.warn("Request error.");
         return clientResponse.createError();
       })
 

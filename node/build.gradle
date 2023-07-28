@@ -1,8 +1,6 @@
 plugins {
   id 'java'
 }
-
-
 dependencies {
   implementation project(":library")
   implementation project(":library-spring")

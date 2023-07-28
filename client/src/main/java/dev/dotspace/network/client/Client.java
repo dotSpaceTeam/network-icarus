@@ -37,7 +37,7 @@ public final class Client extends SpringRunner implements IClient {
    */
   @Override
   public @NotNull IProfileManipulator profileRequest() {
-    return new ProfileRequest();
+    return this.beanElseThrow(ProfileRequest.class);
   }
 
   /**
@@ -45,10 +45,11 @@ public final class Client extends SpringRunner implements IClient {
    */
   @Override
   public @NotNull IPositionManipulator positionRequest() {
-    return new PositionRequest();
+    return this.beanElseThrow(PositionRequest.class);
   }
 
   //static
+
   /**
    * Get instance of client.
    */

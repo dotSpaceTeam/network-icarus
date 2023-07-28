@@ -27,13 +27,22 @@ public final class NodeListener {
 
   @EventListener
   public void handleEvent(@NotNull final ServletRequestHandledEvent event) {
+    //Store request parameters.
+    final String requestUrl = event.getRequestUrl();
+    final String method = event.getMethod();
+    final long time = event.getProcessingTimeMillis();
+
+    //Log
+    log.info("{}-Request '{}' done after {} ms.", method, requestUrl, time);
+
+    //Add to database.
     this.executor.execute(() -> {
       //Log request.
       this.database.createRequestInfo(
-        event.getRequestUrl(),
+        requestUrl,
         event.getClientAddress(),
-        event.getMethod(),
-        event.getProcessingTimeMillis(),
+        method,
+        time,
         //Invert value.
         !event.wasFailure(),
         Optional.ofNullable(event.getFailureCause()).map(Throwable::getMessage).orElse(null),

@@ -79,6 +79,17 @@ public abstract class SpringRunner implements ISpringRunner {
       .map(this.applicationContext::getBean);
   }
 
+  @Override
+  public @NotNull <T> T beanElseThrow(@Nullable Class<T> beanClass) {
+    return this.bean(beanClass)
+      .orElseThrow(() -> {
+        final String beanName = Optional.ofNullable(beanClass).map(Class::getSimpleName).orElse(null);
+        final String message = "No bean for class='" + beanName + "' found!";
+        log.error(message);
+        return new NullPointerException(message);
+      });
+  }
+
   /**
    * See {@link ISpringRunner#executeEvent(Object)}.
    */
