@@ -77,11 +77,20 @@ public final class MessageController extends AbstractRestController {
       "No message found for %s with locale %s.".formatted(key, locale.toLanguageTag()));
   }
 
+  /**
+   * Convert {@link String} with lang tag to {@link Locale}.
+   *
+   * @param lang to convert.
+   * @return present locale otherwise using {@link Locale#getDefault()}.
+   */
   private @NotNull Locale localeFromTag(@Nullable final String lang) {
     return Optional
       .ofNullable(lang)
       .map(s -> s.replaceAll("_", "-"))
       .map(Locale::forLanguageTag)
-      .orElse(Locale.getDefault());
+      .orElseGet(() -> {
+        log.warn("Can't parse locale tag '{}', using default instead.", lang);
+        return Locale.getDefault();
+      });
   }
 }
