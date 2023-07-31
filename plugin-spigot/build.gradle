@@ -1,0 +1,38 @@
+plugins {
+  id 'java-library'
+}
+
+group 'dev.dotspace'
+version '1.0.0'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation project(":content-spigot")
+
+  compileOnly "io.papermc.paper:paper-api:${paperVersion}"
+
+  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
+  implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+}
+
+jar {
+  dependsOn(':library:build')
+  dependsOn(':library-spring:build')
+  dependsOn(':client:build')
+  dependsOn(':content-game:build')
+  dependsOn(':content-spigot:build')
+
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+test {
+  useJUnitPlatform()
+}

@@ -2,9 +2,11 @@ package dev.dotspace.network.client;
 
 import dev.dotspace.network.client.position.PositionRequest;
 import dev.dotspace.network.client.profile.ProfileRequest;
+import dev.dotspace.network.client.session.SessionRequest;
 import dev.dotspace.network.library.position.IPositionManipulator;
 import dev.dotspace.network.library.profile.IProfileManipulator;
 import dev.dotspace.network.library.runtime.RuntimeType;
+import dev.dotspace.network.library.session.ISessionManipulator;
 import dev.dotspace.network.library.spring.SpringRunner;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +48,14 @@ public final class Client extends SpringRunner implements IClient {
   @Override
   public @NotNull IPositionManipulator positionRequest() {
     return this.beanElseThrow(PositionRequest.class);
+  }
+
+  /**
+   * See {@link IClient#sessionRequest()}.
+   */
+  @Override
+  public @NotNull ISessionManipulator sessionRequest() {
+    return this.beanElseThrow(SessionRequest.class);
   }
 
   //static

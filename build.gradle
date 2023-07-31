@@ -1,6 +1,9 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
   id 'java-library'
   id "io.freefair.lombok" version "6.0.0-m2"
+  id 'org.springframework.boot' version "3.1.0"
 }
 
 group 'dev.dotspace'
@@ -9,6 +12,7 @@ version '1.0.0'
 allprojects {
   apply plugin: 'java-library'
   apply plugin: 'io.freefair.lombok'
+  apply plugin: 'io.spring.dependency-management'
 
   ext {
     jetbrainsAnnotationVersion = '16.0.2'
@@ -23,9 +27,14 @@ allprojects {
     springVersion = '3.1.0'
     adventureVersion = '4.10.1'
 
-    spigotToolChainVersion = '1.19.2-131'
+    paperVersion = '1.19.2-R0.1-SNAPSHOT'
   }
 
+  dependencyManagement {
+    imports {
+      mavenBom(SpringBootPlugin.BOM_COORDINATES)
+    }
+  }
   repositories {
     mavenCentral()
 
@@ -36,7 +45,7 @@ allprojects {
         artifact()
       }
     }
-
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
     maven { url 'https://repo.dotspace.dev/repository/space-public/' }
   }
 
@@ -48,5 +57,7 @@ allprojects {
 
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
   }
 }

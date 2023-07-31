@@ -8,6 +8,7 @@ public class testclas {
 
   public static void T() {
     final UUID profileId = UUID.randomUUID();
+
     Client
       .instance()
       .profileRequest()

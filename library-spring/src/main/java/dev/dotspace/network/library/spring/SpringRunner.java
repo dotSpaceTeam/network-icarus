@@ -10,12 +10,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
+@EnableAutoConfiguration
 @Log4j2
 @Accessors(fluent = true)
 public abstract class SpringRunner implements ISpringRunner {
@@ -29,7 +30,6 @@ public abstract class SpringRunner implements ISpringRunner {
    */
   @Getter
   private final @NotNull RuntimeType type;
-  private final @NotNull SpringApplication springApplication;
   private final @NotNull ConfigurableApplicationContext applicationContext;
 
   /**
@@ -50,16 +50,16 @@ public abstract class SpringRunner implements ISpringRunner {
     this.type = type;
 
     //Define spring application.
-    this.springApplication = new SpringApplication(applicationClass);
+    final SpringApplication springApplication = new SpringApplication(applicationClass);
 
     //Disable webserver if absent.
     if (type != RuntimeType.NODE) {
       log.info("Disabling tomcat web application.");
-      this.springApplication.setWebApplicationType(WebApplicationType.NONE);
+      springApplication.setWebApplicationType(WebApplicationType.NONE);
     }
 
     log.info("Run application.");
-    this.applicationContext = this.springApplication.run(args);
+    this.applicationContext = springApplication.run(args);
     log.info("Runner(id={}, type={}) loaded.", this.runtimeId, this.type);
 
     //Print system info.

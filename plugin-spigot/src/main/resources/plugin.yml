@@ -1,0 +1,7 @@
+name: Ikarus
+version: 1.0.0
+author: Dani_R
+
+main: dev.dotspace.network.library.spigot.self.IkarusPlugin
+
+api-version: 1.19

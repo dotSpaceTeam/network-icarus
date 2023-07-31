@@ -1,0 +1,17 @@
+plugins {
+  id 'java'
+}
+
+dependencies {
+  implementation project(":library")
+  implementation project(":library-spring")
+  implementation project(":client")
+
+  implementation project(":content-game")
+
+  compileOnly "io.papermc.paper:paper-api:${paperVersion}"
+
+  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
+  implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+}

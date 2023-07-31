@@ -4,5 +4,7 @@ include 'node'
 include 'client'
 include 'node-setup'
 include 'library-spring'
-include 'library-spigot'
+include 'content-spigot'
+include 'content-game'
+include 'plugin-spigot'
 
