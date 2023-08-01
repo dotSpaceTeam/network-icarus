@@ -1,5 +1,6 @@
 package dev.dotspace.network.client.web;
 
+import dev.dotspace.network.library.field.RequestField;
 import io.netty.channel.ChannelOption;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -28,9 +29,11 @@ public final class RestClient implements IRestClient {
    */
   private final @NotNull WebClient webClient;
 
-  public RestClient(@Nullable final String service,
+  public RestClient(@Nullable final String clientId,
+                    @Nullable final String service,
                     @Nullable final Duration timeoutDuration) {
     //Null check
+    Objects.requireNonNull(clientId);
     Objects.requireNonNull(service);
     Objects.requireNonNull(timeoutDuration);
 
@@ -52,14 +55,16 @@ public final class RestClient implements IRestClient {
        */
       .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
       .defaultHeader(HttpHeaders.ACCEPT_CHARSET)
+      //Use client as default header
+      .defaultHeader(RequestField.CLIENT_ID, clientId)
       .clientConnector(new ReactorClientHttpConnector(httpClient))
       .build();
 
     log.info("Successfully created client to '{}'.", service);
   }
 
-  public RestClient() {
-    this("http://localhost:8443", Duration.ofSeconds(5));
+  public RestClient(@Nullable final String clientId) {
+    this(clientId, "http://localhost:8443", Duration.ofSeconds(5));
     log.info("Created default(test) client.");
   }
 
@@ -118,6 +123,7 @@ public final class RestClient implements IRestClient {
       .method(httpMethod);
 
     final WebClient.RequestBodySpec request = requestBodySpec
+      //Url
       .uri(apiEndpoint)
       .acceptCharset(StandardCharsets.UTF_8);
 

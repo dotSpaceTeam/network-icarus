@@ -12,6 +12,9 @@ import dev.dotspace.network.library.profile.IProfileManipulator;
 import dev.dotspace.network.library.provider.IProviderManager;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.provider.ProviderManager;
+import dev.dotspace.network.library.runtime.IRuntime;
+import dev.dotspace.network.library.runtime.ImmutableRuntime;
+import dev.dotspace.network.library.runtime.RuntimeType;
 import dev.dotspace.network.library.session.ISessionManipulator;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +24,10 @@ import java.util.Optional;
 @Log4j2
 public final class Client implements IClient {
   /**
+   * Runtime info.
+   */
+  private final @NotNull IRuntime runtime;
+  /**
    * Manager to hold provider for client.
    */
   private final @NotNull IProviderManager providerManager;
@@ -29,12 +36,18 @@ public final class Client implements IClient {
    * Only local .
    */
   private Client() {
+    this.runtime = ImmutableRuntime.randomOfType(RuntimeType.CLIENT);
     this.providerManager = new ProviderManager();
+
+    log.info("Instance running under id={}.", this.runtime.runtimeId());
   }
 
+  /**
+   * Initialized client.
+   */
   private void init() {
     log.info("Setting up client.");
-    final IRestClient restClient = new RestClient();
+    final IRestClient restClient = new RestClient(this.runtime.runtimeId());
 
     //Set up provider manager
     this.providerManager
