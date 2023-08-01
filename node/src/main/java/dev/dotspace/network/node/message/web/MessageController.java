@@ -2,7 +2,7 @@ package dev.dotspace.network.node.message.web;
 
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
-import dev.dotspace.network.library.message.ImmutableTextMessage;
+import dev.dotspace.network.library.message.ImmutableComponentMessage;
 import dev.dotspace.network.node.message.db.MessageDatabase;
 import dev.dotspace.network.node.message.text.ITextMessage;
 import dev.dotspace.network.node.message.text.parser.TextParser;
@@ -42,7 +42,7 @@ public final class MessageController extends AbstractRestController {
    */
   @PostMapping("/")
   @ResponseBody
-  public ResponseEntity<ITextMessage> getFormatted(@RequestBody @NotNull final ImmutableTextMessage message,
+  public ResponseEntity<ITextMessage> getFormatted(@RequestBody @NotNull final ImmutableComponentMessage message,
                                                    @RequestParam(required = false) final String lang) throws InterruptedException {
     final Locale locale = this.localeFromTag(lang);
 
@@ -77,11 +77,21 @@ public final class MessageController extends AbstractRestController {
       "No message found for %s with locale %s.".formatted(key, locale.toLanguageTag()));
   }
 
+  /**
+   * Convert {@link String} with lang tag to {@link Locale}.
+   *
+   * @param lang to convert.
+   * @return present locale otherwise using {@link Locale#getDefault()}.
+   */
   private @NotNull Locale localeFromTag(@Nullable final String lang) {
     return Optional
       .ofNullable(lang)
       .map(s -> s.replaceAll("_", "-"))
+      //Convert string to locale tag.
       .map(Locale::forLanguageTag)
-      .orElse(Locale.getDefault());
+      .orElseGet(() -> {
+        log.warn("Can't parse locale tag '{}', using default instead.", lang);
+        return Locale.getDefault();
+      });
   }
 }

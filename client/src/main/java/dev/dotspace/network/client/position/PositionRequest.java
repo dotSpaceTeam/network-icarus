@@ -2,20 +2,21 @@ package dev.dotspace.network.client.position;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.network.client.web.AbstractRequest;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.position.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
-public final class PositionRequest implements IPositionManipulator {
-
-  @Autowired
-  private IRestClient client;
+public final class PositionRequest extends AbstractRequest implements IPositionManipulator {
+  /**
+   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
+   */
+  public PositionRequest(IRestClient client) {
+    super(client);
+  }
 
   /**
    * See {@link IPositionManipulator#setPosition(String, long, long, long)}.
@@ -29,7 +30,7 @@ public final class PositionRequest implements IPositionManipulator {
       //Null check
       Objects.requireNonNull(key);
 
-      return this.client.put("/v1/position", ImmutablePosition.class, new ImmutablePosition(key, x, y, z));
+      return this.client().put("/v1/position", ImmutablePosition.class, new ImmutablePosition(key, x, y, z));
     });
   }
 
@@ -42,7 +43,7 @@ public final class PositionRequest implements IPositionManipulator {
       //Null check
       Objects.requireNonNull(key);
 
-      return this.client.get("/v1/position/%s".formatted(key), ImmutablePosition.class);
+      return this.client().get("/v1/position/%s".formatted(key), ImmutablePosition.class);
     });
   }
 
@@ -60,7 +61,7 @@ public final class PositionRequest implements IPositionManipulator {
       //Null check
       Objects.requireNonNull(key);
 
-      return this.client.put("/v1/position/view",
+      return this.client().put("/v1/position/view",
         ImmutableViewPosition.class, new ImmutableViewPosition(key, x, y, z, yaw, pitch));
     });
   }
@@ -84,7 +85,7 @@ public final class PositionRequest implements IPositionManipulator {
       //Null check
       Objects.requireNonNull(key);
 
-      return this.client.get("/v1/position/view/%s".formatted(key), ImmutableViewPosition.class);
+      return this.client().get("/v1/position/view/%s".formatted(key), ImmutableViewPosition.class);
     });
   }
 }

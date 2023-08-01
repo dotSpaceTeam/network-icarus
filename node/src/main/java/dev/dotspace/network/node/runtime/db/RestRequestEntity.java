@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Date;
 
 @Entity
-@Table(name = "RestRequest")
+@Table(name = "NodeRestRequest")
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class RestRequestEntity implements IRestRequest {

@@ -37,14 +37,14 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#getSessionList(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable String uniqueId) {
+  public @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
-      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(profileId);
 
       final ProfileEntity profile = this.profileRepository
-        .findByUniqueId(uniqueId)
-        .orElseThrow(this.failOptional("No profile='%s' found to list sessions from.".formatted(uniqueId)));
+        .findByUniqueId(profileId)
+        .orElseThrow(this.failOptional("No profile='%s' found to list sessions from.".formatted(profileId)));
 
       return this.sessionRepository
         //Find all sessions entities.
@@ -61,34 +61,34 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#getSession(String, Long)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> getSession(@Nullable String uniqueId,
+  public @NotNull CompletableResponse<ISession> getSession(@Nullable String profileId,
                                                            @Nullable Long sessionId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
-      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(profileId);
       Objects.requireNonNull(sessionId);
 
       return this.sessionRepository
         //Find element by id.
         .findById(sessionId)
         //Check if session was performed by uniqueId.
-        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(uniqueId))
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
         //Map session to ISession.
         .map(ImmutableSession::of)
         //Else error, no session or profile does not match.
-        .orElseThrow(this.failOptional("No session='%s' found for profile='%s'.".formatted(sessionId, uniqueId)));
+        .orElseThrow(this.failOptional("No session='%s' found for profile='%s'.".formatted(sessionId, profileId)));
     });
   }
 
   @Override
-  public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String uniqueId) {
+  public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
-      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(profileId);
 
       final ProfileEntity profile = this.profileRepository
-        .findByUniqueId(uniqueId)
-        .orElseThrow(this.failOptional("No profile='%s' to calculate playtime from.".formatted(uniqueId)));
+        .findByUniqueId(profileId)
+        .orElseThrow(this.failOptional("No profile='%s' to calculate playtime from.".formatted(profileId)));
 
       return ImmutablePlaytime.with(this.sessionRepository.calculatePlaytime(profile.id()).orElseThrow());
     });
@@ -98,14 +98,14 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#createSession(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> createSession(@Nullable String uniqueId) {
+  public @NotNull CompletableResponse<ISession> createSession(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
-      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(profileId);
 
       final ProfileEntity profile = this.profileRepository
-        .findByUniqueId(uniqueId)
-        .orElseThrow(this.failOptional("No profile='%s' found to create session.".formatted(uniqueId)));
+        .findByUniqueId(profileId)
+        .orElseThrow(this.failOptional("No profile='%s' found to create session.".formatted(profileId)));
 
       return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
     });
@@ -115,18 +115,18 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#completeSession(String, Long)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> completeSession(@Nullable String uniqueId,
+  public @NotNull CompletableResponse<ISession> completeSession(@Nullable String profileId,
                                                                 @Nullable Long sessionId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
-      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(profileId);
       Objects.requireNonNull(sessionId);
 
       //Get session of id.
       final SessionEntity session = this.sessionRepository
         .findById(sessionId)
         //Check if unique id equal to given uniqueId.
-        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(uniqueId))
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
         //Check if session is not closed.
         .filter(sessionEntity -> !sessionEntity.closed())
         .orElseThrow(this.failOptional("No session='%s' found to close.".formatted(sessionId)));

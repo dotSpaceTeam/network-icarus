@@ -6,18 +6,51 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Manipulate {@link ISession} objects in storage.
+ */
 public interface ISessionManipulator {
+  /**
+   * Get all sessions of profile id.
+   *
+   * @param profileId to get session list from.
+   * @return list of all {@link ISession} entities for profile.
+   */
+  @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable final String profileId);
 
-  @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable final String uniqueId);
-
-  @NotNull CompletableResponse<ISession> getSession(@Nullable final String uniqueId,
+  /**
+   * Get Session from id and profile.
+   *
+   * @param profileId to get specific session.
+   * @param sessionId id of session.
+   * @return matching {@link ISession} of profileId and sessionId.
+   */
+  @NotNull CompletableResponse<ISession> getSession(@Nullable final String profileId,
                                                     @Nullable final Long sessionId);
 
-  @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable final String uniqueId);
+  /**
+   * Calculate playtime of profile id.
+   *
+   * @param profileId to calculate playtime for.
+   * @return calculated play time of profile.
+   */
+  @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable final String profileId);
 
-  @NotNull CompletableResponse<ISession> createSession(@Nullable final String uniqueId);
+  /**
+   * Create new session for profile.
+   *
+   * @param profileId to create new session for.
+   * @return created {@link ISession}.
+   */
+  @NotNull CompletableResponse<ISession> createSession(@Nullable final String profileId);
 
-  @NotNull CompletableResponse<ISession> completeSession(@Nullable final String uniqueId,
+  /**
+   * Complete a session of profile.
+   *
+   * @param profileId to complete session for.
+   * @param sessionId to complete.
+   * @return completed {@link ISession}.
+   */
+  @NotNull CompletableResponse<ISession> completeSession(@Nullable final String profileId,
                                                          @Nullable final Long sessionId);
-
 }

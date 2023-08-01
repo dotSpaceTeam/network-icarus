@@ -2,21 +2,23 @@ package dev.dotspace.network.client.profile;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.network.client.web.AbstractRequest;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
-public final class ProfileRequest implements IProfileManipulator {
-
-  @Autowired
-  private IRestClient client;
+public final class ProfileRequest extends AbstractRequest implements IProfileManipulator {
+  /**
+   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
+   */
+  public ProfileRequest(IRestClient client) {
+    super(client);
+  }
 
   /**
    * See {@link IProfileManipulator#getProfile(String)}.
@@ -27,7 +29,7 @@ public final class ProfileRequest implements IProfileManipulator {
       //Null check
       Objects.requireNonNull(uniqueId);
 
-      return this.client.get("/v1/profile/%s".formatted(uniqueId), ImmutableProfile.class);
+      return this.client().get("/v1/profile/%s".formatted(uniqueId), ImmutableProfile.class);
     });
   }
 
@@ -42,7 +44,7 @@ public final class ProfileRequest implements IProfileManipulator {
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(profileType);
 
-      return this.client.put("/v1/profile", ImmutableProfile.class, new ImmutableProfile(uniqueId, profileType));
+      return this.client().put("/v1/profile", ImmutableProfile.class, new ImmutableProfile(uniqueId, profileType));
     });
   }
 
@@ -55,8 +57,7 @@ public final class ProfileRequest implements IProfileManipulator {
       //Null check
       Objects.requireNonNull(uniqueId);
 
-      return this.client.get("/v1/profile/%s/attributes".formatted(uniqueId),
-        AttributeList.class);
+      return this.client().get("/v1/profile/%s/attributes".formatted(uniqueId), AttributeList.class);
     });
   }
 
@@ -71,7 +72,7 @@ public final class ProfileRequest implements IProfileManipulator {
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(key);
 
-      return this.client.get("/v1/profile/%s/attributes/%s".formatted(uniqueId, key), ImmutableProfileAttribute.class);
+      return this.client().get("/v1/profile/%s/attributes/%s".formatted(uniqueId, key), ImmutableProfileAttribute.class);
     });
   }
 
@@ -85,7 +86,7 @@ public final class ProfileRequest implements IProfileManipulator {
       Objects.requireNonNull(key);
       Objects.requireNonNull(value);
 
-      return this.client.post("/v1/profile/%s/attributes".formatted(uniqueId),
+      return this.client().post("/v1/profile/%s/attributes".formatted(uniqueId),
         ImmutableProfileAttribute.class,
         new ImmutableProfileAttribute(key, value));
     });
@@ -99,7 +100,7 @@ public final class ProfileRequest implements IProfileManipulator {
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(key);
 
-      return this.client.delete("/v1/profile/%s/attributes".formatted(uniqueId),
+      return this.client().delete("/v1/profile/%s/attributes".formatted(uniqueId),
         ImmutableProfileAttribute.class,
         new ImmutableKey(key));
     });
