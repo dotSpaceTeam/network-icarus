@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.config;
+package dev.dotspace.network.library.field;
 
 import org.jetbrains.annotations.NotNull;
 

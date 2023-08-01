@@ -1,6 +1,6 @@
 package dev.dotspace.network.node.web.security;
 
-import dev.dotspace.network.library.config.ConfigField;
+import dev.dotspace.network.library.field.ConfigField;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
