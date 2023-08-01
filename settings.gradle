@@ -1,9 +1,9 @@
 rootProject.name = 'network-icarus'
 include 'library'
+include 'library-game'
+include 'library-spigot'
 include 'node'
 include 'node-setup'
 include 'client'
-include 'content-spigot'
-include 'content-game'
 include 'plugin-spigot'
 

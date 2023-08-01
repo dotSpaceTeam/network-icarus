@@ -6,7 +6,7 @@ dependencies {
   implementation project(":library")
   implementation project(":client")
 
-  implementation project(":content-game")
+  implementation project(":library-game")
 
   compileOnly "io.papermc.paper:paper-api:${paperVersion}"
 

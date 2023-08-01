@@ -12,8 +12,8 @@ repositories {
 dependencies {
   implementation project(":library")
   implementation project(":client")
-  implementation project(":content-game")
-  implementation project(":content-spigot")
+  implementation project(":library-game")
+  implementation project(":library-spigot")
 
   compileOnly "io.papermc.paper:paper-api:${paperVersion}"
 
@@ -25,8 +25,8 @@ dependencies {
 jar {
   dependsOn(':library:build')
   dependsOn(':client:build')
-  dependsOn(':content-game:build')
-  dependsOn(':content-spigot:build')
+  dependsOn(':library-game:build')
+  dependsOn(':library-spigot:build')
 
   from {
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
