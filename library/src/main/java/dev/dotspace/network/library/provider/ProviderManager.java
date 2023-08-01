@@ -11,12 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Log4j2
 public final class ProviderManager implements IProviderManager {
+  /**
+   * Map to hold provider to class.
+   */
   private final Map<Class<?>, Object> map;
 
+  /**
+   * Construct instance.
+   */
   public ProviderManager() {
     this.map = new ConcurrentHashMap<>();
   }
-
 
   /**
    * See {@link IProviderManager#provider(Provider)}
