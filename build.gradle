@@ -1,72 +1,52 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-  id 'java-library'
-  id "io.freefair.lombok" version "6.0.0-m2"
-  id 'org.springframework.boot' version "3.1.0"
+    id 'java-library'
+    alias(libs.plugins.lombok)
+    alias(libs.plugins.boot)
 }
 
 group 'dev.dotspace'
 version '1.0.0'
 
 allprojects {
-  apply plugin: 'java-library'
-  apply plugin: 'io.freefair.lombok'
-  apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'java-library'
+    apply plugin: libs.plugins.lombok.get().pluginId
+    apply plugin: libs.plugins.dependencymanagement.get().pluginId
 
-  ext {
-    jetbrainsAnnotationVersion = '16.0.2'
-    log4jVersion = '2.16.0'
-
-    //Common
-    dotSpaceCommonVersion = '1.0.7'
-
-    //Database
-    postgresVersion = '42.6.0'
-
-    springVersion = '3.1.0'
-    adventureVersion = '4.10.1'
-
-    paperVersion = '1.19.2-R0.1-SNAPSHOT'
-
-    //Google
-    guiceVersion = '7.0.0'
-    guavaVersion = '32.1.1-jre'
-  }
-
-  dependencyManagement {
-    imports {
-      mavenBom(SpringBootPlugin.BOM_COORDINATES)
+    dependencyManagement {
+        imports {
+            mavenBom(SpringBootPlugin.BOM_COORDINATES)
+        }
     }
-  }
-  repositories {
-    mavenCentral()
+    repositories {
+        mavenCentral()
 
-    maven {
-      url "https://repo.pluginstube.dev/repository/maven-public/"
-      metadataSources {
-        mavenPom()
-        artifact()
-      }
+        maven {
+            url "https://repo.pluginstube.dev/repository/maven-public/"
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+        }
+        maven { url 'https://repo.papermc.io/repository/maven-public/' }
+        maven { url 'https://repo.dotspace.dev/repository/space-public/' }
     }
-    maven { url 'https://repo.papermc.io/repository/maven-public/' }
-    maven { url 'https://repo.dotspace.dev/repository/space-public/' }
-  }
 
-  dependencies {
-    api "org.jetbrains:annotations:${jetbrainsAnnotationVersion}"
+    dependencies {
+        api libs.annotations
 
-    implementation "dev.dotspace:common:${dotSpaceCommonVersion}"
-    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+        implementation libs.common
+        implementation libs.log4j
 
-    // https://mvnrepository.com/artifact/com.google.guava/guava
-    implementation "com.google.inject:guice:${guiceVersion}"
-    implementation "com.google.guava:guava:${guavaVersion}"
+        // https://mvnrepository.com/artifact/com.google.guava/guava
+        implementation libs.guice
+        implementation libs.guava
 
 
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+        testImplementation platform(libs.junit.bom)
+        testImplementation libs.junit.jupiter
 
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
-  }
+        implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    }
 }

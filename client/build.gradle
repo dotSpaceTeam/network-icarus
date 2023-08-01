@@ -5,6 +5,6 @@ plugins {
 dependencies {
   implementation project(":library")
 
-  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.webflux
 }
