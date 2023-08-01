@@ -1,18 +1,18 @@
 package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.Client;
-import dev.dotspace.network.library.IkarusRuntime;
+import dev.dotspace.network.library.IcarusRuntime;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.scoreboard.SidebarProvider;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public final class IkarusPlugin extends AbstractPlugin {
+public final class IcarusPlugin extends AbstractPlugin {
   @Override
   public void load() {
     log.info("Loading ikarus spigot.");
 
-    IkarusRuntime
+    IcarusRuntime
       .providers()
       //Initialize providers.
       .provider(new SidebarProvider());

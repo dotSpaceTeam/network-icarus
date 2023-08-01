@@ -7,7 +7,6 @@ import dev.dotspace.network.client.status.IStatusRequest;
 import dev.dotspace.network.client.status.StatusRequest;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.client.web.RestClient;
-import dev.dotspace.network.library.IkarusRuntime;
 import dev.dotspace.network.library.position.IPositionManipulator;
 import dev.dotspace.network.library.profile.IProfileManipulator;
 import dev.dotspace.network.library.provider.IProviderManager;
