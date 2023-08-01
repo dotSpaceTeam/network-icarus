@@ -28,6 +28,5 @@ public final class IcarusPlugin extends AbstractPlugin {
 
   @Override
   public void disable() {
-
   }
 }
