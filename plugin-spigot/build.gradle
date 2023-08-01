@@ -10,6 +10,9 @@ repositories {
 }
 
 dependencies {
+  implementation project(":library")
+  implementation project(":client")
+  implementation project(":content-game")
   implementation project(":content-spigot")
 
   compileOnly "io.papermc.paper:paper-api:${paperVersion}"
@@ -21,7 +24,6 @@ dependencies {
 
 jar {
   dependsOn(':library:build')
-  dependsOn(':library-spring:build')
   dependsOn(':client:build')
   dependsOn(':content-game:build')
   dependsOn(':content-spigot:build')

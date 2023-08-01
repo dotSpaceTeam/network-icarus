@@ -3,6 +3,7 @@ package dev.dotspace.network.client.session;
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.network.client.web.AbstractRequest;
+import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.session.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,8 +15,16 @@ import java.util.Objects;
 /**
  * Manipulate session as client.
  */
-@Component
+
 public final class SessionRequest extends AbstractRequest implements ISessionManipulator {
+
+  /**
+   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
+   */
+  public SessionRequest(IRestClient client) {
+    super(client);
+  }
+
   /**
    * See {@link ISessionManipulator#getSessionList(String)}.
    */

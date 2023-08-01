@@ -1,30 +1,83 @@
 package dev.dotspace.network.node;
 
+import dev.dotspace.network.library.runtime.IRuntime;
+import dev.dotspace.network.library.runtime.ImmutableRuntime;
 import dev.dotspace.network.library.runtime.RuntimeType;
-import dev.dotspace.network.library.spring.SpringRunner;
-import dev.dotspace.network.node.runtime.db.RuntimeDatabase;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Log4j2
 @Accessors(fluent = true)
-public final class Node extends SpringRunner implements INode {
+public final class Node implements INode {
+  /**
+   * Runtime info.
+   */
+  private final @NotNull IRuntime runtime;
 
   /**
-   * See {@link SpringRunner#SpringRunner(Class, String[], RuntimeType)}.
+   * Srping context.-
    */
-  public Node(@Nullable final Class<?> applicationClass,
-              @Nullable final String[] args) {
-    super(applicationClass, args, RuntimeType.NODE);
+  private final @NotNull ConfigurableApplicationContext applicationContext;
+
+  public Node(@Nullable final ConfigurableApplicationContext applicationContext) {
+    //Null check
+    Objects.requireNonNull(applicationContext);
+
+    //Runtime
+    this.runtime = ImmutableRuntime.randomOfType(RuntimeType.NODE);
     //Insert local runtime in database.
-    this
-      .bean(RuntimeDatabase.class)
-      .ifPresent(runtimeDatabase -> runtimeDatabase.createRuntime(this.runtimeId(), this.type()));
-    log.info("Initialized node.");
+
+    this.applicationContext = applicationContext;
+
+    log.info("Node is running under id={}.", this.runtime.runtimeId());
     instance = this;
+  }
+
+  /**
+   * See {@link INode#bean(Class)}.
+   */
+  @Override
+  public @NotNull <T> Optional<T> bean(@Nullable Class<T> beanClass) {
+    return Optional
+      //Wrap in optional
+      .ofNullable(beanClass)
+      //Get bean of class.
+      .map(this.applicationContext::getBean);
+  }
+
+  @Override
+  public @NotNull <T> T beanElseThrow(@Nullable Class<T> beanClass) {
+    return this.bean(beanClass)
+      .orElseThrow(() -> {
+        final String beanName = Optional.ofNullable(beanClass).map(Class::getSimpleName).orElse(null);
+        final String message = "No bean for class='" + beanName + "' found!";
+        log.error(message);
+        return new NullPointerException(message);
+      });
+  }
+
+  /**
+   * See {@link INode#executeEvent(Object)}.
+   */
+  @Override
+  public @NotNull INode executeEvent(@Nullable Object object) {
+    //Null check.
+    if (object == null) {
+      log.warn("No event to execute.");
+      return this;
+    }
+
+    //Run event.
+    this.applicationContext.publishEvent(object);
+    log.debug("Executed event {}.", object.getClass().getName());
+    return this;
   }
 
   //static

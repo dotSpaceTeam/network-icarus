@@ -7,13 +7,17 @@ import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.position.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
 public final class PositionRequest extends AbstractRequest implements IPositionManipulator {
+  /**
+   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
+   */
+  public PositionRequest(IRestClient client) {
+    super(client);
+  }
+
   /**
    * See {@link IPositionManipulator#setPosition(String, long, long, long)}.
    */

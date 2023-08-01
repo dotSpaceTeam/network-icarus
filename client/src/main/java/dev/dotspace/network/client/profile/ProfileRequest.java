@@ -8,13 +8,18 @@ import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-@Component
 public final class ProfileRequest extends AbstractRequest implements IProfileManipulator {
+  /**
+   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
+   */
+  public ProfileRequest(IRestClient client) {
+    super(client);
+  }
+
   /**
    * See {@link IProfileManipulator#getProfile(String)}.
    */

@@ -1,13 +1,19 @@
 package dev.dotspace.network.client.web;
 
+import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Accessors(fluent = true)
-public abstract class AbstractRequest {
-  @Autowired
+public abstract class AbstractRequest implements Provider {
+  /**
+   * Client for request.
+   */
   @Getter(AccessLevel.PROTECTED)
-  private IRestClient client;
+  private final IRestClient client;
+
+  protected AbstractRequest(IRestClient client) {
+    this.client = client;
+  }
 }

@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
   implementation project(":library")
-  implementation project(":library-spring")
   implementation project(":client")
 
   implementation project(":content-game")
