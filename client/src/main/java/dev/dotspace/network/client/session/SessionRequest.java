@@ -16,97 +16,89 @@ import java.util.Objects;
  * Manipulate session as client.
  */
 
-public final class SessionRequest extends AbstractRequest implements ISessionManipulator {
+public final class SessionRequest extends AbstractRequest implements ISessionRequest {
+    /**
+     * See {@link ISessionManipulator#getSessionList(String)}.
+     */
+    @Override
+    public @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable String profileId) {
+        return SpaceLibrary.completeResponseAsync(() -> {
+            //Null check
+            Objects.requireNonNull(profileId);
 
-  /**
-   * See {@link AbstractRequest#AbstractRequest(IRestClient)}
-   */
-  public SessionRequest(IRestClient client) {
-    super(client);
-  }
+            //Send request
+            return this.client()
+                    //Get all
+                    .get("/v1/session/" + profileId, SessionList.class)
+                    //Map
+                    .stream()
+                    .map(immutableSession -> (ISession) immutableSession)
+                    //Convert stream to list.
+                    .toList();
+        });
+    }
 
-  /**
-   * See {@link ISessionManipulator#getSessionList(String)}.
-   */
-  @Override
-  public @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable String profileId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+    /**
+     * See {@link ISessionManipulator#getSession(String, Long)}.
+     */
+    @Override
+    public @NotNull CompletableResponse<ISession> getSession(@Nullable String profileId,
+                                                             @Nullable Long sessionId) {
+        return SpaceLibrary.completeResponseAsync(() -> {
+            //Null check
+            Objects.requireNonNull(profileId);
+            Objects.requireNonNull(sessionId);
 
-      //Send request
-      return this.client()
-        //Get all
-        .get("/v1/session/" + profileId, SessionList.class)
-        //Map
-        .stream()
-        .map(immutableSession -> (ISession) immutableSession)
-        //Convert stream to list.
-        .toList();
-    });
-  }
+            //Send request
+            return this.client()
+                    .get("/v1/session/" + profileId + "/" + sessionId, ImmutableSession.class);
+        });
+    }
 
-  /**
-   * See {@link ISessionManipulator#getSession(String, Long)}.
-   */
-  @Override
-  public @NotNull CompletableResponse<ISession> getSession(@Nullable String profileId,
-                                                           @Nullable Long sessionId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
-      Objects.requireNonNull(sessionId);
+    /**
+     * See {@link ISessionManipulator#getPlaytime(String)}.
+     */
+    @Override
+    public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String profileId) {
+        return SpaceLibrary.completeResponseAsync(() -> {
+            //Null check
+            Objects.requireNonNull(profileId);
 
-      //Send request
-      return this.client()
-        .get("/v1/session/" + profileId + "/" + sessionId, ImmutableSession.class);
-    });
-  }
+            //Send request
+            return this.client()
+                    .get("/v1/playtime/" + profileId, ImmutablePlaytime.class);
+        });
+    }
 
-  /**
-   * See {@link ISessionManipulator#getPlaytime(String)}.
-   */
-  @Override
-  public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String profileId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+    /**
+     * See {@link ISessionManipulator#createSession(String)}.
+     */
+    @Override
+    public @NotNull CompletableResponse<ISession> createSession(@Nullable String profileId) {
+        return SpaceLibrary.completeResponseAsync(() -> {
+            //Null check
+            Objects.requireNonNull(profileId);
 
-      //Send request
-      return this.client()
-        .get("/v1/playtime/" + profileId, ImmutablePlaytime.class);
-    });
-  }
+            //Send request
+            return this.client()
+                    .post("/v1/session/" + profileId, ImmutableSession.class, null);
+        });
+    }
 
-  /**
-   * See {@link ISessionManipulator#createSession(String)}.
-   */
-  @Override
-  public @NotNull CompletableResponse<ISession> createSession(@Nullable String profileId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+    /**
+     * See {@link ISessionManipulator#completeSession(String, Long)}.
+     */
+    @Override
+    public @NotNull CompletableResponse<ISession> completeSession(@Nullable String profileId,
+                                                                  @Nullable Long sessionId) {
+        return SpaceLibrary.completeResponseAsync(() -> {
+            //Null check
+            Objects.requireNonNull(profileId);
+            Objects.requireNonNull(sessionId);
 
-      //Send request
-      return this.client()
-        .post("/v1/session/" + profileId, ImmutableSession.class, null);
-    });
-  }
-
-  /**
-   * See {@link ISessionManipulator#completeSession(String, Long)}.
-   */
-  @Override
-  public @NotNull CompletableResponse<ISession> completeSession(@Nullable String profileId,
-                                                                @Nullable Long sessionId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
-      Objects.requireNonNull(sessionId);
-
-      //Send request
-      return this.client()
-        .put("/v1/session/" + profileId + "/" + sessionId, ImmutableSession.class, null);
-    });
-  }
+            //Send request
+            return this.client()
+                    .put("/v1/session/" + profileId + "/" + sessionId, ImmutableSession.class, null);
+        });
+    }
 }

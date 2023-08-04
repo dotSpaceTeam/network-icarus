@@ -1,19 +1,16 @@
 package dev.dotspace.network.client.web;
 
-import dev.dotspace.network.library.provider.Provider;
+import com.google.inject.Inject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 
 @Accessors(fluent = true)
-public abstract class AbstractRequest implements Provider {
+public abstract class AbstractRequest {
   /**
    * Client for request.
    */
   @Getter(AccessLevel.PROTECTED)
-  private final IRestClient client;
-
-  protected AbstractRequest(IRestClient client) {
-    this.client = client;
-  }
+  @Inject
+  private IRestClient client;
 }
