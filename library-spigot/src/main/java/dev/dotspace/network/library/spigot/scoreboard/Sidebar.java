@@ -16,7 +16,7 @@ public final class Sidebar implements ISidebar {
    */
   private @Nullable FastBoard fastBoard;
 
-  protected Sidebar(@NotNull final Player player) {
+  Sidebar(@NotNull final Player player) {
     this.fastBoard = new FastBoard(player);
     log.debug("Created sidebar for {}.", player);
   }

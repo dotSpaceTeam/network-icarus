@@ -4,8 +4,6 @@ import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
 import dev.dotspace.network.client.status.IStatusRequest;
-import dev.dotspace.network.library.position.IPositionManipulator;
-import dev.dotspace.network.library.session.ISessionManipulator;
 import org.jetbrains.annotations.NotNull;
 
 public interface IClient {

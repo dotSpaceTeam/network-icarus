@@ -3,7 +3,6 @@ package dev.dotspace.network.library.spigot.self.listener;
 import com.google.inject.Inject;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
-import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
