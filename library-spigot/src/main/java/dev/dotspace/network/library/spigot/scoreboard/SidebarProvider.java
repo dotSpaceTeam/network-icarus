@@ -1,6 +1,7 @@
 package dev.dotspace.network.library.spigot.scoreboard;
 
-import dev.dotspace.network.library.game.scoreboard.ISidebar;
+import dev.dotspace.network.library.game.scoreboard.GameSidebar;
+import dev.dotspace.network.library.game.scoreboard.GameSidebarProvider;
 import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @org.springframework.stereotype.Component
 @Log4j2
-public final class SidebarProvider implements ISpigotSidebarProvider {
+public final class SidebarProvider implements ISidebarProvider {
   /**
    * Map of player and sidebar
    */
@@ -26,10 +27,10 @@ public final class SidebarProvider implements ISpigotSidebarProvider {
   }
 
   /**
-   * See {@link dev.dotspace.network.library.game.scoreboard.ISidebarProvider#sidebar(Object)}
+   * See {@link GameSidebarProvider#sidebar(Object)}
    */
   @Override
-  public @NotNull Optional<ISidebar<Component>> sidebar(@Nullable Player player) {
+  public @NotNull Optional<GameSidebar<Component>> sidebar(@Nullable Player player) {
     //Null check
     Objects.requireNonNull(player);
 
@@ -39,7 +40,7 @@ public final class SidebarProvider implements ISpigotSidebarProvider {
   }
 
   @Override
-  public @NotNull ISidebar<Component> create(@Nullable Player player) {
+  public @NotNull GameSidebar<Component> create(@Nullable Player player) {
     //Null check
     Objects.requireNonNull(player);
 
@@ -54,7 +55,7 @@ public final class SidebarProvider implements ISpigotSidebarProvider {
   }
 
   @Override
-  public @NotNull Optional<ISidebar<Component>> remove(@Nullable Player player) {
+  public @NotNull Optional<GameSidebar<Component>> remove(@Nullable Player player) {
     //Null check
     Objects.requireNonNull(player);
 

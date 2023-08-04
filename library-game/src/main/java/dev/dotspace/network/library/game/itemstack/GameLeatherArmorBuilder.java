@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public interface ILeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE>
-        extends IItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> {
+public interface GameLeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE>
+        extends GameItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> {
     /**
      * Specifies the color to be used for the builder
      *
@@ -19,5 +19,5 @@ public interface ILeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTME
      *
      * @param color update builder color with a {@link COLOR}
      */
-    @NotNull ILeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> color(@Nullable final COLOR color);
+    @NotNull GameLeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> color(@Nullable final COLOR color);
 }

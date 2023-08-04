@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * This object represents the {@link ISidebar} shown to a player.
+ * This object represents the {@link GameSidebar} shown to a player.
  */
-public interface ISidebar<TEXT> {
+public interface GameSidebar<TEXT> {
     /**
-     * Returns the current title of {@link ISidebar}.
+     * Returns the current title of {@link GameSidebar}.
      *
      * @return current title of sidebar.
      */
@@ -25,7 +25,7 @@ public interface ISidebar<TEXT> {
      * @param text to update title.
      * @return class instance.
      */
-    @NotNull ISidebar<TEXT> title(@Nullable final TEXT text);
+    @NotNull GameSidebar<TEXT> title(@Nullable final TEXT text);
 
     /**
      * Returns list of sidebar text.
@@ -49,8 +49,8 @@ public interface ISidebar<TEXT> {
      * @param text to set on the line.
      * @return class instance.
      */
-    @NotNull ISidebar<TEXT> line(final int line,
-                                 @Nullable final TEXT text);
+    @NotNull GameSidebar<TEXT> line(final int line,
+                                    @Nullable final TEXT text);
 
     /**
      * Update all lines of sidebar.
@@ -58,30 +58,30 @@ public interface ISidebar<TEXT> {
      * @param components list the update with.
      * @return class instance.
      */
-    @NotNull ISidebar<TEXT> lines(@Nullable final Collection<TEXT> components);
+    @NotNull GameSidebar<TEXT> lines(@Nullable final Collection<TEXT> components);
 
     /**
-     * Similar to {@link ISidebar#lines(Collection)}.
+     * Similar to {@link GameSidebar#lines(Collection)}.
      */
 
-    default @NotNull ISidebar<TEXT> lines(@Nullable final TEXT... components) {
+    default @NotNull GameSidebar<TEXT> lines(@Nullable final TEXT... components) {
         return this.lines(Arrays.asList(components));
     }
 
     /**
-     * Remove a line of {@link ISidebar}.
+     * Remove a line of {@link GameSidebar}.
      *
      * @param line to delete of sidebar.
      * @return class instance.
      */
-    @NotNull ISidebar<TEXT> deleteLine(final int line);
+    @NotNull GameSidebar<TEXT> deleteLine(final int line);
 
     /**
-     * Remove all lines from {@link ISidebar}.
+     * Remove all lines from {@link GameSidebar}.
      *
      * @return class instance.
      */
-    @NotNull ISidebar<TEXT> clear();
+    @NotNull GameSidebar<TEXT> clear();
 
     boolean delete();
 

@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.spigot.itemstack;
 
-import dev.dotspace.network.library.game.itemstack.IEnchantmentInfo;
+import dev.dotspace.network.library.game.itemstack.GameEnchantmentInfo;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.enchantments.Enchantment;
@@ -11,17 +11,17 @@ import java.util.Objects;
 
 @Getter
 @Accessors(fluent = true)
-public final class EnchantmentInfo implements ISpigotEnchantmentInfo {
+public final class EnchantmentInfo implements IEnchantmentInfo {
     /**
-     * See {@link IEnchantmentInfo#type()}
+     * See {@link GameEnchantmentInfo#type()}
      */
     private final @NotNull Enchantment type;
     /**
-     * See {@link IEnchantmentInfo#level()}
+     * See {@link GameEnchantmentInfo#level()}
      */
     private final int level;
     /**
-     * See {@link IEnchantmentInfo#legal()}
+     * See {@link GameEnchantmentInfo#legal()}
      */
     private final boolean legal;
 

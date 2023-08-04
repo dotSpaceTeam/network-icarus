@@ -1,7 +1,7 @@
 package dev.dotspace.network.library.spigot.itemstack;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
-import dev.dotspace.network.library.game.itemstack.ISkullItemBuilder;
+import dev.dotspace.network.library.game.itemstack.GameSkullItemBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -10,10 +10,10 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Spigot implementation of {@link ISkullItemBuilder}.
+ * Spigot implementation of {@link GameSkullItemBuilder}.
  */
-public interface ISpigotSkullItemBuilder
-        extends ISkullItemBuilder<ItemStack, Material, Component, ItemFlag, Enchantment, Color, PlayerProfile> {
+public interface ISkullItemBuilder
+        extends GameSkullItemBuilder<ItemStack, Material, Component, ItemFlag, Enchantment, Color, PlayerProfile> {
     /*
      * Nothing
      */

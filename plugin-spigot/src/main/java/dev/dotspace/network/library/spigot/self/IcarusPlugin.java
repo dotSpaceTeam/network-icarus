@@ -1,32 +1,41 @@
 package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.Client;
-import dev.dotspace.network.library.IcarusRuntime;
+import dev.dotspace.network.library.game.plugin.GameDisableConfiguration;
+import dev.dotspace.network.library.game.plugin.GameEnableConfiguration;
+import dev.dotspace.network.library.game.plugin.GameLoadConfiguration;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
-import dev.dotspace.network.library.spigot.scoreboard.SidebarProvider;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public final class IcarusPlugin extends AbstractPlugin {
-  @Override
-  public void load() {
-    log.info("Loading ikarus spigot.");
+    /**
+     * See {@link AbstractPlugin#load(GameLoadConfiguration)}
+     */
+    @Override
+    public void load(@NotNull GameLoadConfiguration configuration) {
+        log.info("Loading ikarus spigot.");
 
-    IcarusRuntime
-      .providers()
-      //Initialize providers.
-      .provider(new SidebarProvider());
+        configuration.addModule(new IcarusModule());
 
-    log.info("Loaded ikarus spigot.");
-  }
+        log.info("Loaded ikarus spigot.");
+    }
 
-  @Override
-  public void enable() {
-    //Enable client.
-    Client.enable();
-  }
+    /**
+     * {@link AbstractPlugin#enable(GameEnableConfiguration)}
+     */
+    @Override
+    public void enable(@NotNull GameEnableConfiguration configuration) {
+        //Enable client.
+        Client.enable();
+    }
 
-  @Override
-  public void disable() {
-  }
+    /**
+     * {@link AbstractPlugin#disable(GameDisableConfiguration)}
+     */
+    @Override
+    public void disable(@NotNull GameDisableConfiguration configuration) {
+
+    }
 }

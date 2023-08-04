@@ -16,10 +16,11 @@ allprojects {
 
   ext {
     jetbrainsAnnotationVersion = '16.0.2'
-    log4jVersion = '2.16.0'
+    log4jVersion = '2.17.1'
 
     //Common
     dotSpaceCommonVersion = '1.0.7'
+    reflectionsVersion = '0.10.2'
 
     //Database
     postgresVersion = '42.6.0'
@@ -58,6 +59,8 @@ allprojects {
 
     implementation "dev.dotspace:common:${dotSpaceCommonVersion}"
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+
+    implementation "org.reflections:reflections:${reflectionsVersion}"
 
     // https://mvnrepository.com/artifact/com.google.guava/guava
     implementation "com.google.inject:guice:${guiceVersion}"

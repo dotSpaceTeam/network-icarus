@@ -2,7 +2,7 @@ package dev.dotspace.network.library.game.itemstack;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface IEnchantmentInfo<ENCHANTMENT> {
+public interface GameEnchantmentInfo<ENCHANTMENT> {
     /**
      * Type of enchantment.
      *

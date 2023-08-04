@@ -2,7 +2,7 @@ package dev.dotspace.network.library.spigot.profile;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import dev.dotspace.network.library.game.profile.ISkin;
+import dev.dotspace.network.library.game.profile.GameSkin;
 import dev.dotspace.network.library.game.profile.SkinOrigin;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -14,14 +14,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Accessors(fluent = true)
-public final class Skin implements ISpigotSkin {
+public final class Skin implements ISkin {
     /**
-     * See {@link ISkin#value()}
+     * See {@link GameSkin#value()}
      */
     @Getter
     private final @NotNull String value;
     /**
-     * See {@link ISkin#origin()}
+     * See {@link GameSkin#origin()}
      */
     @Getter
     private final @NotNull SkinOrigin origin;
@@ -39,7 +39,7 @@ public final class Skin implements ISpigotSkin {
     }
 
     /**
-     * See {@link ISkin#createProfile()}
+     * See {@link GameSkin#createProfile()}
      */
     @Override
     public @NotNull PlayerProfile createProfile() {//Create profile with name
@@ -56,7 +56,7 @@ public final class Skin implements ISpigotSkin {
     }
 
     /**
-     * See {@link ISkin#attachProfile(Object)}
+     * See {@link GameSkin#attachProfile(Object)}
      */
     @Override
     public void attachProfile(@Nullable final PlayerProfile playerProfile) {

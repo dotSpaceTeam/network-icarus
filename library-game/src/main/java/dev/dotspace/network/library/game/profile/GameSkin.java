@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @param <PROFILE> generic type of implementation.
  */
-public interface ISkin<PROFILE> {
+public interface GameSkin<PROFILE> {
     /**
      * Value of skin.
      *
