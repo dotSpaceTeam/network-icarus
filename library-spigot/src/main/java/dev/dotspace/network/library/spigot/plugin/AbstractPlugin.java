@@ -13,19 +13,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-
-@SpringBootApplication
 @Log4j2
 public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     /**
      * Plugin to handle system, cant be extended because {@link JavaPlugin} needed by default.
      */
     private final @NotNull SpigotPlugin spigotPlugin = new SpigotPlugin();
+    /**
+     * Get time plugin had been loaded
+     */
+    private long loadTime = 0;
 
     /**
      * Pass {@link SpigotPlugin#injector()}
@@ -65,6 +66,8 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
         //Configure.
         this.module(new PluginModule(this));
         this.configure();
+        //Set load timestamp
+        this.loadTime = System.currentTimeMillis();
 
         this.spigotPlugin.executeRunnable(PluginState.PRE_LOAD);
         //--- Code start ---
@@ -85,7 +88,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
         //Reflections of this plugin.
         final Reflections reflections = new Reflections(this.getClass().getPackageName());
 
-        log.info("Searching for listener. (Instances for AbstractListener and empty constructors.)");
+        log.info("Searching for listener. (Variables must be part of the local initializer.)");
         //Search for all Abstract listeners.
         this.reflectionAndConstruct(reflections, AbstractListener.class)
                 //Register listeners.
@@ -94,6 +97,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
                     this.getServer().getPluginManager().registerEvents(abstractListener, this);
                 });
 
+        log.info("Searching for commands. (Variables must be part of the local initializer.)");
         //Search fo commands
         this.reflectionAndConstruct(reflections, AbstractCommand.class)
                 .forEach(abstractCommand -> {
@@ -108,6 +112,10 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
         //--- Code end ---
         this.spigotPlugin.executeRunnable(PluginState.POST_ENABLE);
 
+        //Info
+        log.info("Plugin {} loaded and enabled totally. Took a total of {}ms",
+                this.getName(),
+                (System.currentTimeMillis() - this.loadTime));
     }
 
     /**
