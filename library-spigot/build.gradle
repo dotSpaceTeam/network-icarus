@@ -8,6 +8,7 @@ dependencies {
 
   implementation project(":library-game")
 
+  implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
   compileOnly "io.papermc.paper:paper-api:${paperVersion}"
 
   implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"

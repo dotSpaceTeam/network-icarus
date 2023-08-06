@@ -1,11 +1,11 @@
 package dev.dotspace.network.library.spigot.plugin;
 
 
-import com.google.inject.Guice;
+import cloud.commandframework.CommandManager;
+import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
-import dev.dotspace.network.library.game.plugin.GameDisableConfiguration;
-import dev.dotspace.network.library.game.plugin.GameEnableConfiguration;
-import dev.dotspace.network.library.game.plugin.LoadConfiguration;
+import dev.dotspace.network.library.game.plugin.GamePlugin;
+import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import lombok.extern.log4j.Log4j2;
@@ -15,75 +15,127 @@ import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @SpringBootApplication
 @Log4j2
-public abstract class AbstractPlugin extends JavaPlugin implements IPlugin {
+public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     /**
-     * Injector of plugin -> {@link IPlugin#injector()}
+     * Plugin to handle system, cant be extended because {@link JavaPlugin} needed by default.
      */
-    private @Nullable Injector injector;
+    private final @NotNull SpigotPlugin spigotPlugin = new SpigotPlugin();
 
+    /**
+     * Pass {@link SpigotPlugin#injector()}
+     */
     @Override
-    public final void onLoad() {
-        final LoadConfiguration configuration = new LoadConfiguration();
+    public @NotNull Injector injector() {
+        return this.spigotPlugin.injector();
+    }
 
-        //Pass load
-        this.load(configuration);
+    /**
+     * Pass {@link SpigotPlugin#provider(Class)}
+     */
+    @Override
+    public @NotNull <PROVIDER extends Provider> Optional<PROVIDER> provider(@Nullable Class<PROVIDER> providerClass) {
+        return this.spigotPlugin.provider(providerClass);
+    }
 
-        //Add default module.
-        configuration.addModule(new DefaultPluginModule(this));
+    /**
+     * Pass {@link SpigotPlugin#handle(PluginState, Runnable)}
+     */
+    @Override
+    public @NotNull GamePlugin handle(@Nullable PluginState state,
+                                      @Nullable Runnable runnable) {
+        return this.spigotPlugin.handle(state, runnable);
+    }
 
-        //Create instances
-        this.injector = Guice.createInjector(configuration.modules());
+    /**
+     * Pass {@link SpigotPlugin#module(AbstractModule)}
+     */
+    @Override
+    public @NotNull <MODULE extends AbstractModule> GamePlugin module(@Nullable MODULE module) {
+        return this.spigotPlugin.module(module);
     }
 
     @Override
+    public final void onLoad() {
+        //Configure.
+        this.module(new PluginModule(this));
+        this.configure();
+
+        this.spigotPlugin.executeRunnable(PluginState.PRE_LOAD);
+        //--- Code start ---
+
+        //--- Code end ---
+        this.spigotPlugin.executeRunnable(PluginState.POST_LOAD);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public final void onEnable() {
+        //Lock and finalize system.
+        this.spigotPlugin.lock();
+
+        this.spigotPlugin.executeRunnable(PluginState.PRE_ENABLE);
+        //--- Code start ---
+
         //Reflections of this plugin.
         final Reflections reflections = new Reflections(this.getClass().getPackageName());
 
         log.info("Searching for listener. (Instances for AbstractListener and empty constructors.)");
-        reflections
-                .getSubTypesOf(AbstractListener.class)
-                .stream()
-                //Create instance from injector.
-                .map(this.injector()::getInstance)
+        //Search for all Abstract listeners.
+        this.reflectionAndConstruct(reflections, AbstractListener.class)
                 //Register listeners.
                 .forEach(abstractListener -> {
-                    log.info("Constructed instance of listener={}", abstractListener.getClass().getSimpleName());
+                    log.info("Constructed instance of listener={}.", abstractListener.getClass().getSimpleName());
                     this.getServer().getPluginManager().registerEvents(abstractListener, this);
                 });
 
+        //Search fo commands
+        this.reflectionAndConstruct(reflections, AbstractCommand.class)
+                .forEach(abstractCommand -> {
+                    log.info("Constructed instance of command={},", abstractCommand.getClass().getSimpleName());
+                    try {
+                        abstractCommand.configure(this.injector().getInstance(CommandManager.class));
+                    } catch (final Exception exception) {
+                        log.warn("Error while registering command={}.", abstractCommand.getClass().getSimpleName());
+                    }
+                });
 
-        //Pass enable
-        this.enable(new GameEnableConfiguration() {
-        });
+        //--- Code end ---
+        this.spigotPlugin.executeRunnable(PluginState.POST_ENABLE);
+
+    }
+
+    /**
+     * Get all class objects of type in path.
+     *
+     * @param reflections library to search.
+     * @param typeClass   to search for.
+     * @param <TYPE>      generic type of objects and class.
+     * @return stream of all created instances.
+     */
+    private <TYPE> @NotNull Stream<TYPE> reflectionAndConstruct(@NotNull final Reflections reflections,
+                                                                @NotNull final Class<TYPE> typeClass) {
+        return reflections
+                //Get all class
+                .getSubTypesOf(typeClass)
+                .stream()
+                //Create instance from injector.
+                .map(this.injector()::getInstance);
     }
 
     @Override
     public final void onDisable() {
-        //Pass disable
-        this.disable(new GameDisableConfiguration() {
-        });
+        this.spigotPlugin.executeRunnable(PluginState.PRE_DISABLE);
+        //--- Code start ---
+
+        //--- Code end ---
+        this.spigotPlugin.executeRunnable(PluginState.POST_DISABLE);
     }
 
-    @Override
-    public @NotNull Injector injector() {
-        return Objects.requireNonNull(this.injector, "No injector defined, check plugin config.");
-    }
 
-    /**
-     * See {@link IPlugin#provider(Class)}
-     */
-    @Override
-    public @NotNull <PROVIDER extends Provider> Optional<PROVIDER> provider(@Nullable Class<PROVIDER> providerClass) {
-        return Optional
-                .ofNullable(providerClass)
-                //Map injector to provider.
-                .map(this.injector()::getInstance);
-    }
 }

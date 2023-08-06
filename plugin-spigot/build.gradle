@@ -16,6 +16,7 @@ dependencies {
   implementation project(":library-spigot")
 
   compileOnly "io.papermc.paper:paper-api:${paperVersion}"
+  implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
 
   implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
   implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
