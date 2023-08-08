@@ -26,7 +26,6 @@ public final class IcarusPlugin extends AbstractPlugin {
 
     @Override
     public void configure() {
-        //Enable client.
         this
                 //Enable client.
                 .handle(PluginState.POST_ENABLE, Client::enable)
