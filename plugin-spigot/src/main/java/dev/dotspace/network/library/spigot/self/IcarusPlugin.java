@@ -22,10 +22,8 @@ public final class IcarusPlugin extends AbstractPlugin {
                     this.unregisterCommand("reload");
                 })
 
-                .handle(PluginState.POST_ENABLE, () -> {
-                    //Enable client.
-                    Client.enable();
-                });
+                //Enable client.
+                .handle(PluginState.POST_ENABLE, Client::enable);
     }
 
     /**

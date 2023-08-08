@@ -3,6 +3,7 @@ package dev.dotspace.network.library.velocity.self;
 import com.google.inject.Inject;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.velocity.plugin.AbstractPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -25,12 +26,13 @@ public final class IcarusPlugin extends AbstractPlugin {
 
     @Override
     public void configure() {
-        this.handle(PluginState.POST_ENABLE, () -> {
-            System.out.println("Enabled.");
-        });
+        //Enable client.
+        this
+                //Enable client.
+                .handle(PluginState.POST_ENABLE, Client::enable)
 
-        this.handle(PluginState.POST_DISABLE, () -> {
-            System.out.println("Disabled.");
-        });
+                .handle(PluginState.POST_DISABLE, () -> {
+                    System.out.println("Disabled.");
+                });
     }
 }
