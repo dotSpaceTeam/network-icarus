@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 
 //Get tick information.
 public final class TickCommand extends AbstractCommand {
-
     /**
      * Configure tps command
      */
@@ -31,8 +30,8 @@ public final class TickCommand extends AbstractCommand {
                 .handler(commandContext -> {
                     final Player player = (Player) commandContext.getSender(); //Sender
 
+                    //Todo: Stuff
                     player.sendMessage("Resources.");
                 }));
-
     }
 }

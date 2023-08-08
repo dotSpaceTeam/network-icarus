@@ -7,6 +7,7 @@ import com.google.inject.Injector;
 import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.provider.Provider;
+import dev.dotspace.network.library.spigot.LibraryModule;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -65,6 +66,8 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     public final void onLoad() {
         //Configure.
         this.module(new PluginModule(this));
+        this.module(LibraryModule.instance());
+
         this.configure();
         //Set load timestamp
         this.loadTime = System.currentTimeMillis();
@@ -100,6 +103,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
         log.info("Searching for commands. (Variables must be part of the local initializer.)");
         //Search fo commands
         this.reflectionAndConstruct(reflections, AbstractCommand.class)
+                //Register commands
                 .forEach(abstractCommand -> {
                     log.info("Constructed instance of command={},", abstractCommand.getClass().getSimpleName());
                     try {
@@ -132,7 +136,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
                 //Get all class
                 .getSubTypesOf(typeClass)
                 .stream()
-                //Create instance from injector.
+                //Create instance from injector. (All variables of class must be present in injector)
                 .map(this.injector()::getInstance);
     }
 
@@ -144,6 +148,4 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
         //--- Code end ---
         this.spigotPlugin.executeRunnable(PluginState.POST_DISABLE);
     }
-
-
 }

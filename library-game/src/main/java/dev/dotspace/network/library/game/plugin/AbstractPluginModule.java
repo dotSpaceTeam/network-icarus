@@ -1,3 +1,4 @@
+
 package dev.dotspace.network.library.game.plugin;
 
 import com.google.inject.AbstractModule;
