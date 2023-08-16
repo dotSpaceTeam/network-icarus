@@ -15,9 +15,12 @@ junit-jupiter-api = "org.junit.jupiter:junit-jupiter-api:5.8.1"
 junit-jupiter-engine = "org.junit.jupiter:junit-jupiter-engine:5.8.1"
 junit-bom = "org.junit:junit-bom:5.9.1"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:5.10.0"
+cloud-paper = "cloud.commandframework:cloud-paper:1.8.3"
+cloud-velocity = "cloud.commandframework:cloud-velocity:1.8.3"
 
 postgresql = "org.postgresql:postgresql:42.6.0"
 reflections = "org.reflections:reflections:0.10.2"
+velocity = { module = "com.velocitypowered:velocity-api", version = "3.2.0-SNAPSHOT" }
 
 [plugins]
 lombok = "io.freefair.lombok:8.1.0"

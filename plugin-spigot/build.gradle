@@ -17,7 +17,7 @@ dependencies {
 
   compileOnly libs.paper
 
-  implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
+  implementation libs.cloud.paper
   implementation libs.spring.boot.starter.parent
   implementation libs.spring.boot.starter.webflux
   implementation libs.spring.boot.autoconfigure
