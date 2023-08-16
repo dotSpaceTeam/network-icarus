@@ -6,4 +6,6 @@ include 'node'
 include 'node-setup'
 include 'client'
 include 'plugin-spigot'
+include 'library-velocity'
+include 'plugin-velocity'
 

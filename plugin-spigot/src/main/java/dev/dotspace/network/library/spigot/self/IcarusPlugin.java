@@ -1,32 +1,48 @@
 package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.Client;
-import dev.dotspace.network.library.IcarusRuntime;
+import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
-import dev.dotspace.network.library.spigot.scoreboard.SidebarProvider;
 import lombok.extern.log4j.Log4j2;
+import org.bukkit.command.Command;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Locale;
 
 @Log4j2
 public final class IcarusPlugin extends AbstractPlugin {
-  @Override
-  public void load() {
-    log.info("Loading ikarus spigot.");
 
-    IcarusRuntime
-      .providers()
-      //Initialize providers.
-      .provider(new SidebarProvider());
+    @Override
+    public void configure() {
+        this
+                .handle(PluginState.PRE_ENABLE, () -> {
+                    //Unregister unwanted commands.
+                    this.unregisterCommand("tps");
+                    this.unregisterCommand("reload");
+                })
 
-    log.info("Loaded ikarus spigot.");
-  }
+                //Enable client.
+                .handle(PluginState.POST_ENABLE, Client::enable);
+    }
 
-  @Override
-  public void enable() {
-    //Enable client.
-    Client.enable();
-  }
+    /**
+     * Unregister command from server.
+     *
+     * @param commandString command to unregister.
+     */
+    public void unregisterCommand(@NotNull final String commandString) {
+        //Set command to lowercase
+        final String lowerCommand = commandString.toLowerCase(Locale.ROOT);
+        //Get command from map.
+        @Nullable final Command command = this.getServer().getCommandMap().getKnownCommands().remove(lowerCommand);
 
-  @Override
-  public void disable() {
-  }
+        //Return if command is not present.
+        if (command == null) {
+            return;
+        }
+
+        command.unregister(this.getServer().getCommandMap());
+        log.info("Removed '{}' from command map.", lowerCommand);
+    }
 }

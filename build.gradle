@@ -1,52 +1,55 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id 'java-library'
-    alias(libs.plugins.lombok)
-    alias(libs.plugins.boot)
+  id 'java-library'
+  alias(libs.plugins.lombok)
+  alias(libs.plugins.boot)
 }
 
 group 'dev.dotspace'
 version '1.0.0'
 
 allprojects {
-    apply plugin: 'java-library'
-    apply plugin: libs.plugins.lombok.get().pluginId
-    apply plugin: libs.plugins.dependencymanagement.get().pluginId
+  apply plugin: 'java-library'
+  apply plugin: libs.plugins.lombok.get().pluginId
+  apply plugin: libs.plugins.dependencymanagement.get().pluginId
 
-    dependencyManagement {
-        imports {
-            mavenBom(SpringBootPlugin.BOM_COORDINATES)
-        }
+  dependencyManagement {
+    imports {
+      mavenBom(SpringBootPlugin.BOM_COORDINATES)
     }
-    repositories {
-        mavenCentral()
+  }
+  repositories {
+    mavenCentral()
 
-        maven {
-            url "https://repo.pluginstube.dev/repository/maven-public/"
-            metadataSources {
-                mavenPom()
-                artifact()
-            }
-        }
-        maven { url 'https://repo.papermc.io/repository/maven-public/' }
-        maven { url 'https://repo.dotspace.dev/repository/space-public/' }
+    maven {
+      url "https://repo.pluginstube.dev/repository/maven-public/"
+      metadataSources {
+        mavenPom()
+        artifact()
+      }
     }
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://repo.dotspace.dev/repository/space-public/' }
+  }
 
-    dependencies {
-        api libs.annotations
+  dependencies {
+    api libs.annotations
 
-        implementation libs.common
-        implementation libs.log4j
-
-        // https://mvnrepository.com/artifact/com.google.guava/guava
-        implementation libs.guice
-        implementation libs.guava
+    implementation libs.common
+    implementation libs.log4j
 
 
-        testImplementation platform(libs.junit.bom)
-        testImplementation libs.junit.jupiter
+    implementation "org.reflections:reflections:${reflectionsVersion}"
 
-        implementation platform(SpringBootPlugin.BOM_COORDINATES)
-    }
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation libs.guice
+    implementation libs.guava
+
+
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.jupiter
+
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+  }
 }

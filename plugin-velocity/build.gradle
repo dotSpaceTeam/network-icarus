@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+
+
+dependencies {
+    implementation project(":library")
+    implementation project(":client")
+    implementation project(":library-game")
+    implementation project(":library-velocity")
+
+    compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
+    annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"
+    implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
+
+    implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
+    implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+}
+
+jar {
+    dependsOn(':library:build')
+    dependsOn(':client:build')
+    dependsOn(':library-game:build')
+    dependsOn(':library-velocity:build')
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}

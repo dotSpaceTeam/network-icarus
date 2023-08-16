@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
   implementation project(":library")
+  implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
   testImplementation libs.junit.jupiter.api
   testRuntimeOnly libs.junit.jupiter.engine
 }
