@@ -10,28 +10,29 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
-@Plugin(id = "icarus",
-        name = "Icarus",
-        version = "1.0",
-        url = "https://git.pluginstube.dev/pluginstube/development/icarus",
-        description = "Handle icarus.",
-        authors = {"Dani_R"})
+
+@Plugin(id="icarus",
+    name="Icarus",
+    version="1.0",
+    url="https://git.pluginstube.dev/pluginstube/development/icarus",
+    description="Handle icarus.",
+    authors={"Dani_R"})
 public final class IcarusPlugin extends AbstractPlugin {
 
-    @Inject
-    public IcarusPlugin(@NotNull ProxyServer server,
-                        @NotNull Logger logger) {
-        super(server, logger);
-    }
+  @Inject
+  public IcarusPlugin(@NotNull ProxyServer server,
+                      @NotNull Logger logger) {
+    super(server, logger);
+  }
 
-    @Override
-    public void configure() {
-        this
-                //Enable client.
-                .handle(PluginState.POST_ENABLE, Client::enable)
+  @Override
+  public void configure() {
+    this
+        //Enable client.
+        .handle(PluginState.POST_ENABLE, Client::enable)
 
-                .handle(PluginState.POST_DISABLE, () -> {
-                    System.out.println("Disabled.");
-                });
-    }
+        .handle(PluginState.POST_DISABLE, () -> {
+          System.out.println("Disabled.");
+        });
+  }
 }
