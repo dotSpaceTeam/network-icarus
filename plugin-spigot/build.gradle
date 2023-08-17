@@ -2,18 +2,25 @@ plugins {
   id 'java-library'
 }
 
+group 'dev.dotspace'
+version '1.0.0'
+
+repositories {
+  mavenCentral()
+}
+
 dependencies {
   implementation project(":library")
   implementation project(":client")
   implementation project(":library-game")
   implementation project(":library-spigot")
 
-  compileOnly "io.papermc.paper:paper-api:${paperVersion}"
-  implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
+  compileOnly libs.paper
 
-  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+  implementation libs.cloud.paper
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.webflux
+  implementation libs.spring.boot.autoconfigure
 }
 
 jar {
@@ -27,4 +34,8 @@ jar {
   }
   exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+}
+
+test {
+  useJUnitPlatform()
 }

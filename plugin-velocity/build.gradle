@@ -10,13 +10,13 @@ dependencies {
     implementation project(":library-game")
     implementation project(":library-velocity")
 
-    compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
-    annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"
-    implementation "cloud.commandframework:cloud-paper:${cloudCommandVersion}"
+    compileOnly libs.velocity
+    annotationProcessor libs.velocity
+    implementation libs.cloud.velocity
 
-    implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
-    implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+    implementation libs.spring.boot.starter.parent
+    implementation libs.spring.boot.starter.webflux
+    implementation libs.spring.boot.autoconfigure
 }
 
 jar {

@@ -8,9 +8,9 @@ dependencies {
 
     implementation project(":library-game")
 
-    compileOnly "com.velocitypowered:velocity-api:${velocityVersion}"
-    annotationProcessor "com.velocitypowered:velocity-api:${velocityVersion}"
+    compileOnly libs.velocity
+    annotationProcessor libs.velocity
 
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation platform(libs.junit.bom)
+    testImplementation libs.junit.jupiter
 }
