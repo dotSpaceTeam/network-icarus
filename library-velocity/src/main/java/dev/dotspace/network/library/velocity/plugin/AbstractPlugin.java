@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.velocity.event.AbstractListener;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -14,55 +15,71 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Logger;
 
+
 @Log4j2
 @Getter
-@Accessors(fluent = true)
-public abstract class AbstractPlugin extends AbstractGamePlugin {
-    private final @NotNull ProxyServer server;
-    private final @NotNull Logger logger;
+@Accessors(fluent=true)
+public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener> {
+  private final @NotNull ProxyServer server;
+  private final @NotNull Logger logger;
 
-    @Inject
-    public AbstractPlugin(@NotNull final ProxyServer server,
-                          @NotNull final Logger logger) {
-        this.server = server;
-        this.logger = logger;
+  @Inject
+  public AbstractPlugin(@NotNull final ProxyServer server,
+                        @NotNull final Logger logger) {
+    this.server = server;
+    this.logger = logger;
 
-        this.module(new PluginModule(this));
-        this.configure();
+    this.module(new PluginModule(this));
+    this.configure();
 
-        this.executeRunnable(PluginState.PRE_LOAD);
-        //--- Code start ---
+    //Create listener register.
+    this.hookEventListener(AbstractListener.class, abstractListener -> {
+      this.server.getEventManager().register(this, abstractListener);
+    });
 
-        //--- Code end ---
-        this.executeRunnable(PluginState.POST_LOAD);
-    }
+    this.executeRunnable(PluginState.PRE_LOAD);
+    //--- Code start ---
 
-    @Subscribe
-    public void handleEnable(@NotNull final ProxyInitializeEvent event) {
-        this.lock();
+    //--- Code end ---
+    this.executeRunnable(PluginState.POST_LOAD);
+  }
 
-        this.executeRunnable(PluginState.PRE_ENABLE);
-        //--- Code start ---
+  @Subscribe
+  public void handleEnable(@NotNull final ProxyInitializeEvent event) {
+    this.lock();
 
-        //--- Code end ---
-        this.executeRunnable(PluginState.POST_ENABLE);
-    }
+    this.executeRunnable(PluginState.PRE_ENABLE);
+    //--- Code start ---
 
-    @Subscribe
-    public void handleShutdown(@NotNull final ProxyShutdownEvent event) {
-        this.executeRunnable(PluginState.PRE_DISABLE);
-        //--- Code start ---
+    //Name of plugin
+    final String name = this.server.getPluginManager()
+        .fromInstance(this)
+        .flatMap(pluginContainer -> pluginContainer.getDescription().getName())
+        .orElse("Not defined.");
 
-        //--- Code end ---
-        this.executeRunnable(PluginState.POST_DISABLE);
-    }
+    this.init(name);
 
-    /**
-     * Get name of plugin class.
-     *
-     * @return class name.
-     */
-    public @NotNull String name() {
-        return this.getClass().getName();
-    }
+    //--- Code end ---
+    this.executeRunnable(PluginState.POST_ENABLE);
+  }
+
+  @Subscribe
+  public void handleShutdown(@NotNull final ProxyShutdownEvent event) {
+    this.executeRunnable(PluginState.PRE_DISABLE);
+    //--- Code start ---
+
+    this.shutdown();
+
+    //--- Code end ---
+    this.executeRunnable(PluginState.POST_DISABLE);
+  }
+
+  /**
+   * Get name of plugin class.
+   *
+   * @return class name.
+   */
+  public @NotNull String name() {
+    return this.getClass().getName();
+  }
 }

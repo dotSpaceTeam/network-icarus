@@ -3,7 +3,7 @@ package dev.dotspace.network.library.spigot.self.command;
 
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
-import dev.dotspace.network.library.spigot.plugin.AbstractCommand;
+import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;

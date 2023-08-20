@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.game.plugin;
+package dev.dotspace.network.library.game.command;
 
 import cloud.commandframework.CommandManager;
 import lombok.Getter;

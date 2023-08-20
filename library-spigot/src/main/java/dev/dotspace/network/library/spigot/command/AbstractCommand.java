@@ -1,6 +1,6 @@
-package dev.dotspace.network.library.spigot.plugin;
+package dev.dotspace.network.library.spigot.command;
 
-import dev.dotspace.network.library.game.plugin.AbstractCloudCommand;
+import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import org.bukkit.command.CommandSender;
 
 /**
