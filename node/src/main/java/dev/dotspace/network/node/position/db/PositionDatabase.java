@@ -1,7 +1,7 @@
 package dev.dotspace.network.node.position.db;
 
 import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.position.*;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
@@ -32,10 +32,10 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    * See {@link IPositionManipulator#setPosition(String, long, long, long)}.
    */
   @Override
-  public @NotNull CompletableResponse<IPosition> setPosition(@Nullable String key,
-                                                             long x,
-                                                             long y,
-                                                             long z) {
+  public @NotNull Response<IPosition> setPosition(@Nullable String key,
+                                                  long x,
+                                                  long y,
+                                                  long z) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(key);
@@ -48,7 +48,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
    */
   @Override
-  public @NotNull CompletableResponse<IPosition> getPosition(@Nullable String key) {
+  public @NotNull Response<IPosition> getPosition(@Nullable String key) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(key);
@@ -58,7 +58,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
   }
 
   @Override
-  public @NotNull CompletableResponse<IViewPosition> setViewPosition(@Nullable String key,
+  public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
                                                                      long x,
                                                                      long y,
                                                                      long z,
@@ -76,7 +76,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
    */
   @Override
-  public @NotNull CompletableResponse<IViewPosition> setViewPosition(@Nullable String key,
+  public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
                                                                      long yaw,
                                                                      long pitch) {
     return SpaceLibrary.completeResponseAsync(() -> {
@@ -95,7 +95,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    * See {@link IPositionManipulator#getViewPosition(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IViewPosition> getViewPosition(@Nullable String key) {
+  public @NotNull Response<IViewPosition> getViewPosition(@Nullable String key) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(key);

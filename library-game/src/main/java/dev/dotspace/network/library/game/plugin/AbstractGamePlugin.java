@@ -7,6 +7,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.provider.Provider;
@@ -55,6 +56,9 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>> imple
   protected AbstractGamePlugin() {
     this.stateRunnableMultimap = HashMultimap.create();
     this.moduleList = new ArrayList<>();
+
+    //Add library module.
+    this.module(Library.module());
   }
 
   /**

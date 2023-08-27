@@ -15,44 +15,45 @@ import dev.dotspace.network.client.web.RestClient;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
+
 /**
  * Configure google guice.
  */
 @Log4j2
 final class ClientModule extends AbstractModule {
 
-    private final @NotNull String identifier;
+  private final @NotNull String identifier;
 
-    ClientModule(@NotNull final String identifier) {
-        this.identifier = identifier;
-    }
+  ClientModule(@NotNull final String identifier) {
+    this.identifier = identifier;
+  }
 
-    @Override
-    protected void configure() {
-        log.info("Configuring ClientModule...");
-        //Configure start.
+  @Override
+  protected void configure() {
+    log.info("Configuring ClientModule...");
+    //Configure start.
 
-        //Create rest client.
-        this.bind(IRestClient.class).toInstance(new RestClient(this.identifier));
+    //Create rest client.
+    this.bind(IRestClient.class).toInstance(new RestClient(this.identifier));
 
-        //Requests.
-        this.bind(IPositionRequest.class)
-                .to(PositionRequest.class)
-                .in(Scopes.SINGLETON);
+    //Requests.
+    this.bind(IPositionRequest.class)
+        .to(PositionRequest.class)
+        .in(Scopes.SINGLETON);
 
-        this.bind(IProfileRequest.class)
-                .to(ProfileRequest.class)
-                .in(Scopes.SINGLETON);
+    this.bind(IProfileRequest.class)
+        .to(ProfileRequest.class)
+        .in(Scopes.SINGLETON);
 
-        this.bind(ISessionRequest.class)
-                .to(SessionRequest.class)
-                .in(Scopes.SINGLETON);
+    this.bind(ISessionRequest.class)
+        .to(SessionRequest.class)
+        .in(Scopes.SINGLETON);
 
-        this.bind(IStatusRequest.class)
-                .to(StatusRequest.class)
-                .in(Scopes.SINGLETON);
+    this.bind(IStatusRequest.class)
+        .to(StatusRequest.class)
+        .in(Scopes.SINGLETON);
 
-        //Configure end.
-        log.info("Client(ClientModule) configured.");
-    }
+    //Configure end.
+    log.info("Client(ClientModule) configured.");
+  }
 }

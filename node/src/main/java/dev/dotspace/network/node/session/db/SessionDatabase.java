@@ -2,6 +2,7 @@ package dev.dotspace.network.node.session.db;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.session.*;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
@@ -37,7 +38,7 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#getSessionList(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable String profileId) {
+  public @NotNull Response<List<ISession>> getSessionList(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(profileId);
@@ -61,7 +62,7 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#getSession(String, Long)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> getSession(@Nullable String profileId,
+  public @NotNull Response<ISession> getSession(@Nullable String profileId,
                                                            @Nullable Long sessionId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
@@ -81,7 +82,7 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
   }
 
   @Override
-  public @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable String profileId) {
+  public @NotNull Response<IPlaytime> getPlaytime(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(profileId);
@@ -98,7 +99,7 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#createSession(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> createSession(@Nullable String profileId) {
+  public @NotNull Response<ISession> createSession(@Nullable String profileId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(profileId);
@@ -115,7 +116,7 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
    * See {@link ISessionManipulator#completeSession(String, Long)}.
    */
   @Override
-  public @NotNull CompletableResponse<ISession> completeSession(@Nullable String profileId,
+  public @NotNull Response<ISession> completeSession(@Nullable String profileId,
                                                                 @Nullable Long sessionId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check

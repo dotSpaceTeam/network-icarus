@@ -1,6 +1,7 @@
 package dev.dotspace.network.node.web;
 
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public abstract class AbstractRestController {
    * @param <TYPE>              generic type of object.
    * @throws InterruptedException if {@link CompletableResponse} was interrupted.
    */
-  protected <TYPE> ResponseEntity<TYPE> validateOkResponse(@Nullable final CompletableResponse<TYPE> completableResponse,
+  protected <TYPE> ResponseEntity<TYPE> validateOkResponse(@Nullable final Response<TYPE> completableResponse,
                                                            @Nullable final String errorMessage) throws InterruptedException {
     //Null check
     Objects.requireNonNull(completableResponse, "Response is null");

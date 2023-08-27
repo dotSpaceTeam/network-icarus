@@ -1,6 +1,7 @@
 package dev.dotspace.network.library.position;
 
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,10 +18,10 @@ public interface IPositionManipulator {
    * @param z   see {@link IPosition#z()}.
    * @return updated {@link IPosition}.
    */
-  @NotNull CompletableResponse<IPosition> setPosition(@Nullable final String key,
-                                                      final long x,
-                                                      final long y,
-                                                      final long z);
+  @NotNull Response<IPosition> setPosition(@Nullable final String key,
+                                           final long x,
+                                           final long y,
+                                           final long z);
 
   /**
    * Get position.
@@ -28,7 +29,7 @@ public interface IPositionManipulator {
    * @param key to get position from, null if absent.
    * @return present {@link IPosition}.
    */
-  @NotNull CompletableResponse<IPosition> getPosition(@Nullable final String key);
+  @NotNull Response<IPosition> getPosition(@Nullable final String key);
 
   /**
    * Insert or update {@link IViewPosition}.
@@ -41,7 +42,7 @@ public interface IPositionManipulator {
    * @param pitch see {@link IViewPosition#pitch()}.
    * @return updated {@link IViewPosition}.
    */
-  @NotNull CompletableResponse<IViewPosition> setViewPosition(@Nullable final String key,
+  @NotNull Response<IViewPosition> setViewPosition(@Nullable final String key,
                                                               final long x,
                                                               final long y,
                                                               final long z,
@@ -56,7 +57,7 @@ public interface IPositionManipulator {
    * @param pitch see {@link IViewPosition#pitch()}.
    * @return updated {@link IViewPosition}.
    */
-  @NotNull CompletableResponse<IViewPosition> setViewPosition(@Nullable final String key,
+  @NotNull Response<IViewPosition> setViewPosition(@Nullable final String key,
                                                               final long yaw,
                                                               final long pitch);
 
@@ -66,5 +67,5 @@ public interface IPositionManipulator {
    * @param key to get position from, null if absent.
    * @return present {@link IViewPosition}.
    */
-  @NotNull CompletableResponse<IViewPosition> getViewPosition(@Nullable final String key);
+  @NotNull Response<IViewPosition> getViewPosition(@Nullable final String key);
 }

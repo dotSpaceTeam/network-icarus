@@ -2,6 +2,7 @@ package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.profile.*;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +33,8 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#createProfile(String, ProfileType)}.
    */
   @Override
-  public @NotNull CompletableResponse<IProfile> createProfile(@Nullable String uniqueId,
-                                                              @Nullable ProfileType profileType) {
+  public @NotNull Response<IProfile> createProfile(@Nullable String uniqueId,
+                                                   @Nullable ProfileType profileType) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null checks
       Objects.requireNonNull(uniqueId);
@@ -55,7 +56,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#getProfile(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IProfile> getProfile(@Nullable String uniqueId) {
+  public @NotNull Response<IProfile> getProfile(@Nullable String uniqueId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null checks
       Objects.requireNonNull(uniqueId);
@@ -70,7 +71,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#setAttribute(String, String, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IProfileAttribute> setAttribute(@Nullable String uniqueId,
+  public @NotNull Response<IProfileAttribute> setAttribute(@Nullable String uniqueId,
                                                                       @Nullable String key,
                                                                       @Nullable String value) {
     return SpaceLibrary.completeResponseAsync(() -> {
@@ -123,7 +124,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#removeAttribute(String, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IProfileAttribute> removeAttribute(@Nullable String uniqueId,
+  public @NotNull Response<IProfileAttribute> removeAttribute(@Nullable String uniqueId,
                                                                          @Nullable String key) {
     return this.setAttribute(uniqueId, key, null);
   }
@@ -132,7 +133,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#getAttributes(String)}.
    */
   @Override
-  public @NotNull CompletableResponse<List<IProfileAttribute>> getAttributes(@Nullable String uniqueId) {
+  public @NotNull Response<List<IProfileAttribute>> getAttributes(@Nullable String uniqueId) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(uniqueId);
@@ -160,7 +161,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    * See {@link IProfileManipulator#getAttribute(String, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IProfileAttribute> getAttribute(@Nullable String uniqueId,
+  public @NotNull Response<IProfileAttribute> getAttribute(@Nullable String uniqueId,
                                                                       @Nullable String key) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check

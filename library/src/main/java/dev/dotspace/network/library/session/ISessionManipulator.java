@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.session;
 
-import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ public interface ISessionManipulator {
    * @param profileId to get session list from.
    * @return list of all {@link ISession} entities for profile.
    */
-  @NotNull CompletableResponse<List<ISession>> getSessionList(@Nullable final String profileId);
+  @NotNull Response<List<ISession>> getSessionList(@Nullable final String profileId);
 
   /**
    * Get Session from id and profile.
@@ -25,7 +25,7 @@ public interface ISessionManipulator {
    * @param sessionId id of session.
    * @return matching {@link ISession} of profileId and sessionId.
    */
-  @NotNull CompletableResponse<ISession> getSession(@Nullable final String profileId,
+  @NotNull Response<ISession> getSession(@Nullable final String profileId,
                                                     @Nullable final Long sessionId);
 
   /**
@@ -34,7 +34,7 @@ public interface ISessionManipulator {
    * @param profileId to calculate playtime for.
    * @return calculated play time of profile.
    */
-  @NotNull CompletableResponse<IPlaytime> getPlaytime(@Nullable final String profileId);
+  @NotNull Response<IPlaytime> getPlaytime(@Nullable final String profileId);
 
   /**
    * Create new session for profile.
@@ -42,7 +42,7 @@ public interface ISessionManipulator {
    * @param profileId to create new session for.
    * @return created {@link ISession}.
    */
-  @NotNull CompletableResponse<ISession> createSession(@Nullable final String profileId);
+  @NotNull Response<ISession> createSession(@Nullable final String profileId);
 
   /**
    * Complete a session of profile.
@@ -51,6 +51,6 @@ public interface ISessionManipulator {
    * @param sessionId to complete.
    * @return completed {@link ISession}.
    */
-  @NotNull CompletableResponse<ISession> completeSession(@Nullable final String profileId,
+  @NotNull Response<ISession> completeSession(@Nullable final String profileId,
                                                          @Nullable final Long sessionId);
 }
