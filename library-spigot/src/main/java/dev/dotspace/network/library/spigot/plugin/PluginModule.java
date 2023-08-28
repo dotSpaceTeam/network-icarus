@@ -15,56 +15,57 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+
 /**
  * Base {@link AbstractModule} for spigot.
  */
 @Log4j2
 public final class PluginModule extends AbstractPluginModule<JavaPlugin> {
 
-    /**
-     * See {@link AbstractPluginModule#AbstractPluginModule(Object)}
-     */
-    public PluginModule(@Nullable JavaPlugin javaPlugin) {
-        super(javaPlugin);
+  /**
+   * See {@link AbstractPluginModule#AbstractPluginModule(Object)}
+   */
+  public PluginModule(@Nullable JavaPlugin javaPlugin) {
+    super(javaPlugin);
+  }
+
+  /**
+   * Configure module
+   */
+  @Override
+  protected void configure() {
+    log.info("Configuring default PluginModule for {}.", this.plugin().getName());
+    //Configure start.
+    this.bind(JavaPlugin.class).toInstance(this.plugin());
+    log.info("Defined plugin to '{}'.", this.plugin().getName());
+
+    //Get server instance.
+    final Server server = this.plugin().getServer();
+
+    this.bind(Server.class).toInstance(server);
+    log.info("Defined server.");
+
+    this.bind(PluginManager.class).toInstance(server.getPluginManager());
+    log.info("Defined plugin manager.");
+
+    this.bind(ServicesManager.class).toInstance(server.getServicesManager());
+    //Defined services.
+
+    log.info("Configuring cloud command framework...");
+    try {
+      final CommandManager<CommandSender> commandManager = new BukkitCommandManager<>(
+          this.plugin(),
+          CommandExecutionCoordinator.simpleCoordinator(),
+          Function.identity(),
+          Function.identity());
+
+      this.bind(CommandManager.class).toInstance(commandManager);
+      log.info("Defined command manger.");
+    } catch (final Exception exception) {
+      log.fatal("Error while initializing command manager (cloud). message={}", exception.getMessage());
     }
 
-    /**
-     * Configure module
-     */
-    @Override
-    protected void configure() {
-        log.info("Configuring default PluginModule for {}.", this.plugin().getName());
-        //Configure start.
-        this.bind(JavaPlugin.class).toInstance(this.plugin());
-        log.info("Defined plugin to '{}'.", this.plugin().getName());
-
-        //Get server instance.
-        final Server server = this.plugin().getServer();
-
-        this.bind(Server.class).toInstance(server);
-        log.info("Defined server.");
-
-        this.bind(PluginManager.class).toInstance(server.getPluginManager());
-        log.info("Defined plugin manager.");
-
-        this.bind(ServicesManager.class).toInstance(server.getServicesManager());
-        //Defined services.
-
-        log.info("Configuring cloud command framework...");
-        try {
-            final CommandManager<CommandSender> commandManager = new BukkitCommandManager<>(
-                    this.plugin(),
-                    CommandExecutionCoordinator.simpleCoordinator(),
-                    Function.identity(),
-                    Function.identity());
-
-            this.bind(CommandManager.class).toInstance(commandManager);
-            log.info("Defined command manger.");
-        } catch (final Exception exception) {
-            log.fatal("Error while initializing command manager (cloud). message={}", exception.getMessage());
-        }
-
-        //Configure end.
-        log.info("Configuration of PluginModule for {} done.", this.plugin().getName());
-    }
+    //Configure end.
+    log.info("Configuration of PluginModule for {} done.", this.plugin().getName());
+  }
 }

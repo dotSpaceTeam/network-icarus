@@ -6,6 +6,7 @@ import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.LibraryModule;
+import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,11 +61,16 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     //Configure.
     this.module(new PluginModule(this));
     this.module(LibraryModule.instance());
+    //Define entry.
+    this.spigotPlugin.entryClass(this.getClass());
 
-    //Hoo spigot events
+    //Hook spigot events
     this.spigotPlugin.hookEventListener(AbstractListener.class, abstractListener -> {
       this.getServer().getPluginManager().registerEvents(abstractListener, this);
     });
+
+    //Hook spigot commands
+    this.spigotPlugin.hookCommand(AbstractCommand.class);
 
     this.configure();
 

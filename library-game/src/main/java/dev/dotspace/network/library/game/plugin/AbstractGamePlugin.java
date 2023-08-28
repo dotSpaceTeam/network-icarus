@@ -11,6 +11,9 @@ import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.provider.Provider;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +33,7 @@ import java.util.stream.Stream;
  */
 @Log4j2
 @Accessors(fluent=true)
-public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>> implements GamePlugin {
+public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMAND extends AbstractCloudCommand> implements GamePlugin {
   /**
    * Injector of plugin -> {@link GamePlugin#injector()}
    */
@@ -50,8 +53,15 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>> imple
    * List modules of system.
    */
   private final @NotNull List<Module> moduleList;
+
+  @Getter(AccessLevel.PROTECTED)
+  @Setter(AccessLevel.PROTECTED)
+  private @Nullable Class<?> entryClass;
+
   private @Nullable Class<LISTENER> listenerClass;
   private @Nullable Consumer<LISTENER> listenerConsumer;
+
+  private @Nullable Class<COMMAND> commandClass;
 
   protected AbstractGamePlugin() {
     this.stateRunnableMultimap = HashMultimap.create();
@@ -71,6 +81,11 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>> imple
                                    @Nullable final Consumer<LISTENER> listenerConsumer) {
     this.listenerClass = listenerClass;
     this.listenerConsumer = listenerConsumer;
+  }
+
+
+  protected void hookCommand(@Nullable final Class<COMMAND> commandClass) {
+    this.commandClass = commandClass;
   }
 
   /**
@@ -143,34 +158,41 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>> imple
    */
   @SuppressWarnings("unchecked")
   protected synchronized void init(@Nullable final String name) {
+    //Null checks
+    Objects.requireNonNull(this.listenerClass);
+    Objects.requireNonNull(this.listenerConsumer);
+    Objects.requireNonNull(this.commandClass);
+
     //Set load timestamp
     this.loadTime = System.currentTimeMillis();
 
     log.info("Initializing plugin instance...");
 
+    //Check if entry is present.
+    if (this.entryClass == null) {
+      log.info("No entry class defined using locale.");
+      this.entryClass = this.getClass();
+    }
+
     //Reflections of this plugin.
-    final Reflections reflections = new Reflections(this.getClass().getPackageName());
+    final Reflections reflections = new Reflections(this.entryClass.getPackageName());
 
     //Register listener.
-    if (this.listenerClass != null && this.listenerConsumer != null) {
-      log.info("Searching for listener. (Variables must be part of the local initializer.)");
-      //Search for all Abstract listeners.
-      this.createInstanceOf(reflections, this.listenerClass)
-          //Register listeners.
-          .forEach(abstractListener -> {
-            log.info("Constructed instance of listener={}.", abstractListener.getClass().getSimpleName());
-            this.listenerConsumer.accept(abstractListener);
-          });
-    } else {
-      log.warn("No listener class or consumer defined.");
-    }
+    log.info("Searching for listener. (Variables must be part of the local initializer.)");
+    //Search for all Abstract listeners.
+    this.createInstanceOf(reflections, this.listenerClass)
+        //Register listeners.
+        .forEach(abstractListener -> {
+          log.info("Constructed instance of listener={}.", abstractListener.getClass().getSimpleName());
+          this.listenerConsumer.accept(abstractListener);
+        });
     //Registered listener.
 
     //Register commands.
     log.info("Searching for commands. (Variables must be part of the local initializer.)");
     final CommandManager<?> manager = this.injector().getInstance(CommandManager.class);
     //Search fo commands
-    this.createInstanceOf(reflections, AbstractCloudCommand.class)
+    this.createInstanceOf(reflections, this.commandClass)
         //Register commands
         .forEach(abstractCommand -> {
           log.info("Constructed instance of command={},", abstractCommand.getClass().getSimpleName());

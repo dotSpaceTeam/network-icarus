@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.message;
 
-import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,9 +19,9 @@ public interface IMessageManipulator {
    * @param message content of message itself.
    * @return
    */
-  @NotNull CompletableResponse<IMessage> insertMessage(@Nullable final Locale locale,
-                                                      @Nullable final String key,
-                                                      @Nullable final String message);
+  @NotNull Response<IMessage> insertMessage(@Nullable final Locale locale,
+                                            @Nullable final String key,
+                                            @Nullable final String message);
 
   /**
    * @param locale
@@ -29,7 +29,7 @@ public interface IMessageManipulator {
    * @param message
    * @return
    */
-  @NotNull CompletableResponse<IMessage> updateMessage(@Nullable final Locale locale,
+  @NotNull Response<IMessage> updateMessage(@Nullable final Locale locale,
                                                       @Nullable final String key,
                                                       @Nullable final String message);
 
@@ -38,6 +38,6 @@ public interface IMessageManipulator {
    * @param key
    * @return
    */
-  @NotNull CompletableResponse<IMessage> message(@Nullable final Locale locale,
+  @NotNull Response<IMessage> message(@Nullable final Locale locale,
                                                  @Nullable final String key);
 }

@@ -1,7 +1,7 @@
 package dev.dotspace.network.node.message.db;
 
 import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageManipulator;
 import dev.dotspace.network.library.message.ImmutableMessage;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Objects;
+
 
 @Component("messageDatabase")
 @Log4j2
@@ -28,9 +29,9 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
    * See {@link IMessageManipulator#insertMessage(Locale, String, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<Boolean> insertMessage(@Nullable Locale locale,
-                                                             @Nullable String key,
-                                                             @Nullable String message) {
+  public @NotNull Response<IMessage> insertMessage(@Nullable Locale locale,
+                                                   @Nullable String key,
+                                                   @Nullable String message) {
     return this.handleUpdate(locale, key, message, false);
   }
 
@@ -38,9 +39,9 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
    * See {@link IMessageManipulator#updateMessage(Locale, String, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<Boolean> updateMessage(@Nullable Locale locale,
-                                                             @Nullable String key,
-                                                             @Nullable String message) {
+  public @NotNull Response<IMessage> updateMessage(@Nullable Locale locale,
+                                                   @Nullable String key,
+                                                   @Nullable String message) {
     return this.handleUpdate(locale, key, message, true);
   }
 
@@ -53,10 +54,10 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
    * @param allowUpdate true, if message can be updated if already present.
    * @return response.
    */
-  private CompletableResponse<Boolean> handleUpdate(@Nullable final Locale locale,
-                                                    @Nullable final String key,
-                                                    @Nullable final String message,
-                                                    final boolean allowUpdate) {
+  private Response<IMessage> handleUpdate(@Nullable final Locale locale,
+                                          @Nullable final String key,
+                                          @Nullable final String message,
+                                          final boolean allowUpdate) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(locale);
@@ -67,22 +68,21 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
       final MessageKeyEntity messageKey = this.insertIfAbsentAndGetLocale(key);
 
       @Nullable final MessageEntity messageEntity = this.messageRepository
-        .findByKeyAndLocale(messageKey, localeTag)
-        .orElse(null);
+          .findByKeyAndLocale(messageKey, localeTag)
+          .orElse(null);
 
       if (messageEntity == null) {
-        this.messageRepository.save(new MessageEntity(messageKey, localeTag, message));
-        return true;
+        return this.messageRepository.save(new MessageEntity(messageKey, localeTag, message));
       }
 
       //No update
       if (!allowUpdate) {
-        return false;
+        return null;
       }
 
       messageEntity.message(message);
       this.messageRepository.save(messageEntity);
-      return true;
+      return messageEntity;
     });
   }
 
@@ -91,29 +91,29 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
    * See {@link IMessageManipulator#message(Locale, String)}.
    */
   @Override
-  public @NotNull CompletableResponse<IMessage> message(@Nullable Locale locale,
-                                                        @Nullable String key) {
+  public @NotNull Response<IMessage> message(@Nullable Locale locale,
+                                             @Nullable String key) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null check
       Objects.requireNonNull(locale);
       Objects.requireNonNull(key);
 
       final MessageKeyEntity messageKey = this.messageKeyRepository
-        .findByKey(key)
-        .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
+          .findByKey(key)
+          .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
 
       final String localeTag = locale.toLanguageTag();
 
       return this.messageRepository
-        /*
-         * Find key and locale.
-         */
-        .findByKeyAndLocale(messageKey, localeTag)
-        /*
-         * Map to message.
-         */
-        .map(ImmutableMessage::of)
-        .orElseThrow();
+          /*
+           * Find key and locale.
+           */
+          .findByKeyAndLocale(messageKey, localeTag)
+          /*
+           * Map to message.
+           */
+          .map(ImmutableMessage::of)
+          .orElseThrow();
     });
   }
 
@@ -124,13 +124,13 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
    */
   private @NotNull MessageKeyEntity insertIfAbsentAndGetLocale(@NotNull final String key) {
     return this.messageKeyRepository
-      /*
-       * Return this if present.
-       */
-      .findByKey(key)
-      /*
-       * Otherwise create.
-       */
-      .orElseGet(() -> this.messageKeyRepository.save(new MessageKeyEntity(key)));
+        /*
+         * Return this if present.
+         */
+        .findByKey(key)
+        /*
+         * Otherwise create.
+         */
+        .orElseGet(() -> this.messageKeyRepository.save(new MessageKeyEntity(key)));
   }
 }

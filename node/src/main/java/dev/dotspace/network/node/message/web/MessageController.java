@@ -56,8 +56,7 @@ public final class MessageController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IMessage> putKey(@RequestBody @NotNull final ImmutableMessage message) throws InterruptedException {
     return this.validateOkResponse(this.messageDatabase
-        .updateMessage(message.locale(), message.key(), message.message())
-        .map(aBoolean -> aBoolean ? message : null),
+        .updateMessage(message.locale(), message.key(), message.message()),
       "Can't set message '%s' to key '%s'.".formatted(message.message(), message.key()));
   }
 

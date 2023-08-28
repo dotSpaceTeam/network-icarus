@@ -1,8 +1,12 @@
 package dev.dotspace.network.node.economy.db;
 
 import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.library.economy.*;
+import dev.dotspace.common.response.Response;
+import dev.dotspace.network.library.economy.ICurrency;
+import dev.dotspace.network.library.economy.ITransaction;
+import dev.dotspace.network.library.economy.ImmutableCurrency;
+import dev.dotspace.network.library.economy.ImmutableTransaction;
+import dev.dotspace.network.library.economy.TransactionType;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
@@ -36,9 +40,9 @@ public final class EconomyDatabase extends AbstractDatabase implements IEconomyD
   private ProfileRepository profileRepository;
 
   @Override
-  public @NotNull CompletableResponse<ICurrency> createCurrency(@Nullable String symbol,
-                                                                @Nullable String name,
-                                                                @Nullable String pluralName) {
+  public @NotNull Response<ICurrency> createCurrency(@Nullable String symbol,
+                                                     @Nullable String name,
+                                                     @Nullable String pluralName) {
     return SpaceLibrary.completeResponseAsync(() -> {
       //Null checks
       Objects.requireNonNull(symbol);
@@ -57,7 +61,7 @@ public final class EconomyDatabase extends AbstractDatabase implements IEconomyD
   }
 
   @Override
-  public @NotNull CompletableResponse<ITransaction> createTransaction(@Nullable String uniqueId,
+  public @NotNull Response<ITransaction> createTransaction(@Nullable String uniqueId,
                                                                       @Nullable String symbol,
                                                                       int amount,
                                                                       @Nullable TransactionType transactionType) {

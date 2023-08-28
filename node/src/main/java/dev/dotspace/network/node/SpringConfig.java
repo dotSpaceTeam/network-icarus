@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+
 @Configuration
 @Log4j2
 public class SpringConfig {
@@ -28,16 +29,16 @@ public class SpringConfig {
       @Override
       public void addViewControllers(@NotNull final ViewControllerRegistry registry) {
         registry
-          .addViewController("/")
-          .setViewName("forward:/index.html"); //Redirect to default registry.
+            .addViewController("/")
+            .setViewName("forward:/index.html"); //Redirect to default registry.
         log.info("Added view controller for '/'.");
       }
 
       @Override
       public void addCorsMappings(@NotNull final CorsRegistry registry) {
         registry
-          .addMapping("/**")
-          .allowedOrigins("*"); //Allow all origins
+            .addMapping("/**")
+            .allowedOrigins("*"); //Allow all origins
         log.info("Allowed all origins for cors.");
       }
     };
@@ -52,4 +53,5 @@ public class SpringConfig {
     log.info("Initialized thread executor bean.");
     return executor;
   }
+
 }
