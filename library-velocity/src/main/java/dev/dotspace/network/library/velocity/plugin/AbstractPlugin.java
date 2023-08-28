@@ -7,6 +7,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.velocity.command.AbstractCommand;
 import dev.dotspace.network.library.velocity.event.AbstractListener;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 @Log4j2
 @Getter
 @Accessors(fluent=true)
-public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener> {
+public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener, AbstractCommand> {
   private final @NotNull ProxyServer server;
   private final @NotNull Logger logger;
 
@@ -36,6 +37,9 @@ public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener
     this.hookEventListener(AbstractListener.class, abstractListener -> {
       this.server.getEventManager().register(this, abstractListener);
     });
+
+    //Create command register.
+    this.hookCommand(AbstractCommand.class);
 
     this.executeRunnable(PluginState.PRE_LOAD);
     //--- Code start ---
