@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.function.Supplier;
+
 
 public interface INode {
   /**
@@ -17,7 +19,7 @@ public interface INode {
   @NotNull <T> Optional<T> bean(@Nullable final Class<T> beanClass);
 
   /**
-   * Calls {@link ISpringRunner#bean(Class)} else throw error.
+   * Calls {@link INode#bean(Class)} with {@link Optional#orElseThrow(Supplier)}
    */
   @NotNull <T> T beanElseThrow(@Nullable final Class<T> beanClass);
 
