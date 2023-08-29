@@ -1,11 +1,15 @@
 package dev.dotspace.network.library.spigot.self.listener;
 
 import com.google.inject.Inject;
+import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
+import dev.dotspace.network.library.spigot.self.message.Message;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
@@ -44,5 +48,19 @@ public final class ProviderListener extends AbstractListener {
 
     //Remove from sidebar.
     this.sidebarProvider.remove(player);
+  }
+
+  /**
+   * Handle if player login to server.
+   * LOWEST priority means this event will be triggered as first.
+   */
+  @EventHandler(priority=EventPriority.LOWEST)
+  public void handle(@NotNull final AsyncPlayerPreLoginEvent event) {
+    //Check if connection is valid
+    if (Client.disconnected()) {
+      //Kick because client is deactivated.
+      event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
+      return;
+    }
   }
 }

@@ -2,6 +2,7 @@ package dev.dotspace.network.client;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.position.PositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
@@ -33,8 +34,14 @@ final class ClientModule extends AbstractModule {
     log.info("Configuring ClientModule...");
     //Configure start.
 
+    //Define new monitoring
+    final ClientMonitoring clientMonitoring = new ClientMonitoring();
+
     //Create rest client.
-    this.bind(IRestClient.class).toInstance(new RestClient(this.identifier));
+    this.bind(IRestClient.class).toInstance(new RestClient(this.identifier).clientMonitoring(clientMonitoring));
+
+    //Bind clientMonitoring
+    this.bind(ClientMonitoring.class).toInstance(clientMonitoring);
 
     //Requests.
     this.bind(IPositionRequest.class)

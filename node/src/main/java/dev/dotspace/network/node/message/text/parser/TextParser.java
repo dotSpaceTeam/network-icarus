@@ -2,7 +2,7 @@ package dev.dotspace.network.node.message.text.parser;
 
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.node.message.db.MessageDatabase;
-import dev.dotspace.network.node.message.text.IPlaceholder;
+import dev.dotspace.network.library.message.content.IContentPlaceholder;
 import dev.dotspace.network.node.message.text.ITextMessage;
 import dev.dotspace.network.node.message.text.ImmutableTextMessage;
 import dev.dotspace.network.node.message.text.Placeholder;
@@ -76,7 +76,7 @@ public final class TextParser implements ITextParser {
      * Placeholders of message.
      * This list will be filled after algorithm is running.
      */
-    private final @NotNull Set<IPlaceholder<?>> placeholders;
+    private final @NotNull Set<IContentPlaceholder<?>> placeholders;
     /**
      * Database to get message from.
      */

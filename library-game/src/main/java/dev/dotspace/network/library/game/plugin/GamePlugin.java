@@ -2,10 +2,10 @@ package dev.dotspace.network.library.game.plugin;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.library.provider.Provider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.reflections.Reflections;
 
 import java.util.Optional;
 
@@ -39,7 +39,7 @@ public interface GamePlugin {
    * @throws NullPointerException if state or runnable is null.
    */
   @NotNull GamePlugin handle(@Nullable final PluginState state,
-                             @Nullable final Runnable runnable);
+                             @Nullable final ThrowableRunnable runnable);
 
   /**
    * Register no module for injected. Execute on configure.

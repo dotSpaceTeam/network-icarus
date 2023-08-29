@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
 
-public interface IMessage extends IMessageComponent {
+public interface IMessage extends IStringContent {
   /**
    * Key of message.
    *
@@ -13,7 +13,7 @@ public interface IMessage extends IMessageComponent {
   @NotNull String key();
 
   /**
-   * Locale of message. The locale message of {@link IMessageComponent#message()}.
+   * Locale of message. The locale message of {@link IStringContent#message()}.
    *
    * @return locale as {@link Locale}.
    */

@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.message.text;
 
+import dev.dotspace.network.library.message.content.IContentPlaceholder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,7 @@ public interface ITextMessage {
   @NotNull <TYPE> ITextMessage replace(@Nullable final String string,
                                        @Nullable final TYPE replace);
 
-  @NotNull Set<IPlaceholder<?>> placeholders();
+  @NotNull Set<IContentPlaceholder<?>> placeholders();
 
   /**
    * Format and create string from message.

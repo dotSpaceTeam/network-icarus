@@ -6,7 +6,9 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.concurrent.Executors;
+
 
 @Log4j2
 public final class Library {
@@ -23,6 +25,10 @@ public final class Library {
   private final static @NotNull LibraryModule module = new LibraryModule();
 
   static {
+    final List<String> SILENT = List.of(
+        "org.springframework.web.reactive.function.client.WebClientRequestException"
+    );
+
     responseService = ResponseService
         //Create builder
         .builder()
@@ -31,6 +37,17 @@ public final class Library {
 
         //Global exception handle
         .exceptionConsumer(throwable -> {
+          //Return if throwable is null -> no error.
+          if (throwable == null) {
+            return;
+          }
+
+          //Return if class is set to silent.
+          if (SILENT.contains(throwable.getClass().getName())) {
+            return;
+          }
+
+          //Else print error.
           log.warn("Error while executing response.", throwable);
         })
 

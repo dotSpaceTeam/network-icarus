@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.message.text;
 
+import dev.dotspace.network.library.message.content.IContentPlaceholder;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,7 @@ import java.util.Set;
  */
 @Log4j2
 public record ImmutableTextMessage(@NotNull String plainText,
-                                   @Nullable Set<IPlaceholder<?>> placeholders) implements ITextMessage {
+                                   @Nullable Set<IContentPlaceholder<?>> placeholders) implements ITextMessage {
   /**
    * See {@link ITextMessage#replace(String, Object)}.
    */
@@ -37,18 +38,18 @@ public record ImmutableTextMessage(@NotNull String plainText,
    * @param <TYPE> generic type of placeholder.
    */
   @SuppressWarnings("unchecked")
-  private <TYPE> @NotNull Optional<@Nullable IPlaceholder<TYPE>> findPlaceholder(@Nullable final String string) {
+  private <TYPE> @NotNull Optional<@Nullable IContentPlaceholder<TYPE>> findPlaceholder(@Nullable final String string) {
     // Return empty if placeholders are null.
     if (this.placeholders == null) {
       return Optional.empty();
     }
 
-    for (final IPlaceholder<?> placeholder : this.placeholders) { //Loop trough placeholders.
+    for (final IContentPlaceholder<?> placeholder : this.placeholders) { //Loop trough placeholders.
       if (!placeholder.code().equals(string)) { //Goto next placeholder if code does not match.
         continue;
       }
       try {
-        return Optional.of((IPlaceholder<TYPE>) placeholder); //Return found placeholder.
+        return Optional.of((IContentPlaceholder<TYPE>) placeholder); //Return found placeholder.
       } catch (final ClassCastException exception) {
         log.error("Placeholder is not needed type! ({})", exception.getMessage());
       }
@@ -69,7 +70,7 @@ public record ImmutableTextMessage(@NotNull String plainText,
       return preparedMessage;
     }
 
-    for (final IPlaceholder<?> placeholder : this.placeholders) { //Loop trough every placeholder.
+    for (final IContentPlaceholder<?> placeholder : this.placeholders) { //Loop trough every placeholder.
       preparedMessage = preparedMessage.replace(placeholder.replaceKey(), placeholder
         .replaceContext()
         .map(Object::toString)

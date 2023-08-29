@@ -1,7 +1,5 @@
 package dev.dotspace.network.node.message.text;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.dotspace.network.node.message.text.parser.TextParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +10,7 @@ public class manint {
   @Autowired
   private TextParser textParser;
 
-  public static void main(String[] args) throws JsonProcessingException {
+  public static void main(String[] args) throws Exception {
     var a = SpringApplication.run(manint.class, args);
 
     TextParser parser = a.getBean(TextParser.class);
@@ -24,8 +22,6 @@ public class manint {
         System.out.println(placeholder);
         System.out.println(placeholder.code());
       });
-
-    System.out.println(new ObjectMapper().writeValueAsString(iTextMessage));
 
     System.out.println(iTextMessage.formatted());
 

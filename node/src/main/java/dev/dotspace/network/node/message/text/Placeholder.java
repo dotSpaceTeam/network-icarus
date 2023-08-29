@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.message.text;
 
+import dev.dotspace.network.library.message.content.IContentPlaceholder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -10,18 +11,18 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Abstract implementation for {@link IPlaceholder}.
+ * Abstract implementation for {@link IContentPlaceholder}.
  */
 @Accessors(fluent = true)
 @Log4j2
-public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
+public final class Placeholder<TYPE> implements IContentPlaceholder<TYPE> {
   /**
-   * See {@link IPlaceholder#replaceKey()}.
+   * See {@link IContentPlaceholder#replaceKey()}.
    */
   @Getter
   private final @NotNull String replaceKey;
   /**
-   * See {@link IPlaceholder#code()}.
+   * See {@link IContentPlaceholder#code()}.
    */
   @Getter
   private final @NotNull String code;
@@ -42,7 +43,7 @@ public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
   }
 
   /**
-   * See {@link IPlaceholder#replaceContext()}.
+   * See {@link IContentPlaceholder#replaceContext()}.
    */
   @Override
   public @NotNull Optional<TYPE> replaceContext() {
@@ -50,10 +51,10 @@ public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
   }
 
   /**
-   * See {@link IPlaceholder#replaceContext(TYPE)}.
+   * See {@link IContentPlaceholder#replaceContext(TYPE)}.
    */
   @Override
-  public @NotNull IPlaceholder<TYPE> replaceContext(@Nullable final TYPE replaceContext) {
+  public @NotNull IContentPlaceholder<TYPE> replaceContext(@Nullable final TYPE replaceContext) {
     this.replaceContext = replaceContext;
     return this;
   }
@@ -75,7 +76,7 @@ public final class Placeholder<TYPE> implements IPlaceholder<TYPE> {
       return true; //Equal reference.
     }
 
-    return object instanceof IPlaceholder<?> placeholder &&
+    return object instanceof IContentPlaceholder<?> placeholder &&
       placeholder.replaceKey().equals(this.replaceKey); //If both replace patterns are equal -> same object.
   }
 }

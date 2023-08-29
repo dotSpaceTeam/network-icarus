@@ -2,12 +2,16 @@ package dev.dotspace.network.library.spigot.plugin;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
+import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.LibraryModule;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -17,11 +21,20 @@ import java.util.Optional;
 
 
 @Log4j2
+@Accessors(fluent=true)
 public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
   /**
    * Plugin to handle system, cant be extended because {@link JavaPlugin} needed by default.
    */
   private final @NotNull SpigotPlugin spigotPlugin = new SpigotPlugin();
+
+  /**
+   * Define if server is a subserver or standalone.
+   * True if value is set in spigot.yml to 'true' otherwise 'false'.
+   */
+  @Getter
+  @Setter
+  private boolean proxy;
 
   /**
    * Pass {@link SpigotPlugin#injector()}
@@ -40,11 +53,11 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
   }
 
   /**
-   * Pass {@link SpigotPlugin#handle(PluginState, Runnable)}
+   * Pass {@link SpigotPlugin#handle(PluginState, ThrowableRunnable)}
    */
   @Override
   public @NotNull GamePlugin handle(@Nullable PluginState state,
-                                    @Nullable Runnable runnable) {
+                                    @Nullable ThrowableRunnable runnable) {
     return this.spigotPlugin.handle(state, runnable);
   }
 
@@ -106,5 +119,18 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     this.spigotPlugin.executeRunnable(PluginState.POST_DISABLE);
   }
 
-
+  /**
+   * Synchronize {@link Runnable}.
+   *
+   * @param runnable to synchronize relative to main bukkit thread.
+   * @return class instance.
+   */
+  public @NotNull JavaPlugin sync(@Nullable final Runnable runnable) {
+    //Only run if runnable is present.
+    if (runnable != null) {
+      //Run synchronized
+      this.getServer().getScheduler().runTask(this, runnable);
+    }
+    return this;
+  }
 }

@@ -1,9 +1,13 @@
 package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.ClientState;
+import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
+import dev.dotspace.network.library.spigot.self.message.Message;
 import lombok.extern.log4j.Log4j2;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -23,14 +27,62 @@ public final class IcarusPlugin extends AbstractPlugin {
           //Unregister unwanted commands.
           this.unregisterCommand("tps");
           this.unregisterCommand("reload");
+          this.unregisterCommand("rl");
         })
 
-        //Enable client.
-        .handle(PluginState.POST_ENABLE, Client::enable)
-
+        //Handle client.
         .handle(PluginState.POST_ENABLE, () -> {
-          final boolean proxy = this.behindProxy();
-          log.info(proxy ? "Proxy present." : "No proxy present.");
+          //Enable client
+          Client.enable();
+
+
+          Client.client()
+              //Handle establish
+              .handle(ClientState.ESTABLISHED, () -> {
+
+                this.sync(() -> {
+                  Bukkit
+                      .getOnlinePlayers()
+                      .stream()
+                      //Filter online players, this state is only for double security.
+                      .filter(player -> player.hasPermission(Permission.OFFLINE))
+                      //Broadcast message
+                      .forEach(player -> {
+                        player.sendMessage(Message.CLIENT_ONLINE_INFO);
+                      });
+                });
+
+              })
+              //Handle failed
+              .handle(ClientState.FAILED, () -> {
+
+                this.sync(() -> {
+                  Bukkit
+                      .getOnlinePlayers()
+                      .forEach(player -> {
+                        //Check if player has permission -> inform about connection loss.
+                        if (player.hasPermission(Permission.OFFLINE)) {
+                          player.sendMessage(Message.CLIENT_OFFLINE_INFO);
+                        } else {
+                          //Kick
+                          player.kick(Message.CLIENT_OFFLINE_KICK);
+                        }
+                      });
+                });
+
+              });
+        })
+
+        //Set icarus
+        .handle(PluginState.POST_ENABLE, () -> {
+          //Get configuration value of bungeecord value in spigot.yml
+          this.proxy(YamlConfiguration
+              //Load config file.
+              .loadConfiguration(new File("spigot.yml"))
+              //Get if boolean is true.
+              .getBoolean("settings.bungeecord"));
+
+          log.info(this.proxy() ? "Proxy present." : "No proxy present.");
         });
   }
 
@@ -53,18 +105,4 @@ public final class IcarusPlugin extends AbstractPlugin {
     command.unregister(this.getServer().getCommandMap());
     log.info("Removed '{}' from command map.", lowerCommand);
   }
-
-  /**
-   * Get if server is behind proxy.
-   *
-   * @return true, if configuration is set to true.
-   */
-  private boolean behindProxy() {
-    return YamlConfiguration
-        //Load config file.
-        .loadConfiguration(new File("spigot.yml"))
-        //Get if boolean is true.
-        .getBoolean("settings.bungeecord");
-  }
-
 }

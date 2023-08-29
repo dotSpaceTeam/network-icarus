@@ -1,7 +1,11 @@
 package dev.dotspace.network.client.web;
 
+import dev.dotspace.network.client.ClientState;
+import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.library.field.RequestField;
 import io.netty.channel.ChannelOption;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -20,10 +24,18 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Objects;
 
+
 @Component
-@Accessors(fluent = true)
+@Accessors(fluent=true)
 @Log4j2
 public final class RestClient implements IRestClient {
+  /**
+   * Monitoring of client.
+   */
+  @Getter
+  @Setter
+  private @Nullable ClientMonitoring clientMonitoring;
+
   /**
    * Spring webclient for request.
    */
@@ -41,30 +53,31 @@ public final class RestClient implements IRestClient {
      * Create client instance.
      */
     final HttpClient httpClient = HttpClient.create()
-      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(timeoutDuration.toMillis()))
-      .responseTimeout(timeoutDuration);
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(timeoutDuration.toMillis()))
+        .responseTimeout(timeoutDuration);
 
     this.webClient = org.springframework.web.reactive.function.client.WebClient.builder()
-      /*
-       * Set base url.
-       */
-      .baseUrl(service)
+        /*
+         * Set base url.
+         */
+        .baseUrl(service)
 
-      /*
-       * Default headers.
-       */
-      .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-      .defaultHeader(HttpHeaders.ACCEPT_CHARSET)
-      //Use client as default header
-      .defaultHeader(RequestField.CLIENT_ID, clientId)
-      .clientConnector(new ReactorClientHttpConnector(httpClient))
-      .build();
+        /*
+         * Default headers.
+         */
+        .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader(HttpHeaders.ACCEPT_CHARSET)
+        //Use client as default header
+        .defaultHeader(RequestField.CLIENT_ID, clientId)
+        .clientConnector(new ReactorClientHttpConnector(httpClient))
+        .build();
 
     log.info("Successfully created client to '{}'.", service);
   }
 
   public RestClient(@Nullable final String clientId) {
     this(clientId, "http://localhost:8443", Duration.ofSeconds(5));
+
     log.info("Created default(test) client.");
   }
 
@@ -119,33 +132,41 @@ public final class RestClient implements IRestClient {
      * Create request.
      */
     final WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpec = this
-      .webClient
-      .method(httpMethod);
+        .webClient
+        .method(httpMethod);
+
 
     final WebClient.RequestBodySpec request = requestBodySpec
-      //Url
-      .uri(apiEndpoint)
-      .acceptCharset(StandardCharsets.UTF_8);
+        //Url
+        .uri(apiEndpoint)
+        .acceptCharset(StandardCharsets.UTF_8);
 
     if (type != null) {
       request
-        .body(BodyInserters.fromValue(type));
+          .body(BodyInserters.fromValue(type));
     }
 
     return request.exchangeToMono(clientResponse -> {
-        /*
-         * Only  build object if ok.
-         */
-        if (clientResponse.statusCode().equals(HttpStatus.OK)) {
-          return clientResponse.bodyToMono(typeClass);
-        }
-        log.warn("Request error.");
-        return clientResponse.createError();
-      })
+          /*
+           * Only  build object if ok.
+           */
+          if (clientResponse.statusCode().equals(HttpStatus.OK)) {
+            //If client monitoring is active reset.
+            if (this.clientMonitoring != null) {
+              this.clientMonitoring.lastState(ClientState.ESTABLISHED);
+            }
+            return clientResponse.bodyToMono(typeClass);
+          }
+          //If client monitoring is active error.
+          if (this.clientMonitoring != null) {
+            this.clientMonitoring.lastState(ClientState.FAILED);
+          }
+          return clientResponse.createError();
+        })
 
-      /*
-       * Block thread until response.
-       */
-      .block();
+        /*
+         * Block thread until response.
+         */
+        .block();
   }
 }

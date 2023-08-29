@@ -2,6 +2,8 @@ package dev.dotspace.network.client;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
@@ -10,13 +12,16 @@ import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.runtime.IRuntime;
 import dev.dotspace.network.library.runtime.ImmutableRuntime;
 import dev.dotspace.network.library.runtime.RuntimeType;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 
 
 @Log4j2
+@Accessors(fluent=true)
 public final class Client implements IClient {
   /**
    * Runtime info.
@@ -28,6 +33,15 @@ public final class Client implements IClient {
   private final @NotNull Injector injector;
 
   /**
+   * Thread client is running on.
+   */
+  @Getter
+  private final @NotNull Thread thread;
+
+  @Getter(AccessLevel.PROTECTED)
+  private final @NotNull ClientMonitoring clientMonitoring;
+
+  /**
    * Only local .
    */
   private Client() {
@@ -35,7 +49,20 @@ public final class Client implements IClient {
     //Create injector.
     this.injector = Guice.createInjector(new ClientModule(this.runtime.runtimeId()), Library.module());
 
+    this.thread = Thread.currentThread();
     log.info("Instance running under id={}.", this.runtime.runtimeId());
+    this.clientMonitoring = this.injector.getInstance(ClientMonitoring.class);
+
+  }
+
+  /**
+   * Pass to {@link ClientMonitoring#handle(ClientState, ThrowableRunnable)}.
+   */
+  @Override
+  public @NotNull IClient handle(@Nullable ClientState clientState,
+                                 @Nullable ThrowableRunnable runnable) {
+    this.clientMonitoring.handle(clientState, runnable);
+    return this;
   }
 
   /**
@@ -75,9 +102,15 @@ public final class Client implements IClient {
     return this.injector.getInstance(requestClass);
   }
 
+
   //static
   private final static @NotNull Client client = new Client();
   //Check if client is enabled.
+  /**
+   * Check if client is enabled.
+   */
+  @Getter
+  @Accessors(fluent=true)
   private static boolean enabled = false;
 
   /**
@@ -103,25 +136,12 @@ public final class Client implements IClient {
     enabled = true;
     log.info("Enabled client.");
     log.info("Checking client status...");
+  }
 
-    //Time enabled.
-    final long start = System.currentTimeMillis();
-    //Send request to api
-    client
-        .statusRequest()
-        .getState()
-        //All fine.
-        .ifPresent(state ->
-            log.info("API endpoint available(Status={}). Took {}ms.", state.state(), (System.currentTimeMillis()-start)))
-        //If request is null.
-        .ifAbsent(() -> log.warn("Empty response from endpoint. Took {}ms.", (System.currentTimeMillis()-start)))
-        //If api request fails.
-        .ifExceptionally(throwable ->
-            log.error("Error while contacting endpoint({}). Took {}ms.",
-                Optional
-                    .ofNullable(throwable)
-                    .map(Throwable::getMessage)
-                    .orElse(null), (System.currentTimeMillis()-start)));
-    //End of request
+  /**
+   * Check if client is disconnected, only so if enabled and last connections failed.
+   */
+  public static boolean disconnected() {
+    return Client.enabled() && client.clientMonitoring.clientState() == ClientState.FAILED;
   }
 }

@@ -2,7 +2,10 @@ package dev.dotspace.network.library.message;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface IMessageComponent {
+/**
+ * Wrap for string messsage.
+ */
+public interface IStringContent {
   /**
    * String message to use directly as message.
    *

@@ -1,13 +1,13 @@
 package dev.dotspace.network.library.game.plugin;
 
 import cloud.commandframework.CommandManager;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.library.Library;
+import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.provider.Provider;
@@ -41,7 +41,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
   /**
    * Store values of state runnable.
    */
-  private final @NotNull Multimap<PluginState, Runnable> stateRunnableMultimap;
+  private final @NotNull StateMap<PluginState> stateMap;
   /**
    * State if system is done and configured
    */
@@ -64,7 +64,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
   private @Nullable Class<COMMAND> commandClass;
 
   protected AbstractGamePlugin() {
-    this.stateRunnableMultimap = HashMultimap.create();
+    this.stateMap = StateMap.createMap();
     this.moduleList = new ArrayList<>();
 
     //Add library module.
@@ -109,13 +109,13 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
 
   @Override
   public final @NotNull GamePlugin handle(@Nullable PluginState state,
-                                          @Nullable Runnable runnable) {
+                                          @Nullable ThrowableRunnable runnable) {
     //Null check
     Objects.requireNonNull(state);
     Objects.requireNonNull(runnable);
 
     //Add state and runnable
-    this.stateRunnableMultimap.put(state, runnable);
+    this.stateMap.append(state, runnable);
     return this;
   }
 
@@ -227,12 +227,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
   protected void executeRunnable(@Nullable final PluginState state) {
     //Null check
     Objects.requireNonNull(state);
-
-    this.stateRunnableMultimap
-        //Get list of states.
-        .get(state)
-        //Execute them.
-        .forEach(Runnable::run);
+    this.stateMap.executeRunnable(state);
   }
 
   /**

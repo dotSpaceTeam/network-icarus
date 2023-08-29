@@ -2,7 +2,7 @@ package dev.dotspace.network.node.message.web;
 
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
-import dev.dotspace.network.library.message.ImmutableComponentMessage;
+import dev.dotspace.network.library.message.ImmutableStringContent;
 import dev.dotspace.network.node.message.db.MessageDatabase;
 import dev.dotspace.network.node.message.text.ITextMessage;
 import dev.dotspace.network.node.message.text.parser.TextParser;
@@ -42,7 +42,7 @@ public final class MessageController extends AbstractRestController {
    */
   @PostMapping("/")
   @ResponseBody
-  public ResponseEntity<ITextMessage> getFormatted(@RequestBody @NotNull final ImmutableComponentMessage message,
+  public ResponseEntity<ITextMessage> getFormatted(@RequestBody @NotNull final ImmutableStringContent message,
                                                    @RequestParam(required = false) final String lang) throws InterruptedException {
     final Locale locale = this.localeFromTag(lang);
 
