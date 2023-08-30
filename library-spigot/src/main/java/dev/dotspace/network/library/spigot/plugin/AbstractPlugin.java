@@ -9,8 +9,6 @@ import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.LibraryModule;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,14 +25,6 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
    * Plugin to handle system, cant be extended because {@link JavaPlugin} needed by default.
    */
   private final @NotNull SpigotPlugin spigotPlugin = new SpigotPlugin();
-
-  /**
-   * Define if server is a subserver or standalone.
-   * True if value is set in spigot.yml to 'true' otherwise 'false'.
-   */
-  @Getter
-  @Setter
-  private boolean proxy;
 
   /**
    * Pass {@link SpigotPlugin#injector()}

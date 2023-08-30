@@ -1,6 +1,5 @@
 package dev.dotspace.network.node.message.db;
 
-import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageManipulator;
@@ -58,7 +57,7 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
                                           @Nullable final String key,
                                           @Nullable final String message,
                                           final boolean allowUpdate) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(locale);
       Objects.requireNonNull(key);
@@ -93,7 +92,7 @@ public final class MessageDatabase extends AbstractDatabase implements IMessageM
   @Override
   public @NotNull Response<IMessage> message(@Nullable Locale locale,
                                              @Nullable String key) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(locale);
       Objects.requireNonNull(key);

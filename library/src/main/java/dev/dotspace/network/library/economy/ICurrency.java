@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface ICurrency {
-
   /**
    * Returns the symbol of the currency. It can be a symbol, word or abbreviation.
    *

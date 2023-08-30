@@ -1,8 +1,11 @@
 package dev.dotspace.network.node.position.db;
 
-import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.library.position.*;
+import dev.dotspace.network.library.position.IPosition;
+import dev.dotspace.network.library.position.IPositionManipulator;
+import dev.dotspace.network.library.position.IViewPosition;
+import dev.dotspace.network.library.position.ImmutablePosition;
+import dev.dotspace.network.library.position.ImmutableViewPosition;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+
 
 @Component("positionDatabase")
 @Log4j2
@@ -36,7 +40,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
                                                   long x,
                                                   long y,
                                                   long z) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(key);
 
@@ -49,7 +53,7 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    */
   @Override
   public @NotNull Response<IPosition> getPosition(@Nullable String key) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(key);
 
@@ -59,12 +63,12 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
 
   @Override
   public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
-                                                                     long x,
-                                                                     long y,
-                                                                     long z,
-                                                                     long yaw,
-                                                                     long pitch) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+                                                          long x,
+                                                          long y,
+                                                          long z,
+                                                          long yaw,
+                                                          long pitch) {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(key);
 
@@ -77,15 +81,15 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    */
   @Override
   public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
-                                                                     long yaw,
-                                                                     long pitch) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+                                                          long yaw,
+                                                          long pitch) {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(key);
 
       final PositionElement positionElement = this.positionRepository
-        .findByKey(key)
-        .orElseThrow(this.failOptional("No key='%s' present, can't find position.".formatted(key)));
+          .findByKey(key)
+          .orElseThrow(this.failOptional("No key='%s' present, can't find position.".formatted(key)));
 
       return ImmutableViewPosition.of(this.createViewPosition(positionElement, yaw, pitch));
     });
@@ -96,12 +100,12 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
    */
   @Override
   public @NotNull Response<IViewPosition> getViewPosition(@Nullable String key) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(key);
 
       final PositionElement positionElement = this.positionRepository.findByKey(key)
-        .orElseThrow(this.failOptional("No key='%s' present, can't find base position.".formatted(key)));
+          .orElseThrow(this.failOptional("No key='%s' present, can't find base position.".formatted(key)));
 
 
       return ImmutableViewPosition.of(this.viewPositionRepository.findByPosition(positionElement).orElse(null));
@@ -132,8 +136,8 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
                                                           long yaw,
                                                           long pitch) {
     @Nullable final ViewPositionElement viewPositionElement = this.viewPositionRepository
-      .findByPosition(positionElement)
-      .orElse(null);
+        .findByPosition(positionElement)
+        .orElse(null);
 
     /*
      * Updated existent.

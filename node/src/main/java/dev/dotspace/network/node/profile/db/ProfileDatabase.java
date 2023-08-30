@@ -1,9 +1,12 @@
 package dev.dotspace.network.node.profile.db;
 
-import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.library.profile.*;
+import dev.dotspace.network.library.profile.IProfile;
+import dev.dotspace.network.library.profile.IProfileAttribute;
+import dev.dotspace.network.library.profile.IProfileManipulator;
+import dev.dotspace.network.library.profile.ImmutableProfile;
+import dev.dotspace.network.library.profile.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Objects;
+
 
 @Component("profileDatabase")
 @Log4j2
@@ -35,7 +39,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
   @Override
   public @NotNull Response<IProfile> createProfile(@Nullable String uniqueId,
                                                    @Nullable ProfileType profileType) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null checks
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(profileType);
@@ -57,13 +61,13 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    */
   @Override
   public @NotNull Response<IProfile> getProfile(@Nullable String uniqueId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null checks
       Objects.requireNonNull(uniqueId);
 
       return this.profileRepository.findByUniqueId(uniqueId)
-        .map(ImmutableProfile::of)
-        .orElse(null);
+          .map(ImmutableProfile::of)
+          .orElse(null);
     });
   }
 
@@ -72,23 +76,23 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    */
   @Override
   public @NotNull Response<IProfileAttribute> setAttribute(@Nullable String uniqueId,
-                                                                      @Nullable String key,
-                                                                      @Nullable String value) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+                                                           @Nullable String key,
+                                                           @Nullable String value) {
+    return this.responseService().response(() -> {
       //Null checks
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(key);
 
       final ProfileEntity profileEntity = this.profileRepository
-        .findByUniqueId(uniqueId)
-        .orElseThrow(this.failOptional("No profile with uniqueId='%s' found to set attribute.".formatted(uniqueId)));
+          .findByUniqueId(uniqueId)
+          .orElseThrow(this.failOptional("No profile with uniqueId='%s' found to set attribute.".formatted(uniqueId)));
 
       /*
        * Get attribute else null.
        */
       final ProfileAttributeEntity profileAttributeEntity = this.profileAttributeRepository
-        .findByProfileAndKey(profileEntity, key)
-        .orElse(null);
+          .findByProfileAndKey(profileEntity, key)
+          .orElse(null);
 
 
       if (profileAttributeEntity == null && value == null) {
@@ -116,7 +120,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
        * Otherwise if attribute is not present, insert.
        */
       return ImmutableProfileAttribute
-        .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
+          .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
     });
   }
 
@@ -125,7 +129,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    */
   @Override
   public @NotNull Response<IProfileAttribute> removeAttribute(@Nullable String uniqueId,
-                                                                         @Nullable String key) {
+                                                              @Nullable String key) {
     return this.setAttribute(uniqueId, key, null);
   }
 
@@ -134,7 +138,7 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    */
   @Override
   public @NotNull Response<List<IProfileAttribute>> getAttributes(@Nullable String uniqueId) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(uniqueId);
 
@@ -142,18 +146,18 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
        * Search in database.
        */
       return this.profileRepository.findByUniqueId(uniqueId)
-        /*
-         * Map profile to attributes.
-         */
-        .map(profileEntity -> this.profileAttributeRepository.findByProfile(profileEntity))
-        /*
-         * Map attribute entities to list of IProfileAttribute.
-         */
-        .map(entities -> entities.stream().map(ImmutableProfileAttribute::of).toList())
-        /*
-         * Else throw error.
-         */
-        .orElseThrow();
+          /*
+           * Map profile to attributes.
+           */
+          .map(profileEntity -> this.profileAttributeRepository.findByProfile(profileEntity))
+          /*
+           * Map attribute entities to list of IProfileAttribute.
+           */
+          .map(entities -> entities.stream().map(ImmutableProfileAttribute::of).toList())
+          /*
+           * Else throw error.
+           */
+          .orElseThrow();
     });
   }
 
@@ -162,8 +166,8 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
    */
   @Override
   public @NotNull Response<IProfileAttribute> getAttribute(@Nullable String uniqueId,
-                                                                      @Nullable String key) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+                                                           @Nullable String key) {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(key);
@@ -172,10 +176,10 @@ public final class ProfileDatabase extends AbstractDatabase implements IProfileM
        * Search in database.
        */
       return this.profileRepository
-        .findByUniqueId(uniqueId)
-        .flatMap(profileEntity -> this.profileAttributeRepository.findByProfileAndKey(profileEntity, key))
-        .map(ImmutableProfileAttribute::of)
-        .orElseThrow();
+          .findByUniqueId(uniqueId)
+          .flatMap(profileEntity -> this.profileAttributeRepository.findByProfileAndKey(profileEntity, key))
+          .map(ImmutableProfileAttribute::of)
+          .orElseThrow();
     });
   }
 }

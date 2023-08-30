@@ -1,6 +1,5 @@
 package dev.dotspace.network.node.runtime.db;
 
-import dev.dotspace.common.SpaceLibrary;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ public final class RestRequestDatabase extends AbstractDatabase {
                                                            final boolean success,
                                                            @Nullable final String note,
                                                            @Nullable final Date timestamp) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(url);
       Objects.requireNonNull(client);

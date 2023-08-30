@@ -6,6 +6,9 @@ import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,7 +21,15 @@ import java.util.Locale;
 
 
 @Log4j2
+@Accessors(fluent=true)
 public final class IcarusPlugin extends AbstractPlugin {
+  /**
+   * Define if server is a subserver or standalone.
+   * True if value is set in spigot.yml to 'true' otherwise 'false'.
+   */
+  @Getter
+  @Setter
+  private boolean proxy;
 
   @Override
   public void configure() {

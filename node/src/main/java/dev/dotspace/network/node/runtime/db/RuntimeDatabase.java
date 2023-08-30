@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.runtime.db;
 
-import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.runtime.IRuntime;
 import dev.dotspace.network.library.runtime.IRuntimeManipulator;
 import dev.dotspace.network.library.runtime.ImmutableRuntime;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+
 @Component("runtimeDatabase")
 @Log4j2
 public final class RuntimeDatabase extends AbstractDatabase implements IRuntimeManipulator {
@@ -25,9 +25,9 @@ public final class RuntimeDatabase extends AbstractDatabase implements IRuntimeM
   private RuntimeRepository runtimeRepository;
 
   @Override
-  public @NotNull CompletableResponse<IRuntime> createRuntime(@Nullable String id,
-                                                              @Nullable RuntimeType runtimeType) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+  public @NotNull Response<IRuntime> createRuntime(@Nullable String id,
+                                                   @Nullable RuntimeType runtimeType) {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(id);
       Objects.requireNonNull(runtimeType);
@@ -48,15 +48,15 @@ public final class RuntimeDatabase extends AbstractDatabase implements IRuntimeM
   }
 
   @Override
-  public @NotNull CompletableResponse<IRuntime> getRuntime(@Nullable String id) {
-    return SpaceLibrary.completeResponseAsync(() -> {
+  public @NotNull Response<IRuntime> getRuntime(@Nullable String id) {
+    return this.responseService().response(() -> {
       //Null check
       Objects.requireNonNull(id);
 
       return this.runtimeRepository
-        .findByRuntimeId(id)
-        .map(ImmutableRuntime::of)
-        .orElse(null);
+          .findByRuntimeId(id)
+          .map(ImmutableRuntime::of)
+          .orElse(null);
     });
   }
 }
