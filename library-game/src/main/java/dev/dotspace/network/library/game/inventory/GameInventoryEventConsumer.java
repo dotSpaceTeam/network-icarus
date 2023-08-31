@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <EVENT> generic type of closer.
  */
-public interface GameInventoryCloseConsumer<EVENT> {
+public interface GameInventoryEventConsumer<EVENT> {
   /**
    * Accept close of consumer
    *

@@ -4,26 +4,52 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> {
+public interface GameInteractInventory<INVENTORY, ITEM, PLAYER> {
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> setItem(@Nullable final ITEM item,
-                                                                                            final int slot,
-                                                                                            @Nullable final GameInventoryClickConsumer<ITEM, CLICK_EVENT> consumer);
+  @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable final ITEM item,
+                                                                          final int slot,
+                                                                          @Nullable final GameInventoryClickConsumer<ITEM,
+                                                                              EVENT> consumer);
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> setItem(@Nullable final ITEM item,
-                                                                                            final int slot);
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable final ITEM item,
+                                                                  final int slot);
+  
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> removeItem(final int slot);
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> appendItem(@Nullable final ITEM item);
+  /**
+   * Open inventory for player.
+   *
+   * @param player to open inventory for.
+   * @return interface instance.
+   * @throws NullPointerException if player is null.
+   */
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> open(@Nullable final PLAYER player);
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> removeItem(final int slot);
+  /**
+   * Close inventory for player.
+   *
+   * @param player to close inventory for.
+   * @return interface instance.
+   * @throws NullPointerException if player is null.
+   */
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> close(@Nullable final PLAYER player);
+
+  /**
+   * Close inventory to all players.
+   *
+   * @return interface instance.
+   */
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> closeAll();
+
+  @NotNull INVENTORY inventory();
 
   /*
    * Handles
    */
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> handleClick(final int slot,
-                                                                                                @Nullable final GameInventoryClickConsumer<ITEM, CLICK_EVENT> consumer);
+  @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handleClick(final int slot,
+                                                                              @Nullable final GameInventoryClickConsumer<ITEM, EVENT> consumer);
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> handleOpen(@Nullable final GameInventoryOpenConsumer<INVENTORY, PLAYER> consumer);
+  @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handle(@Nullable final Class<EVENT> eventClass,
+                                                                         @Nullable final GameInventoryEventConsumer<EVENT> consumer);
 
-  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, CLICK_EVENT, CLOSE_EVENT> handleClose(@Nullable final GameInventoryCloseConsumer<CLOSE_EVENT> consumer);
 }

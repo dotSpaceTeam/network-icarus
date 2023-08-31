@@ -11,6 +11,8 @@ repositories {
 
 dependencies {
   implementation project(":library")
+  implementation project(":client")
+
   implementation libs.cloud.paper
   testImplementation libs.junit.jupiter.api
   testRuntimeOnly libs.junit.jupiter.engine
