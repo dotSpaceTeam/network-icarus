@@ -2,7 +2,11 @@ package dev.dotspace.network.node.web;
 
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
+import dev.dotspace.common.response.ResponseService;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -13,8 +17,17 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Objects;
 
+
 @ControllerAdvice
+@Accessors(fluent=true)
 public abstract class AbstractRestController {
+  /**
+   * Async service for rest service.
+   */
+  @Autowired
+  @Getter
+  private ResponseService responseService;
+
   /**
    * Create response.
    *

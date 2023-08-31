@@ -1,0 +1,31 @@
+package dev.dotspace.network.node.message_old.text;
+
+import dev.dotspace.network.node.message_old.text.parser.TextParser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class manint {
+  @Autowired
+  private TextParser textParser;
+
+  public static void main(String[] args) throws Exception {
+    var a = SpringApplication.run(manint.class, args);
+
+    TextParser parser = a.getBean(TextParser.class);
+    final ITextMessage iTextMessage = parser.parse("{{ PLACEHOLDER:SECOND:THIRD }} test");
+
+    iTextMessage
+      .placeholders()
+      .forEach(placeholder -> {
+        System.out.println(placeholder);
+        System.out.println(placeholder.code());
+      });
+
+    System.out.println(iTextMessage.formatted());
+
+    System.out.println(iTextMessage.replace("SECOND", "TestRep").formatted());
+  }
+
+}
