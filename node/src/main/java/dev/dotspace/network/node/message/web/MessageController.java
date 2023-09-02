@@ -4,8 +4,11 @@ import dev.dotspace.network.library.message.v2.IMessage;
 import dev.dotspace.network.library.message.v2.ImmutableMessage;
 import dev.dotspace.network.library.message.v2.content.IPersistentMessage;
 import dev.dotspace.network.library.message.v2.content.ImmutablePersistentMessage;
+import dev.dotspace.network.library.message.v2.parser.MessageParser;
+import dev.dotspace.network.library.message.v2.parser.TextElement;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +41,16 @@ public final class MessageController extends AbstractRestController {
   @Autowired
   private PersistentMessageDatabase messageDatabase;
 
+  @Autowired
+  private MessageParser messageParser;
+
+  @PostConstruct
+  public void init() {
+    this.messageParser
+        .handle(TextElement.PLACEHOLDER, (textElement, locale, text, value, option) -> {
+
+    });
+  }
 
   /**
    * Get a formatted message.
@@ -46,6 +59,11 @@ public final class MessageController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IMessage> postMessage(@RequestBody @NotNull final ImmutableMessage message,
                                               @RequestParam(required=false) final String lang) throws InterruptedException {
+    //Get message or default
+    final Locale locale = this.localeFromTag(lang);
+
+    System.out.println(this.messageParser.parse(message.message(), locale));
+
     return this.validateOkResponse(this.responseService().response(() -> message), "NullMessage");
   }
 

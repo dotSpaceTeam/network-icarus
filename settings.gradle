@@ -8,4 +8,5 @@ include 'client'
 include 'plugin-spigot'
 include 'library-velocity'
 include 'plugin-velocity'
+include 'file-server'
 

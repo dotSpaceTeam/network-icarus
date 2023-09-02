@@ -2,6 +2,7 @@ package dev.dotspace.network.node;
 
 import dev.dotspace.common.response.ResponseService;
 import dev.dotspace.network.library.Library;
+import dev.dotspace.network.library.message.v2.parser.MessageParser;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
@@ -62,6 +63,11 @@ public class SpringConfig {
   @Bean
   public ResponseService responseService() {
     return Library.responseService();
+  }
+
+  @Bean
+  public MessageParser messageParser() {
+    return new MessageParser();
   }
 
 }
