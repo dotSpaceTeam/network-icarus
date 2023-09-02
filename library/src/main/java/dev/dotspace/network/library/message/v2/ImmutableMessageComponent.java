@@ -4,27 +4,8 @@ import dev.dotspace.network.library.message.v2.placeholder.PlaceholderCollection
 import org.jetbrains.annotations.NotNull;
 
 
-public record ImmutableMessageComponent(@NotNull String plain,
-                                        @NotNull String formatted,
+public record ImmutableMessageComponent(@NotNull String message,
                                         @NotNull PlaceholderCollection placeholderCollection
 ) implements IMessageComponent {
-  /**
-   * Get message without parsing.
-   *
-   * @return plain message.
-   */
-  @Override
-  public @NotNull IMessage plainMessage() {
-    return ImmutableMessage.of(this.plain);
-  }
 
-  /**
-   * Get result of parse.
-   *
-   * @return message.
-   */
-  @Override
-  public @NotNull IMessage formattedMessage() {
-    return ImmutableMessage.of(this.formatted);
-  }
 }

@@ -158,7 +158,7 @@ public final class MessageParser implements IMessageParser {
 
         this.message = editiableObject.type() == null ? "" : editiableObject.type();
       }
-      return new ImmutableMessageComponent(this.message, this.message, this.placeholderCollection);
+      return new ImmutableMessageComponent(this.message, this.placeholderCollection);
     }
 
     private void handleKey(@NotNull final String element,
