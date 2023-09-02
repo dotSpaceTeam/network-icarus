@@ -47,9 +47,9 @@ public final class MessageController extends AbstractRestController {
   @PostConstruct
   public void init() {
     this.messageParser
-        .handle(TextElement.PLACEHOLDER, (textElement, locale, text, value, option) -> {
+        .handle(TextElement.KEY, (tag, textElement, value, option, locale, text, placeholderCollection) -> {
 
-    });
+        });
   }
 
   /**

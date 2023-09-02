@@ -3,8 +3,8 @@ package dev.dotspace.network.library.message.v2.parser;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.dotspace.network.library.common.EditiableObject;
-import dev.dotspace.network.library.message.v2.IDetailMessage;
-import dev.dotspace.network.library.message.v2.ImmutableDetailMessage;
+import dev.dotspace.network.library.message.v2.IMessageComponent;
+import dev.dotspace.network.library.message.v2.ImmutableMessageComponent;
 import dev.dotspace.network.library.message.v2.placeholder.PlaceholderCollection;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -31,13 +31,13 @@ public final class MessageParser implements IMessageParser {
    * See {@link IMessageParser#parse(String)}.
    */
   @Override
-  public @NotNull IDetailMessage parse(@Nullable String message) {
+  public @NotNull IMessageComponent parse(@Nullable String message) {
     return this.parse(message, null);
   }
 
   @Override
-  public @NotNull IDetailMessage parse(@Nullable String message,
-                                       @Nullable Locale locale) {
+  public @NotNull IMessageComponent parse(@Nullable String message,
+                                          @Nullable Locale locale) {
     //Null check
     Objects.requireNonNull(message);
     log.info("Parsing '{}'...", message);
@@ -119,9 +119,9 @@ public final class MessageParser implements IMessageParser {
     /**
      * Run algorithm for message.
      *
-     * @return parsed {@link IDetailMessage}.
+     * @return parsed {@link IMessageComponent}.
      */
-    public @NotNull IDetailMessage run() {
+    public @NotNull IMessageComponent run() {
       final Matcher matcher = ELEMENT_PATTERN.matcher(this.message);
       while (matcher.find()) {
         final int groupCount = matcher.groupCount();
@@ -158,7 +158,7 @@ public final class MessageParser implements IMessageParser {
 
         this.message = editiableObject.type() == null ? "" : editiableObject.type();
       }
-      return new ImmutableDetailMessage(this.message, this.message, this.placeholderCollection);
+      return new ImmutableMessageComponent(this.message, this.message, this.placeholderCollection);
     }
 
     private void handleKey(@NotNull final String element,

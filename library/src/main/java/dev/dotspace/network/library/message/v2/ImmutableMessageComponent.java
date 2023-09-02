@@ -4,10 +4,10 @@ import dev.dotspace.network.library.message.v2.placeholder.PlaceholderCollection
 import org.jetbrains.annotations.NotNull;
 
 
-public record ImmutableDetailMessage(@NotNull String plain,
-                                     @NotNull String formatted,
-                                     @NotNull PlaceholderCollection placeholderCollection
-) implements IDetailMessage {
+public record ImmutableMessageComponent(@NotNull String plain,
+                                        @NotNull String formatted,
+                                        @NotNull PlaceholderCollection placeholderCollection
+) implements IMessageComponent {
   /**
    * Get message without parsing.
    *

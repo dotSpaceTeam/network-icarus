@@ -9,4 +9,5 @@ include 'plugin-spigot'
 include 'library-velocity'
 include 'plugin-velocity'
 include 'file-server'
+include 'plugin-minstom'
 

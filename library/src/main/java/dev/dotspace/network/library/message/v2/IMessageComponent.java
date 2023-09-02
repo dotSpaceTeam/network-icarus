@@ -4,7 +4,7 @@ import dev.dotspace.network.library.message.v2.placeholder.PlaceholderCollection
 import org.jetbrains.annotations.NotNull;
 
 
-public interface IDetailMessage {
+public interface IMessageComponent {
 
   @NotNull String plain();
 
