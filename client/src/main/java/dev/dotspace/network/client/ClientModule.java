@@ -2,6 +2,9 @@ package dev.dotspace.network.client;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
+import com.google.inject.Singleton;
+import dev.dotspace.network.client.message.IMessageRequest;
+import dev.dotspace.network.client.message.MessageRequest;
 import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.position.PositionRequest;
@@ -59,6 +62,10 @@ final class ClientModule extends AbstractModule {
     this.bind(IStatusRequest.class)
         .to(StatusRequest.class)
         .in(Scopes.SINGLETON);
+
+    this.bind(IMessageRequest.class)
+        .to(MessageRequest.class)
+        .in(Singleton.class);
 
     //Configure end.
     log.info("Client(ClientModule) configured.");

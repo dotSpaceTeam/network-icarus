@@ -146,6 +146,7 @@ public final class RestClient implements IRestClient {
           .body(BodyInserters.fromValue(type));
     }
 
+
     return request.exchangeToMono(clientResponse -> {
           /*
            * Only  build object if ok.

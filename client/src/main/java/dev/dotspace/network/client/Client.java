@@ -3,6 +3,7 @@ package dev.dotspace.network.client;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
@@ -87,6 +88,15 @@ public final class Client implements IClient {
   @Override
   public @NotNull IPositionRequest positionRequest() {
     return this.request(IPositionRequest.class);
+  }
+
+
+  /**
+   * See {@link IClient#messageRequest()}
+   */
+  @Override
+  public @NotNull IMessageRequest messageRequest() {
+    return this.request(IMessageRequest.class);
   }
 
   /**

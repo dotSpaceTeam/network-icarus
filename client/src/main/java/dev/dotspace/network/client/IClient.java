@@ -1,6 +1,7 @@
 package dev.dotspace.network.client;
 
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
@@ -41,6 +42,13 @@ public interface IClient extends StateHandler<ClientState> {
    * @return instance of {@link IPositionRequest}.
    */
   @NotNull IPositionRequest positionRequest();
+
+  /**
+   * Get request instance of message.
+   *
+   * @return inst ance of {@link IMessageRequest}.
+   */
+  @NotNull IMessageRequest messageRequest();
 
   /**
    * Get request instance of client.
