@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.message.db;
 
 
-import dev.dotspace.network.node.message_old.db.MessageEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -10,7 +9,7 @@ import java.util.Optional;
 
 
 /**
- * Class to manipulate {@link MessageEntity}.
+ * Class to manipulate {@link PersistentMessageEntity}.
  */
 public interface PersistentMessageRepository extends JpaRepository<PersistentMessageEntity, Long> {
   /**

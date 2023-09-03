@@ -1,9 +1,9 @@
 package dev.dotspace.network.node.message.db;
 
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.library.message.v2.content.IPersistentMessage;
-import dev.dotspace.network.library.message.v2.content.IPersistentMessageManipulator;
-import dev.dotspace.network.library.message.v2.content.ImmutablePersistentMessage;
+import dev.dotspace.network.library.message.content.IPersistentMessage;
+import dev.dotspace.network.library.message.content.IPersistentMessageManipulator;
+import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;

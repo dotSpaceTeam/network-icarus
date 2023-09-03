@@ -1,9 +1,9 @@
 package dev.dotspace.network.node;
 
 import dev.dotspace.network.library.Library;
-import dev.dotspace.network.library.message.v2.IMessageComponent;
-import dev.dotspace.network.library.message.v2.ImmutableMessageComponent;
-import dev.dotspace.network.library.message.v2.placeholder.PlaceholderCollection;
+import dev.dotspace.network.library.message.IMessageComponent;
+import dev.dotspace.network.library.message.ImmutableMessageComponent;
+import dev.dotspace.network.library.message.placeholder.PlaceholderCollection;
 
 
 public class ma {

@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.message.db;
 
-import dev.dotspace.network.library.message.old.IMessage;
-import dev.dotspace.network.library.message.v2.content.IPersistentMessage;
+import dev.dotspace.network.library.message.content.IPersistentMessage;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -64,7 +63,7 @@ public final class PersistentMessageEntity implements IPersistentMessage {
   }
 
   /**
-   * See {@link IMessage#key()}.
+   * See {@link IPersistentMessage#key()}.
    */
   @Override
   public @NotNull String key() {
@@ -72,7 +71,7 @@ public final class PersistentMessageEntity implements IPersistentMessage {
   }
 
   /**
-   * See {@link IMessage#locale()}.
+   * See {@link IPersistentMessage#locale()}.
    */
   @Override
   public @NotNull Locale locale() {

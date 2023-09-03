@@ -1,11 +1,10 @@
 package dev.dotspace.network.node.message.web;
 
-import dev.dotspace.network.library.message.v2.IMessage;
-import dev.dotspace.network.library.message.v2.ImmutableMessage;
-import dev.dotspace.network.library.message.v2.content.IPersistentMessage;
-import dev.dotspace.network.library.message.v2.content.ImmutablePersistentMessage;
-import dev.dotspace.network.library.message.v2.parser.MessageParser;
-import dev.dotspace.network.library.message.v2.parser.TextElement;
+import dev.dotspace.network.library.message.IMessage;
+import dev.dotspace.network.library.message.ImmutableMessage;
+import dev.dotspace.network.library.message.content.IPersistentMessage;
+import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
+import dev.dotspace.network.library.message.parser.MessageParser;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import jakarta.annotation.PostConstruct;
@@ -24,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -41,15 +43,9 @@ public final class MessageController extends AbstractRestController {
   @Autowired
   private PersistentMessageDatabase messageDatabase;
 
-  @Autowired
-  private MessageParser messageParser;
-
   @PostConstruct
   public void init() {
-    this.messageParser
-        .handle(TextElement.KEY, (tag, textElement, value, option, locale, text, placeholderCollection) -> {
 
-        });
   }
 
   /**
@@ -62,9 +58,50 @@ public final class MessageController extends AbstractRestController {
     //Get message or default
     final Locale locale = this.localeFromTag(lang);
 
-    System.out.println(this.messageParser.parse(message.message(), locale));
+    final MessageParser messageParser = new MessageParser();
+    //Reference to change in further
+    final AtomicReference<String> reference = new AtomicReference<>(message.message());
+    //List of already replaced messages -> to avoid loops.
+    final List<String> presentKeys = new ArrayList<>();
 
-    return this.validateOkResponse(this.responseService().response(() -> message), "NullMessage");
+    //Search for keys.
+    messageParser
+        .handle("KEY", matcherContext -> {
+          //Return if context is empty.
+          if (matcherContext == null) {
+            return;
+          }
+
+          //Get key of tag.
+          final String key = matcherContext.valueField();
+
+          //Return if already replaced -> avoid death loops.
+          if (presentKeys.contains(key)) {
+            return;
+          }
+
+          presentKeys.add(key);
+
+          //Get message of key.
+          final IPersistentMessage persistentMessage = this.messageDatabase
+              .message(locale, key)
+              .get();
+
+          //Get message else replace.
+          final String replaceText = persistentMessage != null ? persistentMessage.message() :
+              "@"+matcherContext.valueField()+"@";
+
+          //Update reference of object.
+          reference.set(matcherContext.replace(reference.get(), replaceText));
+          //Reparse replaced message. to find further keys.
+          messageParser.parse(reference.get());
+        });
+
+    //Run first loop.
+    messageParser.parse(message.message());
+
+    //Response to client.
+    return this.validateOkResponse(this.responseService().response(() -> ImmutableMessage.of(reference.get())), "NullMessage");
   }
 
   /**

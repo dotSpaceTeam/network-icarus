@@ -1,7 +1,7 @@
 package dev.dotspace.network.library;
 
 import dev.dotspace.common.response.ResponseService;
-import dev.dotspace.network.library.message.v2.MessageService;
+import dev.dotspace.network.library.message.MessageService;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
