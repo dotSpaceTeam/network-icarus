@@ -1,7 +1,6 @@
 package dev.dotspace.network.library;
 
 import dev.dotspace.common.response.ResponseService;
-import dev.dotspace.network.library.message.MessageService;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -19,13 +18,6 @@ public final class Library {
   @Getter
   @Accessors(fluent=true)
   private final static @NotNull ResponseService responseService;
-  /**
-   * Service to handle message package.
-   */
-  @Getter
-  @Accessors(fluent=true)
-  private final static @NotNull MessageService messageService;
-
   /**
    * Library module.
    */
@@ -62,7 +54,5 @@ public final class Library {
 
         //Finalize build
         .build();
-
-    messageService = new MessageService();
   }
 }

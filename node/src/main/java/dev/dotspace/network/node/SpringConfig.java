@@ -2,7 +2,6 @@ package dev.dotspace.network.node;
 
 import dev.dotspace.common.response.ResponseService;
 import dev.dotspace.network.library.Library;
-import dev.dotspace.network.library.message.MessageService;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Bean;
@@ -65,11 +64,4 @@ public class SpringConfig {
     return Library.responseService();
   }
 
-  /**
-   * Service to handle messages.
-   */
-  @Bean
-  public MessageService messageService() {
-    return Library.messageService();
-  }
 }
