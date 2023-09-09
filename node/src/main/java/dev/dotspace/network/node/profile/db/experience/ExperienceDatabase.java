@@ -35,7 +35,6 @@ public final class ExperienceDatabase extends AbstractDatabase {
   public @NotNull IExperience addExperience(@Nullable String uniqueId,
                                             @Nullable String experienceName,
                                             long value) throws ElementException {
-
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(experienceName);
@@ -76,7 +75,6 @@ public final class ExperienceDatabase extends AbstractDatabase {
         .findByProfileAndName(profileEntity, experienceName)
         .orElseThrow(this.failOptional("No experience found.")));
   }
-
 
   public @NotNull List<IExperience> getExperienceList(@Nullable String uniqueId) throws ElementException {
     final ProfileEntity profileEntity = this.profileRepository

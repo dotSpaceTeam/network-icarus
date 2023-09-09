@@ -9,25 +9,26 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
 @Entity
-@Table(name = "Profile_Attributes",
-  uniqueConstraints = {@UniqueConstraint(columnNames = {"Profile", "Key"})})
+@Table(name="ProfileAttributes",
+    uniqueConstraints={@UniqueConstraint(columnNames={"Profile", "Key"})})
 @NoArgsConstructor
-@Accessors(fluent = true)
+@Accessors(fluent=true)
 public final class ProfileAttributeEntity implements IProfileAttribute {
   /**
    * Identity of element
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
   @Getter
   private Long id;
 
   @ManyToOne
-  @JoinColumn(name = "Profile", nullable = false)
+  @JoinColumn(name="Profile", nullable=false)
   private ProfileEntity profile;
 
-  @Column(nullable = false)
+  @Column(nullable=false)
   @Getter
   private String key;
 

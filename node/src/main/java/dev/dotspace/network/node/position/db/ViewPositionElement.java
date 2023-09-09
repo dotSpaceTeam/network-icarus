@@ -8,29 +8,30 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
+
 @Entity
-@Table(name = "Position_View")
+@Table(name="PositionView")
 @NoArgsConstructor
-@Accessors(fluent = true)
+@Accessors(fluent=true)
 public final class ViewPositionElement implements IViewPosition {
   /**
    * Identity of element
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
   @Getter
   private Long id;
 
   @OneToOne
-  @JoinColumn(name = "Position", nullable = false, unique = true)
+  @JoinColumn(name="Position", nullable=false, unique=true)
   private PositionElement position;
 
-  @Column(name = "Yaw", nullable = false)
+  @Column(name="Yaw", nullable=false)
   @Getter
   @Setter
   private long yaw;
 
-  @Column(name = "Pitch", nullable = false)
+  @Column(name="Pitch", nullable=false)
   @Getter
   @Setter
   private long pitch;
