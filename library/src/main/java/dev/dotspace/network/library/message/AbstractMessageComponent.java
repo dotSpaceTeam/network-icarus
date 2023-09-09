@@ -2,7 +2,6 @@ package dev.dotspace.network.library.message;
 
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.network.library.message.parser.MessageParser;
-import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,27 +10,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 
 @Accessors(fluent=true)
-public abstract class AbstractMessageComponent implements IMessageComponent {
+public abstract class AbstractMessageComponent<COMPONENT> implements IMessageComponent<COMPONENT> {
 
-  @Getter
-  private @NotNull String message;
-
+  private final @NotNull Supplier<String> supplier;
   private final @NotNull Map<String, ThrowableSupplier<?>> placeholderMap;
 
-  public AbstractMessageComponent(@Nullable final String message) {
-    //Null check
-    Objects.requireNonNull(message);
-
-    this.message = message;
+  public AbstractMessageComponent(@NotNull final Supplier<String> supplier) {
+    this.supplier = supplier;
     this.placeholderMap = new HashMap<>();
   }
 
   @Override
-  public @NotNull <REPLACE_TYPE> IMessageComponent replace(@Nullable String replaceText,
-                                                           @Nullable REPLACE_TYPE content) {
+  public @NotNull <REPLACE_TYPE> IMessageComponent<COMPONENT> replace(@Nullable String replaceText,
+                                                                      @Nullable REPLACE_TYPE content) {
     //Null check
     Objects.requireNonNull(replaceText);
     Objects.requireNonNull(content);
@@ -42,8 +38,8 @@ public abstract class AbstractMessageComponent implements IMessageComponent {
   }
 
   @Override
-  public @NotNull <REPLACE_TYPE> IMessageComponent replace(@Nullable String replaceText,
-                                                           @Nullable ThrowableSupplier<REPLACE_TYPE> content) {
+  public @NotNull <REPLACE_TYPE> IMessageComponent<COMPONENT> replace(@Nullable String replaceText,
+                                                                      @Nullable ThrowableSupplier<REPLACE_TYPE> content) {
     //Null check
     Objects.requireNonNull(replaceText);
     Objects.requireNonNull(content);
@@ -53,16 +49,8 @@ public abstract class AbstractMessageComponent implements IMessageComponent {
     return this;
   }
 
-  /**
-   * See {@link IMessageComponent#convert()}
-   */
-  @Override
-  public @NotNull String convert() {
-    this.update();
-    return this.message;
-  }
-
-  protected void update() {
+  protected @NotNull String process() {
+    final AtomicReference<String> reference = new AtomicReference<>(this.supplier.get());
     //Create parser.
     final MessageParser messageParser = new MessageParser();
 
@@ -88,11 +76,13 @@ public abstract class AbstractMessageComponent implements IMessageComponent {
           .orElse("%"+field+"%");
 
       //Update message.
-      this.message = context.replace(this.message, replace);
+      reference.set(context.replace(reference.get(), replace));
     });
 
     //Parse message
-    messageParser.parse(this.message);
+    messageParser.parse(reference.get());
+
+    return reference.get();
   }
 
 }

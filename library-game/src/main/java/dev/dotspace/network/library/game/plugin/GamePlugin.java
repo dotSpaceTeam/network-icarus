@@ -3,10 +3,13 @@ package dev.dotspace.network.library.game.plugin;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.provider.Provider;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.Optional;
 
 
@@ -51,4 +54,9 @@ public interface GamePlugin {
    * @throws IllegalStateException if plugin already configured.
    */
   @NotNull <MODULE extends AbstractModule> GamePlugin module(@Nullable final MODULE module);
+
+  @NotNull IMessageComponent<Component> message(@Nullable final String message);
+
+  @NotNull IMessageComponent<Component> messageOfKey(@Nullable final Locale locale,
+                                                     @Nullable final String key);
 }

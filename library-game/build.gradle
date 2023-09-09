@@ -14,6 +14,7 @@ dependencies {
   implementation project(":client")
 
   implementation libs.cloud.paper
+  implementation libs.kyori.minimessage
   testImplementation libs.junit.jupiter.api
   testRuntimeOnly libs.junit.jupiter.engine
 }

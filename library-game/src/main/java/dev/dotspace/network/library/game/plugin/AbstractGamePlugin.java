@@ -6,22 +6,27 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
+import dev.dotspace.network.library.game.message.GameMessageComponent;
+import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -46,8 +51,6 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
    * State if system is done and configured
    */
   private boolean configured = false;
-
-  private long loadTime = 0;
 
   /**
    * List modules of system.
@@ -132,6 +135,29 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     return this;
   }
 
+  @Override
+  public @NotNull IMessageComponent<Component> message(@Nullable String message) {
+    //Null check
+    Objects.requireNonNull(message);
+
+    return new GameMessageComponent(() -> message);
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> messageOfKey(@Nullable Locale locale,
+                                                            @Nullable String key) {
+    //Null check
+    Objects.requireNonNull(locale);
+    Objects.requireNonNull(key);
+
+    Client
+        .client()
+        .messageRequest()
+        .message(locale, key);
+
+    return new GameMessageComponent(() -> null);
+  }
+
   /**
    * Check if system is already configured.
    *
@@ -164,7 +190,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     Objects.requireNonNull(this.commandClass);
 
     //Set load timestamp
-    this.loadTime = System.currentTimeMillis();
+    long loadTime = System.currentTimeMillis();
 
     log.info("Initializing plugin instance...");
 
@@ -207,7 +233,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     //Info
     log.info("Plugin {} loaded and enabled totally. Took a total of {}ms",
         name,
-        (System.currentTimeMillis()-this.loadTime));
+        (System.currentTimeMillis()-loadTime));
   }
 
   /**
@@ -216,7 +242,6 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
   protected synchronized void shutdown() {
 
   }
-
 
   /**
    * Execute runnable list for state.

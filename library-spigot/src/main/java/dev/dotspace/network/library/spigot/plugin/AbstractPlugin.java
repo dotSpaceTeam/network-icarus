@@ -5,16 +5,19 @@ import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.LibraryModule;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
 import java.util.Optional;
 
 
@@ -107,6 +110,16 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
 
     //--- Code end ---
     this.spigotPlugin.executeRunnable(PluginState.POST_DISABLE);
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> message(@Nullable String message) {
+    return this.spigotPlugin.message(message);
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> messageOfKey(@Nullable Locale locale, @Nullable String key) {
+    return this.spigotPlugin.messageOfKey(locale, key);
   }
 
   /**

@@ -17,6 +17,7 @@ junit-bom = "org.junit:junit-bom:5.9.1"
 junit-jupiter = "org.junit.jupiter:junit-jupiter:5.10.0"
 cloud-paper = "cloud.commandframework:cloud-paper:1.8.3"
 cloud-velocity = "cloud.commandframework:cloud-velocity:1.8.3"
+kyori-minimessage = "net.kyori:adventure-text-minimessage:4.14.0"
 
 postgresql = "org.postgresql:postgresql:42.6.0"
 reflections = "org.reflections:reflections:0.10.2"

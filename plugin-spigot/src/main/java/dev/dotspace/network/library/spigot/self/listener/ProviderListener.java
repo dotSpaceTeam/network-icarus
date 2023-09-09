@@ -33,6 +33,13 @@ public final class ProviderListener extends AbstractListener {
 
     //Set default join message to null.
     event.joinMessage(null);
+
+
+    this.plugin()
+        .message("{{ PLACEHOLDER:Test }} Der test@key funktioniert. {{ PLACEHOLDER:Test2 }} ")
+        .replace("Test", "Ja")
+        .replace("Test2", "Nein");
+
   }
 
   /**

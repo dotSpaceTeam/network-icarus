@@ -20,12 +20,12 @@ import java.util.function.Function;
  * Base {@link AbstractModule} for spigot.
  */
 @Log4j2
-public final class PluginModule extends AbstractPluginModule<JavaPlugin> {
+public final class PluginModule extends AbstractPluginModule<AbstractPlugin> {
 
   /**
    * See {@link AbstractPluginModule#AbstractPluginModule(Object)}
    */
-  public PluginModule(@Nullable JavaPlugin javaPlugin) {
+  public PluginModule(@Nullable AbstractPlugin javaPlugin) {
     super(javaPlugin);
   }
 
@@ -36,6 +36,7 @@ public final class PluginModule extends AbstractPluginModule<JavaPlugin> {
   protected void configure() {
     log.info("Configuring default PluginModule for {}.", this.plugin().getName());
     //Configure start.
+    this.bind(AbstractPlugin.class).toInstance(this.plugin());
     this.bind(JavaPlugin.class).toInstance(this.plugin());
     log.info("Defined plugin to '{}'.", this.plugin().getName());
 

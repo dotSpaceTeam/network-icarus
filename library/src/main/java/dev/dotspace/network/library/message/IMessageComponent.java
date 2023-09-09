@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface IMessageComponent extends IMessage {
+public interface IMessageComponent<COMPONENT> {
   /**
    * Replace content in message.
    * Information of content will be pulled on message update. (Good for 'real time applications.')
@@ -17,8 +17,8 @@ public interface IMessageComponent extends IMessage {
    * @param <REPLACE_TYPE> generic type of content. Will be converted with {@link String#valueOf(Object)}.
    * @return instance of component.
    */
-  @NotNull <REPLACE_TYPE> IMessageComponent replace(@Nullable final String replaceText,
-                                                    @Nullable final ThrowableSupplier<REPLACE_TYPE> content);
+  @NotNull <REPLACE_TYPE> IMessageComponent<COMPONENT> replace(@Nullable final String replaceText,
+                                                               @Nullable final ThrowableSupplier<REPLACE_TYPE> content);
 
   /**
    * Replace content in message.
@@ -28,15 +28,8 @@ public interface IMessageComponent extends IMessage {
    * @param <REPLACE_TYPE> generic type of content. Will be converted with {@link String#valueOf(Object)}.
    * @return instance of component.
    */
-  @NotNull <REPLACE_TYPE> IMessageComponent replace(@Nullable final String replaceText,
-                                                    @Nullable final REPLACE_TYPE content);
+  @NotNull <REPLACE_TYPE> IMessageComponent<COMPONENT> replace(@Nullable final String replaceText,
+                                                               @Nullable final REPLACE_TYPE content);
 
-  /**
-   * Convert message to string.
-   */
-  @NotNull String convert();
-
-  @NotNull <TYPE> TYPE convert(@Nullable final Class<TYPE> typeClass);
-
-  @NotNull <TYPE> Response<TYPE> convertAsync(@Nullable final Class<TYPE> typeClass);
+  @NotNull Response<COMPONENT> component(@Nullable final String message);
 }
