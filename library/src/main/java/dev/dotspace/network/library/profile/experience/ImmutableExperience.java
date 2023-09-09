@@ -10,7 +10,8 @@ import java.util.Objects;
 /**
  * Immutable implementation for {@link IExperience}.
  */
-public record ImmutableExperience(long experience,
+public record ImmutableExperience(@NotNull String name,
+                                  long experience,
                                   long level
 ) implements IExperience {
   /**
@@ -23,22 +24,24 @@ public record ImmutableExperience(long experience,
     //Null check
     Objects.requireNonNull(experience);
 
-    return new ImmutableExperience(experience.experience(), experience.level());
+    return new ImmutableExperience(experience.name(), experience.experience(), experience.level());
   }
 
   /**
    * Convert experience to an {@link IExperience}. Level will be calculated trough levelFunction.
    *
-   * @param experience    to use for {@link IExperience#experience()}.
+   * @param experience         to use for {@link IExperience#experience()}.
    * @param experienceFunction to calculate {@link IExperience#level()}.
    * @return
    */
-  public static @NotNull IExperience of(final long experience,
+  public static @NotNull IExperience of(@Nullable final String name,
+                                        final long experience,
                                         @Nullable final ExperienceFunction experienceFunction) {
     //Null check
+    Objects.requireNonNull(name);
     Objects.requireNonNull(experienceFunction);
 
-    return new ImmutableExperience(experience, experienceFunction.levelFromExperience(experience));
+    return new ImmutableExperience(name, experience, experienceFunction.levelFromExperience(experience));
   }
 
 }

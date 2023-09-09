@@ -1,6 +1,10 @@
 package dev.dotspace.network.library.profile.experience;
 
-public interface IExperience {
+import dev.dotspace.network.library.common.Nameable;
+
+
+public interface IExperience extends Nameable {
+
   /**
    * Get experience points for object.
    *

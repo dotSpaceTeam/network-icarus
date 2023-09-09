@@ -1,6 +1,5 @@
 package dev.dotspace.network.node.message.db;
 
-import dev.dotspace.network.node.message_old.db.MessageKeyEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +8,7 @@ import java.util.Optional;
 
 
 /**
- * Class to manipulate {@link MessageKeyEntity}.
+ * Class to manipulate {@link PersistentMessageKeyEntity}.
  */
 public interface PersistentMessageKeyRepository extends JpaRepository<PersistentMessageKeyEntity, Long> {
   /**
@@ -21,7 +20,7 @@ public interface PersistentMessageKeyRepository extends JpaRepository<Persistent
   boolean existsByKey(@Nullable final String key);
 
   /**
-   * Get {@link MessageKeyEntity} from key.
+   * Get {@link PersistentMessageKeyEntity} from key.
    *
    * @param key to look up.
    * @return currency as entity.

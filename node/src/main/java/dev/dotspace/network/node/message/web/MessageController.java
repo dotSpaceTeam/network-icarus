@@ -5,6 +5,8 @@ import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.library.message.parser.MessageParser;
+import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import jakarta.annotation.PostConstruct;
@@ -54,7 +56,7 @@ public final class MessageController extends AbstractRestController {
   @PostMapping("/")
   @ResponseBody
   public ResponseEntity<IMessage> postMessage(@RequestBody @NotNull final ImmutableMessage message,
-                                              @RequestParam(required=false) final String lang) throws InterruptedException {
+                                              @RequestParam(required=false) final String lang) throws ElementException {
     //Get message or default
     final Locale locale = this.localeFromTag(lang);
 
@@ -84,12 +86,10 @@ public final class MessageController extends AbstractRestController {
 
           //Get message of key.
           final IPersistentMessage persistentMessage = this.messageDatabase
-              .message(locale, key)
-              .get();
+              .message(locale, key);
 
           //Get message else replace.
-          final String replaceText = persistentMessage != null ? persistentMessage.message() :
-              "@"+matcherContext.valueField()+"@";
+          final String replaceText = persistentMessage.message();
 
           //Update reference of object.
           reference.set(matcherContext.replace(reference.get(), replaceText));
@@ -101,7 +101,7 @@ public final class MessageController extends AbstractRestController {
     messageParser.parse(message.message());
 
     //Response to client.
-    return this.validateOkResponse(this.responseService().response(() -> ImmutableMessage.of(reference.get())), "NullMessage");
+    return ResponseEntity.ok(ImmutableMessage.of(reference.get()));
   }
 
   /**
@@ -109,10 +109,9 @@ public final class MessageController extends AbstractRestController {
    */
   @PutMapping("/key")
   @ResponseBody
-  public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws InterruptedException {
-    return this.validateOkResponse(this.messageDatabase
-            .insertMessage(message.locale(), message.key(), message.message()),
-        "Can't set (put) message '%s' to key '%s'.".formatted(message.message(), message.key()));
+  public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
+    return ResponseEntity.ok(this.messageDatabase
+        .insertMessage(message.locale(), message.key(), message.message()));
   }
 
   /**
@@ -120,10 +119,9 @@ public final class MessageController extends AbstractRestController {
    */
   @PostMapping("/key")
   @ResponseBody
-  public ResponseEntity<IPersistentMessage> postKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws InterruptedException {
-    return this.validateOkResponse(this.messageDatabase
-            .updateMessage(message.locale(), message.key(), message.message()),
-        "Can't set (post) message '%s' to key '%s'.".formatted(message.message(), message.key()));
+  public ResponseEntity<IPersistentMessage> postKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
+    return ResponseEntity.ok(this.messageDatabase
+        .updateMessage(message.locale(), message.key(), message.message()));
   }
 
   /**
@@ -132,13 +130,9 @@ public final class MessageController extends AbstractRestController {
   @GetMapping("/key/{key}")
   @ResponseBody
   public ResponseEntity<IPersistentMessage> getKey(@PathVariable @NotNull final String key,
-                                                   @RequestParam(required=false) final String lang) throws InterruptedException {
-    final Locale locale = this.localeFromTag(lang);
-
+                                                   @RequestParam(required=false) final String lang) throws ElementException {
     //Return value
-    return this.validateOkResponse(
-        this.messageDatabase.message(locale, key),
-        "No message found for %s with locale %s.".formatted(key, locale.toLanguageTag()));
+    return ResponseEntity.ok(this.messageDatabase.message(this.localeFromTag(lang), key));
   }
 
   /**
@@ -147,16 +141,12 @@ public final class MessageController extends AbstractRestController {
    * @param lang to convert.
    * @return present locale otherwise using {@link Locale#getDefault()}.
    */
-  private @NotNull Locale localeFromTag(@Nullable final String lang) {
+  private @NotNull Locale localeFromTag(@Nullable final String lang) throws ElementNotPresentException {
     return Optional
         .ofNullable(lang)
         .map(s -> s.replaceAll("_", "-"))
         //Convert string to locale tag.
         .map(Locale::forLanguageTag)
-        .orElseGet(() -> {
-          log.warn("Can't parse locale tag '{}', using default instead.", lang);
-          return Locale.getDefault();
-        });
+        .orElseGet(Locale::getDefault);
   }
-
 }

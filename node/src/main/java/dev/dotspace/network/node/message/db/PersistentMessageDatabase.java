@@ -1,10 +1,10 @@
 package dev.dotspace.network.node.message.db;
 
-import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
-import dev.dotspace.network.library.message.content.IPersistentMessageManipulator;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
+import dev.dotspace.network.node.exception.ElementException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Component("messageDatabase")
 @Log4j2
-public final class PersistentMessageDatabase extends AbstractDatabase implements IPersistentMessageManipulator {
+public final class PersistentMessageDatabase extends AbstractDatabase {
   /**
    * Registry for messages.
    */
@@ -29,23 +29,15 @@ public final class PersistentMessageDatabase extends AbstractDatabase implements
   @Autowired
   private PersistentMessageKeyRepository messageKeyRepository;
 
-  /**
-   * See {@link IPersistentMessageManipulator#insertMessage(Locale, String, String)}.
-   */
-  @Override
-  public @NotNull Response<IPersistentMessage> insertMessage(@Nullable Locale locale,
-                                                             @Nullable String key,
-                                                             @Nullable String message) {
+  public @NotNull IPersistentMessage insertMessage(@Nullable Locale locale,
+                                                   @Nullable String key,
+                                                   @Nullable String message) throws ElementException {
     return this.handleUpdate(locale, key, message, false);
   }
 
-  /**
-   * See {@link IPersistentMessageManipulator#updateMessage(Locale, String, String)}.
-   */
-  @Override
-  public @NotNull Response<IPersistentMessage> updateMessage(@Nullable Locale locale,
-                                                             @Nullable String key,
-                                                             @Nullable String message) {
+  public @NotNull IPersistentMessage updateMessage(@Nullable Locale locale,
+                                                   @Nullable String key,
+                                                   @Nullable String message) throws ElementException {
     return this.handleUpdate(locale, key, message, true);
   }
 
@@ -58,74 +50,66 @@ public final class PersistentMessageDatabase extends AbstractDatabase implements
    * @param allowUpdate true, if message can be updated if already present.
    * @return response.
    */
-  private Response<IPersistentMessage> handleUpdate(@Nullable final Locale locale,
-                                                    @Nullable final String key,
-                                                    @Nullable final String message,
-                                                    final boolean allowUpdate) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(locale);
-      Objects.requireNonNull(key);
-      Objects.requireNonNull(message);
+  private @NotNull IPersistentMessage handleUpdate(@Nullable final Locale locale,
+                                                   @Nullable final String key,
+                                                   @Nullable final String message,
+                                                   final boolean allowUpdate) throws ElementException {
+    //Null check
+    Objects.requireNonNull(locale);
+    Objects.requireNonNull(key);
+    Objects.requireNonNull(message);
 
-      final String localeTag = locale.toLanguageTag();
-      final PersistentMessageKeyEntity messageKey = this.key(key);
+    final String localeTag = locale.toLanguageTag();
+    final PersistentMessageKeyEntity messageKey = this.key(key);
 
-      @Nullable final PersistentMessageEntity messageEntity = this.messageRepository
-          .findByKeyAndLocale(messageKey, localeTag)
-          .orElse(null);
+    @Nullable final PersistentMessageEntity messageEntity = this.messageRepository
+        .findByKeyAndLocale(messageKey, localeTag)
+        .orElse(null);
 
-      //If entity is null create new.
-      if (messageEntity == null) {
-        return ImmutablePersistentMessage
-            .of(this.messageRepository.save(new PersistentMessageEntity(messageKey, localeTag, message)));
-      }
+    //If entity is null create new.
+    if (messageEntity == null) {
+      return ImmutablePersistentMessage
+          .of(this.messageRepository.save(new PersistentMessageEntity(messageKey, localeTag, message)));
+    }
 
-      //No update
-      if (!allowUpdate) {
-        return null;
-      }
+    //No update
+    if (!allowUpdate) {
+      //Throw  error
+      throw new ElementAlreadyPresentException(messageEntity, "Message key="+key+" already present.");
+    }
 
-      //Update message.
-      messageEntity.message(message);
+    //Update message.
+    messageEntity.message(message);
 
-      //Store message.
-      this.messageRepository.save(messageEntity);
+    //Store message.
+    this.messageRepository.save(messageEntity);
 
-      //Return message.
-      return ImmutablePersistentMessage.of(messageEntity);
-    });
+    //Return message.
+    return ImmutablePersistentMessage.of(messageEntity);
   }
 
+  public @NotNull IPersistentMessage message(@Nullable Locale locale,
+                                             @Nullable String key) {
+    //Null check
+    Objects.requireNonNull(locale);
+    Objects.requireNonNull(key);
 
-  /**
-   * See {@link IPersistentMessageManipulator#message(Locale, String)}.
-   */
-  @Override
-  public @NotNull Response<IPersistentMessage> message(@Nullable Locale locale,
-                                                       @Nullable String key) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(locale);
-      Objects.requireNonNull(key);
+    final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
+        .findByKey(key)
+        .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
 
-      final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
-          .findByKey(key)
-          .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
+    final String localeTag = locale.toLanguageTag();
 
-      final String localeTag = locale.toLanguageTag();
-
-      return this.messageRepository
-          /*
-           * Find key and locale.
-           */
-          .findByKeyAndLocale(messageKey, localeTag)
-          /*
-           * Map to message.
-           */
-          .map(ImmutablePersistentMessage::of)
-          .orElseThrow();
-    });
+    return this.messageRepository
+        /*
+         * Find key and locale.
+         */
+        .findByKeyAndLocale(messageKey, localeTag)
+        /*
+         * Map to message.
+         */
+        .map(ImmutablePersistentMessage::of)
+        .orElseThrow();
   }
 
   /**

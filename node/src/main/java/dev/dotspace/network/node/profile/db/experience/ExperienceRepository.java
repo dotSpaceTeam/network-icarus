@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -32,4 +33,6 @@ public interface ExperienceRepository extends JpaRepository<ExperienceEntity, Lo
       ;
       """, nativeQuery=true)
   @NotNull Optional<Long> getTotal(@Param("profile") final long profile);
+
+  @NotNull List<ExperienceEntity> findByProfile(@NotNull final ProfileEntity profile);
 }

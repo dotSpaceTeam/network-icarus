@@ -3,6 +3,7 @@ package dev.dotspace.network.node.web;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.common.response.ResponseService;
+import dev.dotspace.network.node.exception.ElementException;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
@@ -85,6 +86,17 @@ public abstract class AbstractRestController {
   private String nullPointerHandler(NullPointerException exception) {
     return "Requested resource is null, or parameter was null. (%s)".formatted(exception.getMessage());
   }
+
+  /**
+   * Handle null pointer errors.
+   */
+  @ResponseBody
+  @ExceptionHandler(ElementException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  private String elementException(ElementException exception) {
+    return "Something went wrong. (%s)".formatted(exception.getMessage());
+  }
+
 
   /**
    * Handle null pointer errors.

@@ -1,12 +1,12 @@
 package dev.dotspace.network.node.position.db;
 
-import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.position.IPosition;
 import dev.dotspace.network.library.position.IPositionManipulator;
 import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Component("positionDatabase")
 @Log4j2
-public final class PositionDatabase extends AbstractDatabase implements IPositionManipulator {
+public final class PositionDatabase extends AbstractDatabase {
 
   /**
    * Instance of {@link PositionRepository} with queries.
@@ -32,84 +32,67 @@ public final class PositionDatabase extends AbstractDatabase implements IPositio
   @Autowired
   private ViewPositionRepository viewPositionRepository;
 
-  /**
-   * See {@link IPositionManipulator#setPosition(String, long, long, long)}.
-   */
-  @Override
-  public @NotNull Response<IPosition> setPosition(@Nullable String key,
-                                                  long x,
-                                                  long y,
-                                                  long z) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(key);
+  public @NotNull IPosition setPosition(@Nullable String key,
+                                        long x,
+                                        long y,
+                                        long z) {
+    //Null check
+    Objects.requireNonNull(key);
 
-      return ImmutablePosition.of(this.createPosition(key, x, y, z));
-    });
+    return ImmutablePosition.of(this.createPosition(key, x, y, z));
   }
 
-  /**
-   * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
-   */
-  @Override
-  public @NotNull Response<IPosition> getPosition(@Nullable String key) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(key);
+  public @NotNull IPosition getPosition(@Nullable String key) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(key);
 
-      return ImmutablePosition.of(this.positionRepository.findByKey(key).orElse(null));
-    });
+    return ImmutablePosition.of(
+        this.positionRepository
+            .findByKey(key)
+            .orElseThrow(() -> new ElementNotPresentException(null, "No position key="+key+" found.")));
   }
 
-  @Override
-  public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
+  public @NotNull IViewPosition setViewPosition(@Nullable String key,
                                                           long x,
                                                           long y,
                                                           long z,
                                                           long yaw,
                                                           long pitch) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(key);
+    //Null check
+    Objects.requireNonNull(key);
 
-      return ImmutableViewPosition.of(this.createViewPosition(this.createPosition(key, x, y, z), yaw, pitch));
-    });
+    return ImmutableViewPosition.of(this.createViewPosition(this.createPosition(key, x, y, z), yaw, pitch));
   }
 
   /**
    * See {@link IPositionManipulator#setViewPosition(String, long, long)}.
    */
-  @Override
-  public @NotNull Response<IViewPosition> setViewPosition(@Nullable String key,
-                                                          long yaw,
-                                                          long pitch) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(key);
+  public @NotNull IViewPosition setViewPosition(@Nullable String key,
+                                                long yaw,
+                                                long pitch) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(key);
 
-      final PositionElement positionElement = this.positionRepository
-          .findByKey(key)
-          .orElseThrow(this.failOptional("No key='%s' present, can't find position.".formatted(key)));
+    final PositionElement positionElement = this.positionRepository
+        .findByKey(key)
+        .orElseThrow(() -> new ElementNotPresentException(null, "No key="+key+" present, can't find position."));
 
-      return ImmutableViewPosition.of(this.createViewPosition(positionElement, yaw, pitch));
-    });
+    return ImmutableViewPosition.of(this.createViewPosition(positionElement, yaw, pitch));
   }
 
   /**
    * See {@link IPositionManipulator#getViewPosition(String)}.
    */
-  @Override
-  public @NotNull Response<IViewPosition> getViewPosition(@Nullable String key) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(key);
+  public @NotNull IViewPosition getViewPosition(@Nullable String key) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(key);
 
-      final PositionElement positionElement = this.positionRepository.findByKey(key)
-          .orElseThrow(this.failOptional("No key='%s' present, can't find base position.".formatted(key)));
+    final PositionElement positionElement = this.positionRepository
+        .findByKey(key)
+        .orElseThrow(() -> new ElementNotPresentException(null, "No key="+key+" present, can't find base position."));
 
 
-      return ImmutableViewPosition.of(this.viewPositionRepository.findByPosition(positionElement).orElse(null));
-    });
+    return ImmutableViewPosition.of(this.viewPositionRepository.findByPosition(positionElement).orElse(null));
   }
 
   private @NotNull PositionElement createPosition(@NotNull final String key,

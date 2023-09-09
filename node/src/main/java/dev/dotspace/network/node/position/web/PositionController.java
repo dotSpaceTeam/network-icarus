@@ -4,6 +4,8 @@ import dev.dotspace.network.library.position.IPosition;
 import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
+import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.position.db.PositionDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
+
 
 @RestController
 @RequestMapping("/v1/position")
@@ -27,14 +30,12 @@ public final class PositionController extends AbstractRestController {
    */
   @PutMapping
   @ResponseBody
-  public ResponseEntity<IPosition> setPosition(@RequestBody @NotNull final ImmutablePosition immutablePosition) throws InterruptedException {
-    return this.validateOkResponse(
-      this.positionDatabase.setPosition(
+  public ResponseEntity<IPosition> setPosition(@RequestBody @NotNull final ImmutablePosition immutablePosition) {
+    return ResponseEntity.ok(this.positionDatabase.setPosition(
         Objects.requireNonNull(immutablePosition.key(), "Key of body is null"),
         immutablePosition.x(),
         immutablePosition.y(),
-        immutablePosition.z()),
-      "Position error '%s'".formatted(immutablePosition.key()));
+        immutablePosition.z()));
   }
 
   /**
@@ -42,8 +43,8 @@ public final class PositionController extends AbstractRestController {
    */
   @GetMapping("/{key}")
   @ResponseBody
-  public ResponseEntity<IPosition> getPosition(@PathVariable @NotNull final String key) throws InterruptedException {
-    return this.validateOkResponse(this.positionDatabase.getPosition(key), "Position '%s' not found".formatted(key));
+  public ResponseEntity<IPosition> getPosition(@PathVariable @NotNull final String key) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.positionDatabase.getPosition(key));
   }
 
   /**
@@ -52,27 +53,21 @@ public final class PositionController extends AbstractRestController {
   @PutMapping("/view")
   @ResponseBody
   public ResponseEntity<IViewPosition> setViewPosition(@RequestBody @NotNull final ImmutableViewPosition immutableViewPosition,
-                                                       @RequestParam(required = false) final boolean updateView) throws InterruptedException {
+                                                       @RequestParam(required=false) final boolean updateView) throws ElementException {
+    //Update view coordination.
     if (updateView) {
-      return this.validateOkResponse(this.positionDatabase.setViewPosition(
-
-          Objects.requireNonNull(immutableViewPosition.key(), "Key of body is null"),
-          immutableViewPosition.yaw(),
-          immutableViewPosition.pitch()),
-
-        "ViewPosition '%s' not found".formatted(immutableViewPosition.key()));
+      return ResponseEntity.ok(this.positionDatabase
+          .setViewPosition(immutableViewPosition.key(), immutableViewPosition.yaw(), immutableViewPosition.pitch()));
     }
 
-    return this.validateOkResponse(this.positionDatabase.setViewPosition(
-
-        Objects.requireNonNull(immutableViewPosition.key(), "Key of body is null"),
+    //Create new
+    return ResponseEntity.ok(this.positionDatabase.setViewPosition(
+        immutableViewPosition.key(),
         immutableViewPosition.x(),
         immutableViewPosition.y(),
         immutableViewPosition.z(),
         immutableViewPosition.yaw(),
-        immutableViewPosition.pitch()),
-
-      "ViewPosition '%s' not found".formatted(immutableViewPosition.key()));
+        immutableViewPosition.pitch()));
   }
 
   /**
@@ -80,7 +75,7 @@ public final class PositionController extends AbstractRestController {
    */
   @GetMapping("/view/{key}")
   @ResponseBody
-  public ResponseEntity<IViewPosition> getViewPosition(@PathVariable @NotNull final String key) throws InterruptedException {
-    return this.validateOkResponse(this.positionDatabase.getViewPosition(key), "ViewPosition '%s' not found".formatted(key));
+  public ResponseEntity<IViewPosition> getViewPosition(@PathVariable @NotNull final String key) throws ElementException {
+    return ResponseEntity.ok(this.positionDatabase.getViewPosition(key));
   }
 }
