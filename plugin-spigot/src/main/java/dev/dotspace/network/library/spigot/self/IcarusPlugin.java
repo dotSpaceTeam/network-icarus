@@ -4,14 +4,12 @@ import dev.dotspace.network.client.Client;
 import dev.dotspace.network.client.ClientState;
 import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
-import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -52,7 +50,7 @@ public final class IcarusPlugin extends AbstractPlugin {
           Client.client()
               //Handle establish
               .handle(ClientState.ESTABLISHED, () -> {
-
+                //Run sync -> bukkit
                 this.sync(() -> {
                   Bukkit
                       .getOnlinePlayers()
@@ -68,7 +66,7 @@ public final class IcarusPlugin extends AbstractPlugin {
               })
               //Handle failed
               .handle(ClientState.FAILED, () -> {
-
+                //Run sync -> bukkit
                 this.sync(() -> {
                   Bukkit
                       .getOnlinePlayers()
