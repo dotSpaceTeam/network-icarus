@@ -1,5 +1,6 @@
-package dev.dotspace.network.node.profile.db;
+package dev.dotspace.network.node.profile.db.attribute;
 
+import dev.dotspace.network.node.profile.db.ProfileEntity;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -12,10 +12,10 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.Executor;
 
+
 @Component
 @Log4j2
 public final class NodeListener {
-
   /**
    *
    */
@@ -39,14 +39,14 @@ public final class NodeListener {
     this.executor.execute(() -> {
       //Log request.
       this.database.createRequestInfo(
-        requestUrl,
-        event.getClientAddress(),
-        method,
-        time,
-        //Invert value.
-        !event.wasFailure(),
-        Optional.ofNullable(event.getFailureCause()).map(Throwable::getMessage).orElse(null),
-        new Date());
+          requestUrl,
+          event.getClientAddress(),
+          method,
+          time,
+          //Invert value.
+          !event.wasFailure(),
+          Optional.ofNullable(event.getFailureCause()).map(Throwable::getMessage).orElse(null),
+          new Date());
     });
   }
 }

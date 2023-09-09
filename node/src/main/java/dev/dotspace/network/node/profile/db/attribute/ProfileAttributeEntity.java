@@ -1,6 +1,7 @@
-package dev.dotspace.network.node.profile.db;
+package dev.dotspace.network.node.profile.db.attribute;
 
-import dev.dotspace.network.library.profile.IProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
+import dev.dotspace.network.node.profile.db.ProfileEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

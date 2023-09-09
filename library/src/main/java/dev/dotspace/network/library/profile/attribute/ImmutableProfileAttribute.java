@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.profile;
+package dev.dotspace.network.library.profile.attribute;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

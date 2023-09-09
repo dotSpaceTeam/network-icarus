@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.profile;
+package dev.dotspace.network.library.profile.attribute;
 
 import dev.dotspace.network.library.key.IKey;
 import org.jetbrains.annotations.NotNull;

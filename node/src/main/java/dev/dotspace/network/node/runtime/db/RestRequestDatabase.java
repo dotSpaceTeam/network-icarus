@@ -33,5 +33,4 @@ public final class RestRequestDatabase extends AbstractDatabase {
 
     return this.requestRepository.save(new RestRequestEntity(url, client, method, processTime, success, note, timestamp));
   }
-
 }

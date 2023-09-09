@@ -1,15 +1,17 @@
 package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.IProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.IProfileManipulator;
 import dev.dotspace.network.library.profile.ImmutableProfile;
-import dev.dotspace.network.library.profile.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
 import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeEntity;
+import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

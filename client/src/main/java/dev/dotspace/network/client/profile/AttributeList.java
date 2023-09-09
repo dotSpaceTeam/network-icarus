@@ -1,7 +1,7 @@
 package dev.dotspace.network.client.profile;
 
 
-import dev.dotspace.network.library.profile.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 
 import java.util.ArrayList;
 

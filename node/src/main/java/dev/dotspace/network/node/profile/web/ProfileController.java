@@ -2,10 +2,10 @@ package dev.dotspace.network.node.profile.web;
 
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.IProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableCombinedProfile;
 import dev.dotspace.network.library.profile.ImmutableProfile;
-import dev.dotspace.network.library.profile.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.experience.IExperience;
 import dev.dotspace.network.library.profile.experience.ImmutableExperience;
 import dev.dotspace.network.node.exception.ElementException;

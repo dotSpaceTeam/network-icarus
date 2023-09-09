@@ -1,11 +1,11 @@
 package dev.dotspace.network.client.profile;
 
-import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.web.AbstractRequest;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

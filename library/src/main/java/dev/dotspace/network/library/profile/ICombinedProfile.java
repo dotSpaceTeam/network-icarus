@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.profile;
 
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
