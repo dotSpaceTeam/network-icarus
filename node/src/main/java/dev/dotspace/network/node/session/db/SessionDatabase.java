@@ -1,12 +1,12 @@
 package dev.dotspace.network.node.session.db;
 
-import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.session.IPlaytime;
 import dev.dotspace.network.library.session.ISession;
-import dev.dotspace.network.library.session.ISessionManipulator;
 import dev.dotspace.network.library.session.ImmutablePlaytime;
 import dev.dotspace.network.library.session.ImmutableSession;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,7 @@ import java.util.Objects;
  */
 @Component("sessionDatabase")
 @Log4j2
-public final class SessionDatabase extends AbstractDatabase implements ISessionManipulator {
+public final class SessionDatabase extends AbstractDatabase {
   /**
    * Repository to modify sessions.
    */
@@ -37,109 +37,81 @@ public final class SessionDatabase extends AbstractDatabase implements ISessionM
   @Autowired
   private ProfileRepository profileRepository;
 
-  /**
-   * See {@link ISessionManipulator#getSessionList(String)}.
-   */
-  @Override
-  public @NotNull Response<List<ISession>> getSessionList(@Nullable String profileId) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+  public @NotNull List<ISession> getSessionList(@Nullable String profileId) throws ElementException {
+    //Null check
+    Objects.requireNonNull(profileId);
 
-      final ProfileEntity profile = this.profileRepository
-          .findByUniqueId(profileId)
-          .orElseThrow(this.failOptional("No profile='%s' found to list sessions from.".formatted(profileId)));
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(profileId);
 
-      return this.sessionRepository
-          //Find all sessions entities.
-          .findByProfile(profile)
-          //Stream elements.
-          .stream()
-          //Map element to ISession.
-          .map(ImmutableSession::of)
-          .toList();
-    });
+    return this.sessionRepository
+        //Find all sessions entities.
+        .findByProfile(profile)
+        //Stream elements.
+        .stream()
+        //Map element to ISession.
+        .map(ImmutableSession::of)
+        .toList();
   }
 
-  /**
-   * See {@link ISessionManipulator#getSession(String, Long)}.
-   */
-  @Override
-  public @NotNull Response<ISession> getSession(@Nullable String profileId,
-                                                @Nullable Long sessionId) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
-      Objects.requireNonNull(sessionId);
+  public @NotNull ISession getSession(@Nullable String profileId,
+                                      @Nullable Long sessionId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(profileId);
+    Objects.requireNonNull(sessionId);
 
-      return this.sessionRepository
-          //Find element by id.
-          .findById(sessionId)
-          //Check if session was performed by uniqueId.
-          .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
-          //Map session to ISession.
-          .map(ImmutableSession::of)
-          //Else error, no session or profile does not match.
-          .orElseThrow(this.failOptional("No session='%s' found for profile='%s'.".formatted(sessionId, profileId)));
-    });
+    return this.sessionRepository
+        //Find element by id.
+        .findById(sessionId)
+        //Check if session was performed by uniqueId.
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
+        //Map session to ISession.
+        .map(ImmutableSession::of)
+        //Else error, no session or profile does not match.
+        .orElseThrow(() ->
+            new ElementNotPresentException(null, "No session="+sessionId+" found for profile="+profileId+"."));
   }
 
-  @Override
-  public @NotNull Response<IPlaytime> getPlaytime(@Nullable String profileId) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+  public @NotNull IPlaytime getPlaytime(@Nullable String profileId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(profileId);
 
-      final ProfileEntity profile = this.profileRepository
-          .findByUniqueId(profileId)
-          .orElseThrow(this.failOptional("No profile='%s' to calculate playtime from.".formatted(profileId)));
+    final ProfileEntity profile = this.profileRepository
+        .findByUniqueId(profileId)
+        .orElseThrow(() ->
+            new ElementNotPresentException(null, "No profile="+profileId+" to calculate playtime from."));
 
-      return ImmutablePlaytime.with(this.sessionRepository.calculatePlaytime(profile.id()).orElseThrow());
-    });
+    return ImmutablePlaytime.with(this.sessionRepository.calculatePlaytime(profile.id()).orElseThrow());
   }
 
-  /**
-   * See {@link ISessionManipulator#createSession(String)}.
-   */
-  @Override
-  public @NotNull Response<ISession> createSession(@Nullable String profileId) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
+  public @NotNull ISession createSession(@Nullable String profileId) throws ElementException {
+    //Null check
+    Objects.requireNonNull(profileId);
 
-      final ProfileEntity profile = this.profileRepository
-          .findByUniqueId(profileId)
-          .orElseThrow(this.failOptional("No profile='%s' found to create session.".formatted(profileId)));
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(profileId);
 
-      return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
-    });
+    return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
   }
 
-  /**
-   * See {@link ISessionManipulator#completeSession(String, Long)}.
-   */
-  @Override
-  public @NotNull Response<ISession> completeSession(@Nullable String profileId,
-                                                     @Nullable Long sessionId) {
-    return this.responseService().response(() -> {
-      //Null check
-      Objects.requireNonNull(profileId);
-      Objects.requireNonNull(sessionId);
+  public @NotNull ISession completeSession(@Nullable String profileId,
+                                           @Nullable Long sessionId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(profileId);
+    Objects.requireNonNull(sessionId);
 
-      //Get session of id.
-      final SessionEntity session = this.sessionRepository
-          .findById(sessionId)
-          //Check if unique id equal to given uniqueId.
-          .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
-          //Check if session is not closed.
-          .filter(sessionEntity -> !sessionEntity.closed())
-          .orElseThrow(this.failOptional("No session='%s' found to close.".formatted(sessionId)));
+    //Get session of id.
+    final SessionEntity session = this.sessionRepository
+        .findById(sessionId)
+        //Check if unique id equal to given uniqueId.
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equalsIgnoreCase(profileId))
+        //Check if session is not closed.
+        .filter(sessionEntity -> !sessionEntity.closed())
+        .orElseThrow(() ->
+            new ElementNotPresentException(null, "No session="+sessionId+" found to close."));
 
-      //Update end date.
-      session.endDate(new Date());
+    //Update end date.
+    session.endDate(new Date());
 
-      //Return modified session.
-      return ImmutableSession.of(this.sessionRepository.save(session));
-    });
+    //Return modified session.
+    return ImmutableSession.of(this.sessionRepository.save(session));
   }
 }
