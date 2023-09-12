@@ -86,7 +86,7 @@ public final class IcarusPlugin extends AbstractPlugin {
 
         //Set icarus
         .handle(PluginState.POST_ENABLE, () -> {
-          //Get configuration value of bungeecord value in spigot.yml
+          //Get configuration value of bungee-cord value in spigot.yml
           this.proxy(YamlConfiguration
               //Load config file.
               .loadConfiguration(new File("spigot.yml"))

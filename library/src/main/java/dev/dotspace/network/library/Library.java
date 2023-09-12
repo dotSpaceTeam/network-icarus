@@ -51,7 +51,6 @@ public final class Library {
           //Else print error.
           log.warn("Error while executing response.", throwable);
         })
-
         //Finalize build
         .build();
   }

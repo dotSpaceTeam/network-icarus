@@ -24,4 +24,5 @@ public interface IDataBridge {
                                      @Nullable final String name,
                                      @Nullable final String texture);
 
+  @NotNull Response<Boolean> disconnect(@Nullable final String uniqueId);
 }

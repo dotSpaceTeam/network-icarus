@@ -13,14 +13,12 @@ public final class StatusRequest extends AbstractRequest implements IStatusReque
   @Override
   public @NotNull Response<ImmutableBooleanState> getState() {
     try {
-      return this
-          .responseService()
-          .response(() -> this.client().get("/v1/running", ImmutableBooleanState.class));
+      return this.responseService().response(
+          () -> this.client().get("/v1/running", ImmutableBooleanState.class));
     } catch (final Exception exception) {
-      return this.responseService()
-          .response(() -> {
-            throw new NullPointerException("");
-          });
+      return this.responseService().response(() -> {
+        throw new NullPointerException("");
+      });
     }
   }
 }

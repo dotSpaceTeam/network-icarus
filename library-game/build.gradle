@@ -13,6 +13,8 @@ dependencies {
   implementation project(":library")
   implementation project(":client")
 
+  implementation libs.jackson.core
+  implementation libs.jackson.databind
   implementation libs.cloud.paper
   implementation libs.kyori.minimessage
   testImplementation libs.junit.jupiter.api

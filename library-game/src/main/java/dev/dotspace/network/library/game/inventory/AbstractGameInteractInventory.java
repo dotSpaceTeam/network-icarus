@@ -79,6 +79,4 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     }
     throw new IllegalArgumentException("Slot out of range!");
   }
-
-
 }

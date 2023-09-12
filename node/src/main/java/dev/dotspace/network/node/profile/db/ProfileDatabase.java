@@ -2,7 +2,6 @@ package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
-import dev.dotspace.network.library.profile.IProfileManipulator;
 import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.ProfileType;

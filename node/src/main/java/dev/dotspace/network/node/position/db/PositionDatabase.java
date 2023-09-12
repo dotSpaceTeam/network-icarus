@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.position.db;
 
 import dev.dotspace.network.library.position.IPosition;
-import dev.dotspace.network.library.position.IPositionManipulator;
 import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
