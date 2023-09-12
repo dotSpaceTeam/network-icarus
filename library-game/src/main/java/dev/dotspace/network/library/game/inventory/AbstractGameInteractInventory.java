@@ -1,26 +1,39 @@
 package dev.dotspace.network.library.game.inventory;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 
 @Log4j2
 @Accessors(fluent=true)
 public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     implements GameInteractInventory<INVENTORY, ITEM, PLAYER> {
-
   @Getter
   private final @NotNull INVENTORY inventory;
-  private final @NotNull Multimap<Class<?>, GameInventoryEventConsumer<?>> eventConsumerMultimap;
+  private final @NotNull List<EventConsumer> eventConsumerList;
 
   protected AbstractGameInteractInventory(@NotNull final INVENTORY inventory) {
     this.inventory = inventory;
-    this.eventConsumerMultimap = HashMultimap.create();
+    this.eventConsumerList = new ArrayList<>();
+  }
+
+  @Override
+  public @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable ITEM item,
+                                                                         int slot) {
+    //Remove handles.
+    this.removeHandleFromSlot(slot);
+
+    //Check if slot is in range.
+    this.checkInventorySlot(slot);
+
+    return this;
   }
 
   @Override
@@ -35,8 +48,37 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
   @Override
   public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handle(@Nullable Class<EVENT> eventClass,
                                                                                 @Nullable GameInventoryEventConsumer<EVENT> consumer) {
-    this.eventConsumerMultimap.put(eventClass, consumer);
+    this.registerHandle(eventClass, -1, consumer);
     return this;
+  }
+
+  @Override
+  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handleClick(int slot,
+                                                                                     @Nullable GameInventoryClickConsumer<ITEM, EVENT> consumer) {
+    //Null check
+    if (!this.itemInSlotPresent(slot)) {
+      return null;
+    }
+
+    return this;
+  }
+
+  protected void removeHandleFromSlot(final int slot) {
+    this.eventConsumerList
+        .removeIf(eventConsumer -> eventConsumer.slot == slot);
+  }
+
+  protected <EVENT> void registerHandle(@Nullable Class<EVENT> eventClass,
+                                        final int slot,
+                                        @Nullable GameInventoryEventConsumer<EVENT> consumer) {
+    //Null check
+    Objects.requireNonNull(eventClass);
+    Objects.requireNonNull(consumer);
+
+    //Slot check
+    this.checkInventorySlot(slot);
+
+    this.eventConsumerList.add(new EventConsumer(eventClass, slot, consumer));
   }
 
   /**
@@ -51,14 +93,15 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     if (event == null) {
       return;
     }
-    this.eventConsumerMultimap
+    this.eventConsumerList
+        .stream()
         //Get all handles of class
-        .get(event.getClass())
+        .filter(eventConsumer -> eventConsumer.getClass() == event.getClass())
         //Loop trough
         .forEach(gameInventoryEventConsumer -> {
           try {
             //Accept event.
-            ((GameInventoryEventConsumer<EVENT>) gameInventoryEventConsumer).accept(event);
+            ((GameInventoryEventConsumer<EVENT>) gameInventoryEventConsumer.consumer()).accept(event);
           } catch (final Throwable error) {
             //Error on consumer throw or class can't be cast.
             log.warn("Error while executing inventory handle.");
@@ -78,5 +121,14 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
       return;
     }
     throw new IllegalArgumentException("Slot out of range!");
+  }
+
+  protected abstract boolean itemInSlotPresent(final int slot);
+
+  private record EventConsumer(@NotNull Class<?> eventClass,
+                               int slot,
+                               @NotNull GameInventoryEventConsumer<?> consumer
+  ) {
+
   }
 }

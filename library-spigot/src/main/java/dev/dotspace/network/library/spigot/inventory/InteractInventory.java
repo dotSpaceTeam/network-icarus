@@ -4,6 +4,7 @@ import dev.dotspace.network.library.game.inventory.AbstractGameInteractInventory
 import dev.dotspace.network.library.game.inventory.GameInteractInventory;
 import dev.dotspace.network.library.game.inventory.GameInventoryClickConsumer;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -30,10 +31,8 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
   @Override
   public @NotNull GameInteractInventory<Inventory, ItemStack, Player> setItem(@Nullable ItemStack itemStack,
                                                                               int slot) {
-    //Todo: check if slot is used.
-
-    //Check if slot is in range.
-    this.checkInventorySlot(slot);
+    //Pass to super class.
+    super.setItem(itemStack, slot);
 
     this.inventory().setItem(slot, itemStack);
     return this;
@@ -94,8 +93,10 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
   @Override
   public @NotNull <EVENT> GameInteractInventory<Inventory, ItemStack, Player> handleClick(int slot,
                                                                                           @Nullable GameInventoryClickConsumer<ItemStack, EVENT> consumer) {
+    super.handleClick(slot, consumer);
+
     //Create new handle with predicate.
-    this.handle(InventoryClickEvent.class, inventoryClickEvent -> {
+    this.registerHandle(InventoryClickEvent.class, slot, inventoryClickEvent -> {
       //Return if slot does not match.
       if (inventoryClickEvent.getSlot() != slot) {
         return;
@@ -106,5 +107,12 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
           inventoryClickEvent.getSlot());
     });
     return this;
+  }
+
+  @Override
+  protected boolean itemInSlotPresent(int slot) {
+    @Nullable final ItemStack itemStack = this.inventory().getItem(slot);
+    //Return true if item is not null and not type of air.
+    return itemStack != null && itemStack.getType() != Material.AIR;
   }
 }

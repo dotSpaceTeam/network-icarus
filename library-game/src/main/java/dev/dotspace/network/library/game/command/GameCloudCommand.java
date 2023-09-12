@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param <SENDER> generic type of sender.
  */
+
 public interface GameCloudCommand<SENDER> {
     /**
      * Configure commands.

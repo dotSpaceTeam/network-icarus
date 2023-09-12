@@ -14,14 +14,35 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
+
 
 /**
  * Handle providers of library.
  */
 public final class ProviderListener extends AbstractListener {
-
   @Inject
   private ISidebarProvider sidebarProvider;
+
+  /**
+   * Handle if player login to server.
+   * LOWEST priority means this event will be triggered as first.
+   */
+  @EventHandler(priority=EventPriority.LOWEST)
+  public void handle(@NotNull final AsyncPlayerPreLoginEvent event) {
+    //Check if connection is valid
+    if (Client.disconnected()) {
+      //Kick because client is deactivated.
+      event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
+      return;
+    }
+
+    this.plugin()
+        .messageOfKey(Locale.GERMANY, "")
+        .replace("", "")
+        ;
+
+  }
 
   /**
    * Handle if player joins server.
@@ -55,19 +76,5 @@ public final class ProviderListener extends AbstractListener {
 
     //Remove from sidebar.
     this.sidebarProvider.remove(player);
-  }
-
-  /**
-   * Handle if player login to server.
-   * LOWEST priority means this event will be triggered as first.
-   */
-  @EventHandler(priority=EventPriority.LOWEST)
-  public void handle(@NotNull final AsyncPlayerPreLoginEvent event) {
-    //Check if connection is valid
-    if (Client.disconnected()) {
-      //Kick because client is deactivated.
-      event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
-      return;
-    }
   }
 }

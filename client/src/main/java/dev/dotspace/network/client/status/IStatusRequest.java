@@ -6,6 +6,10 @@ import dev.dotspace.network.library.state.ImmutableBooleanState;
 import org.jetbrains.annotations.NotNull;
 
 public interface IStatusRequest {
-
+  /**
+   * Get state of master node. (Similar to ping.)
+   *
+   * @return response as object.
+   */
   @NotNull Response<ImmutableBooleanState> getState();
 }

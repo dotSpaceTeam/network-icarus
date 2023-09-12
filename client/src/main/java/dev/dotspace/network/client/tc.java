@@ -14,13 +14,13 @@ public class tc {
 
     Client.client()
         .messageRequest()
-        .update(Locale.GERMANY, "test@message@wow", "{{ KEY:prefix }} Es hat einfach funktioniert")
+        .updateMessage(Locale.GERMANY, "test@message@wow", "{{ KEY:prefix }} Es hat einfach funktioniert")
         .get();
 
     Client
         .client()
         .messageRequest()
-        .format("{{ KEY:prefix }} Diese nachricht sollte eienen prefix besitzen. {{ KEY:prefix2 }}")
+        .formatString("{{ KEY:prefix }} Diese nachricht sollte eienen prefix besitzen. {{ KEY:prefix2 }}")
         .ifPresent(iMessage -> {
           System.out.println(iMessage.message());
         });
@@ -28,7 +28,7 @@ public class tc {
     Client
         .client()
         .messageRequest()
-        .message(Locale.GERMANY, "test@message@wow")
+        .getMessage(Locale.GERMANY, "test@message@wow")
         .ifPresent(iMessage -> {
           System.out.println(iMessage.message());
         });

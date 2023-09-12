@@ -13,7 +13,7 @@ public interface GameInteractInventory<INVENTORY, ITEM, PLAYER> {
 
   @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable final ITEM item,
                                                                   final int slot);
-  
+
   @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> removeItem(final int slot);
 
   /**
@@ -51,5 +51,4 @@ public interface GameInteractInventory<INVENTORY, ITEM, PLAYER> {
 
   @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handle(@Nullable final Class<EVENT> eventClass,
                                                                          @Nullable final GameInventoryEventConsumer<EVENT> consumer);
-
 }

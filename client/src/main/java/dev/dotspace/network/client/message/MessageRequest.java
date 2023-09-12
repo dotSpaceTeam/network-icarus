@@ -15,10 +15,10 @@ import java.util.Objects;
 
 public final class MessageRequest extends AbstractRequest implements IMessageRequest {
   /**
-   * See {@link IMessageRequest#format(String)}
+   * See {@link IMessageRequest#formatString(String)}
    */
   @Override
-  public @NotNull Response<IMessage> format(@Nullable String message) {
+  public @NotNull Response<IMessage> formatString(@Nullable String message) {
     return this
         .responseService()
         .response(() -> {
@@ -32,11 +32,11 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
   }
 
   /**
-   * See {@link IMessageRequest#message(Locale, String)}
+   * See {@link IMessageRequest#getMessage(Locale, String)}
    */
   @Override
-  public @NotNull Response<IMessage> message(@Nullable Locale locale,
-                                             @Nullable String key) {
+  public @NotNull Response<IMessage> getMessage(@Nullable Locale locale,
+                                                @Nullable String key) {
     return this
         .responseService()
         .response(() -> {
@@ -50,12 +50,12 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
   }
 
   /**
-   * See {@link IMessageRequest#update(Locale, String, String)}
+   * See {@link IMessageRequest#updateMessage(Locale, String, String)}
    */
   @Override
-  public @NotNull Response<IPersistentMessage> update(@Nullable Locale locale,
-                                                      @Nullable String key,
-                                                      @Nullable String message) {
+  public @NotNull Response<IPersistentMessage> updateMessage(@Nullable Locale locale,
+                                                             @Nullable String key,
+                                                             @Nullable String message) {
     return this
         .responseService()
         .response(() -> {
@@ -71,12 +71,12 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
   }
 
   /**
-   * See {@link IMessageRequest#create(Locale, String, String)}
+   * See {@link IMessageRequest#createMessage(Locale, String, String)}
    */
   @Override
-  public @NotNull Response<IPersistentMessage> create(@Nullable Locale locale,
-                                                      @Nullable String key,
-                                                      @Nullable String message) {
+  public @NotNull Response<IPersistentMessage> createMessage(@Nullable Locale locale,
+                                                             @Nullable String key,
+                                                             @Nullable String message) {
     return this
         .responseService()
         .response(() -> {

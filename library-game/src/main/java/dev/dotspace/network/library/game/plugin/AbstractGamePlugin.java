@@ -153,7 +153,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     Client
         .client()
         .messageRequest()
-        .message(locale, key);
+        .getMessage(locale, key);
 
     return new GameMessageComponent(() -> null);
   }

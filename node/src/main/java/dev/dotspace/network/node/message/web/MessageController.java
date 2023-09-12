@@ -45,11 +45,6 @@ public final class MessageController extends AbstractRestController {
   @Autowired
   private PersistentMessageDatabase messageDatabase;
 
-  @PostConstruct
-  public void init() {
-
-  }
-
   /**
    * Get a formatted message.
    */
@@ -59,49 +54,8 @@ public final class MessageController extends AbstractRestController {
                                               @RequestParam(required=false) final String lang) throws ElementException {
     //Get message or default
     final Locale locale = this.localeFromTag(lang);
-
-    final MessageParser messageParser = new MessageParser();
-    //Reference to change in further
-    final AtomicReference<String> reference = new AtomicReference<>(message.message());
-    //List of already replaced messages -> to avoid loops.
-    final List<String> presentKeys = new ArrayList<>();
-
-    //Search for keys.
-    messageParser
-        .handle("KEY", matcherContext -> {
-          //Return if context is empty.
-          if (matcherContext == null) {
-            return;
-          }
-
-          //Get key of tag.
-          final String key = matcherContext.valueField();
-
-          //Return if already replaced -> avoid death loops.
-          if (presentKeys.contains(key)) {
-            return;
-          }
-
-          presentKeys.add(key);
-
-          //Get message of key.
-          final IPersistentMessage persistentMessage = this.messageDatabase
-              .message(locale, key);
-
-          //Get message else replace.
-          final String replaceText = persistentMessage.message();
-
-          //Update reference of object.
-          reference.set(matcherContext.replace(reference.get(), replaceText));
-          //Reparse replaced message. to find further keys.
-          messageParser.parse(reference.get());
-        });
-
-    //Run first loop.
-    messageParser.parse(message.message());
-
     //Response to client.
-    return ResponseEntity.ok(ImmutableMessage.of(reference.get()));
+    return ResponseEntity.ok(ImmutableMessage.of(this.message(locale, message.message())));
   }
 
   /**
@@ -131,8 +85,14 @@ public final class MessageController extends AbstractRestController {
   @ResponseBody
   public ResponseEntity<IPersistentMessage> getKey(@PathVariable @NotNull final String key,
                                                    @RequestParam(required=false) final String lang) throws ElementException {
+    //Get message or default
+    final Locale locale = this.localeFromTag(lang);
+    //Get stored message.
+    final IPersistentMessage persistentMessage = this.messageDatabase.message(locale, key);
+
     //Return value
-    return ResponseEntity.ok(this.messageDatabase.message(this.localeFromTag(lang), key));
+    return ResponseEntity.ok(
+        new ImmutablePersistentMessage(key, locale, this.message(locale, persistentMessage.message())));
   }
 
   /**
@@ -148,5 +108,53 @@ public final class MessageController extends AbstractRestController {
         //Convert string to locale tag.
         .map(Locale::forLanguageTag)
         .orElseGet(Locale::getDefault);
+  }
+
+  private @NotNull String message(@NotNull final Locale locale,
+                                  @NotNull final String message) {
+    //Create new parser.
+    final MessageParser messageParser = new MessageParser();
+    //Reference to change in further
+    final AtomicReference<String> reference = new AtomicReference<>(message);
+    //List of already replaced messages -> to avoid loops.
+    final List<String> presentKeys = new ArrayList<>();
+
+    //Search for keys.
+    messageParser
+        .handle("KEY", matcherContext -> {
+          //Return if context is empty.
+          if (matcherContext == null) {
+            return;
+          }
+
+          //Get key of tag.
+          final String key = matcherContext.valueField();
+
+          //Return if already replaced -> avoid death loops.
+          if (presentKeys.contains(key)) {
+            return;
+          }
+
+          //Add to present keys, if key will be double, function will be ignored. -> See above.
+          presentKeys.add(key);
+
+          //Get message of key.
+          final IPersistentMessage persistentMessage = this.messageDatabase
+              .message(locale, key);
+
+          //Get message else replace.
+          final String replaceText = persistentMessage.message();
+
+          //Update reference of object.
+          reference.set(matcherContext.replace(reference.get(), replaceText));
+          //Reparse replaced message. to find further keys.
+          messageParser.parse(reference.get());
+        });
+
+    //Run first loop.
+    messageParser.parse(reference.get());
+
+    //Response to client.
+    return reference.get();
   }
 }

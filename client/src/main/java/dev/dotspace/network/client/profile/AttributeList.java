@@ -7,3 +7,4 @@ import java.util.ArrayList;
 
 public final class AttributeList extends ArrayList<ImmutableProfileAttribute> {
 }
+

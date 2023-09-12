@@ -16,7 +16,7 @@ public interface IMessageRequest {
    * @param message
    * @return
    */
-  @NotNull Response<IMessage> format(@Nullable final String message);
+  @NotNull Response<IMessage> formatString(@Nullable final String message);
 
   /**
    * Get message from locale and key.
@@ -25,8 +25,8 @@ public interface IMessageRequest {
    * @param key
    * @return
    */
-  @NotNull Response<IMessage> message(@Nullable final Locale locale,
-                                      @Nullable final String key);
+  @NotNull Response<IMessage> getMessage(@Nullable final Locale locale,
+                                         @Nullable final String key);
 
 
   /**
@@ -37,9 +37,9 @@ public interface IMessageRequest {
    * @param message
    * @return
    */
-  @NotNull Response<IPersistentMessage> update(@Nullable final Locale locale,
-                                               @Nullable final String key,
-                                               @Nullable final String message);
+  @NotNull Response<IPersistentMessage> updateMessage(@Nullable final Locale locale,
+                                                      @Nullable final String key,
+                                                      @Nullable final String message);
 
   /**
    * Just create no update.
@@ -49,7 +49,7 @@ public interface IMessageRequest {
    * @param message
    * @return
    */
-  @NotNull Response<IPersistentMessage> create(@Nullable final Locale locale,
-                                               @Nullable final String key,
-                                               @Nullable final String message);
+  @NotNull Response<IPersistentMessage> createMessage(@Nullable final Locale locale,
+                                                      @Nullable final String key,
+                                                      @Nullable final String message);
 }

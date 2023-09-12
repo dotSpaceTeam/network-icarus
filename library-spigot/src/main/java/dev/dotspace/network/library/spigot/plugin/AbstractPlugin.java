@@ -128,11 +128,26 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
    * @param runnable to synchronize relative to main bukkit thread.
    * @return class instance.
    */
-  public @NotNull JavaPlugin sync(@Nullable final Runnable runnable) {
+  public @NotNull AbstractPlugin sync(@Nullable final Runnable runnable) {
     //Only run if runnable is present.
     if (runnable != null) {
       //Run synchronized
       this.getServer().getScheduler().runTask(this, runnable);
+    }
+    return this;
+  }
+
+  /**
+   * Async {@link Runnable}.
+   *
+   * @param runnable to run async relative to main bukkit thread.
+   * @return class instance.
+   */
+  public @NotNull AbstractPlugin async(@Nullable final Runnable runnable) {
+    //Only run if runnable is present.
+    if (runnable != null) {
+      //Run async
+      this.getServer().getScheduler().runTaskAsynchronously(this, runnable);
     }
     return this;
   }

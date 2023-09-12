@@ -11,7 +11,6 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @NoArgsConstructor
 public final class MojangUtils {
   /**
@@ -76,7 +75,6 @@ public final class MojangUtils {
       }
     } catch (final Exception ignore) {
     }
-
     return stringStringMap;
   }
 

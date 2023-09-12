@@ -13,6 +13,9 @@ public class tre {
         .handle(InventoryClickEvent.class, inventoryClickEvent -> {
 
         })
+        .handle(InventoryClickEvent.class, inventoryClickEvent -> {
+
+        })
         .handleClick(5, (o, itemStack, slot) -> {
 
         })
