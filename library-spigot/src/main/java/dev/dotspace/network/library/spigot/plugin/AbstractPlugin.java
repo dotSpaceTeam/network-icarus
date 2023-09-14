@@ -118,8 +118,15 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
   }
 
   @Override
-  public @NotNull IMessageComponent<Component> messageOfKey(@Nullable Locale locale, @Nullable String key) {
-    return this.spigotPlugin.messageOfKey(locale, key);
+  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable Locale locale,
+                                                                 @Nullable String key) {
+    return this.spigotPlugin.persistentMessage(locale, key);
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable String uniqueId,
+                                                                 @Nullable String key) {
+    return this.spigotPlugin.persistentMessage(uniqueId, key);
   }
 
   /**

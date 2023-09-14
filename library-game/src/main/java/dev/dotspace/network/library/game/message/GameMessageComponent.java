@@ -1,6 +1,8 @@
 package dev.dotspace.network.library.game.message;
 
+import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.Response;
+import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.message.AbstractMessageComponent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -22,15 +24,17 @@ public final class GameMessageComponent extends AbstractMessageComponent<Compone
 
   static {
     MINI_MESSAGE = MiniMessage.miniMessage();
-    FALLBACK = Component.text("<red>Error while converting message.");
+    FALLBACK = MINI_MESSAGE.deserialize("<red>Error while converting message.");
   }
 
-  public GameMessageComponent(@NotNull Supplier<String> supplier) {
+  public GameMessageComponent(@NotNull ThrowableSupplier<String> supplier) {
     super(supplier);
   }
 
   @Override
-  public @NotNull Response<Component> component(@Nullable String message) {
-    return null;
+  public @NotNull Response<Component> complete() {
+    return Library.responseService()
+        .response(() -> MINI_MESSAGE.deserialize(this.process()))
+        .elseUse(() -> FALLBACK);
   }
 }

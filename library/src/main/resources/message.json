@@ -1,0 +1,8 @@
+{
+  "messageMap": {
+    "de-DE": {
+      "testPrefix": "Testnachricht",
+      "testPrefix2": "Testnachricht2"
+    }
+  }
+}

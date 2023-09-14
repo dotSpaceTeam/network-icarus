@@ -38,9 +38,12 @@ public final class ProviderListener extends AbstractListener {
     }
 
     this.plugin()
-        .messageOfKey(Locale.GERMANY, "")
+        .persistentMessage(Locale.GERMANY, "")
         .replace("", "")
-        ;
+        .complete()
+        .ifPresent(component -> {
+
+        });
 
   }
 

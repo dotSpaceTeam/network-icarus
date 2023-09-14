@@ -12,7 +12,9 @@ import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.game.message.GameMessageComponent;
+import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageComponent;
+import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -37,6 +39,7 @@ import java.util.stream.Stream;
  * Implementation for GamePlugin.
  */
 @Log4j2
+@SuppressWarnings("all")
 @Accessors(fluent=true)
 public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMAND extends AbstractCloudCommand> implements GamePlugin {
   /**
@@ -144,18 +147,23 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
   }
 
   @Override
-  public @NotNull IMessageComponent<Component> messageOfKey(@Nullable Locale locale,
-                                                            @Nullable String key) {
+  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable Locale locale,
+                                                                 @Nullable String key) {
     //Null check
     Objects.requireNonNull(locale);
     Objects.requireNonNull(key);
 
-    Client
-        .client()
-        .messageRequest()
-        .getMessage(locale, key);
-
-    return new GameMessageComponent(() -> null);
+    return new GameMessageComponent(() -> {
+      return Client.client()
+          .messageRequest()
+          //Request message from master.
+          .getMessage(locale, key)
+          .getOptional()
+          //Get stored message
+          .map(IMessage::message)
+          //Else set error.
+          .orElse("Error while requesting message.");
+    });
   }
 
   /**

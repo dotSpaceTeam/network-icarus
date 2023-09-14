@@ -2,8 +2,10 @@ package dev.dotspace.network.library.spigot.plugin;
 
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
@@ -45,6 +47,12 @@ final class SpigotPlugin extends AbstractGamePlugin<AbstractListener, AbstractCo
     /*
      * Ignore
      */
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable String uniqueId,
+                                                                 @Nullable String key) {
+    return null;
   }
 
   /**

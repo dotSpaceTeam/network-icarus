@@ -17,10 +17,10 @@ import java.util.function.Supplier;
 @Accessors(fluent=true)
 public abstract class AbstractMessageComponent<COMPONENT> implements IMessageComponent<COMPONENT> {
 
-  private final @NotNull Supplier<String> supplier;
+  private final @NotNull ThrowableSupplier<String> supplier;
   private final @NotNull Map<String, ThrowableSupplier<?>> placeholderMap;
 
-  public AbstractMessageComponent(@NotNull final Supplier<String> supplier) {
+  public AbstractMessageComponent(@NotNull final ThrowableSupplier<String> supplier) {
     this.supplier = supplier;
     this.placeholderMap = new HashMap<>();
   }
@@ -49,7 +49,7 @@ public abstract class AbstractMessageComponent<COMPONENT> implements IMessageCom
     return this;
   }
 
-  protected @NotNull String process() {
+  protected @NotNull String process() throws Throwable {
     final AtomicReference<String> reference = new AtomicReference<>(this.supplier.get());
     //Create parser.
     final MessageParser messageParser = new MessageParser();

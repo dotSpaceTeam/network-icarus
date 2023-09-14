@@ -57,6 +57,9 @@ public interface GamePlugin {
 
   @NotNull IMessageComponent<Component> message(@Nullable final String message);
 
-  @NotNull IMessageComponent<Component> messageOfKey(@Nullable final Locale locale,
-                                                     @Nullable final String key);
+  @NotNull IMessageComponent<Component> persistentMessage(@Nullable final Locale locale,
+                                                          @Nullable final String key);
+
+  @NotNull IMessageComponent<Component> persistentMessage(@Nullable final String uniqueId,
+                                                          @Nullable final String key);
 }

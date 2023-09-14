@@ -1,4 +1,7 @@
 package dev.dotspace.network.library.config;
 
-public interface IConfigFile {
+import java.io.Serializable;
+
+
+public interface IConfigFile extends Serializable {
 }

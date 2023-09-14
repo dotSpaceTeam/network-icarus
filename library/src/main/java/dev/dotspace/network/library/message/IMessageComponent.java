@@ -31,5 +31,5 @@ public interface IMessageComponent<COMPONENT> {
   @NotNull <REPLACE_TYPE> IMessageComponent<COMPONENT> replace(@Nullable final String replaceText,
                                                                @Nullable final REPLACE_TYPE content);
 
-  @NotNull Response<COMPONENT> component(@Nullable final String message);
+  @NotNull Response<COMPONENT> complete();
 }
