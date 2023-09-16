@@ -5,8 +5,11 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.velocity.plugin.AbstractPlugin;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Logger;
 
@@ -28,11 +31,14 @@ public final class IcarusPlugin extends AbstractPlugin {
   @Override
   public void configure() {
     this
-        //Enable client.
-        .handle(PluginState.POST_ENABLE, Client::enable)
 
         .handle(PluginState.POST_DISABLE, () -> {
           System.out.println("Disabled.");
         });
+  }
+
+  @Override
+  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable String uniqueId, @Nullable String key) {
+    return null;
   }
 }

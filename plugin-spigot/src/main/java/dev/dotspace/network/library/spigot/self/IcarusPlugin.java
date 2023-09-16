@@ -43,9 +43,6 @@ public final class IcarusPlugin extends AbstractPlugin {
 
         //Handle client.
         .handle(PluginState.POST_ENABLE, () -> {
-          //Enable client
-          Client.enable();
-
           //Handle client behavior.
           Client.client()
               //Handle establish

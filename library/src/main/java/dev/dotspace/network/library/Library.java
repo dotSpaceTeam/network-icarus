@@ -1,6 +1,7 @@
 package dev.dotspace.network.library;
 
 import dev.dotspace.common.response.ResponseService;
+import dev.dotspace.network.library.config.ConfigService;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +19,12 @@ public final class Library {
   @Getter
   @Accessors(fluent=true)
   private final static @NotNull ResponseService responseService;
+  /**
+   * Config service of library.
+   */
+  @Getter
+  @Accessors(fluent=true)
+  private final static @NotNull ConfigService configService;
   /**
    * Library module.
    */
@@ -53,5 +60,7 @@ public final class Library {
         })
         //Finalize build
         .build();
+
+    configService = new ConfigService();
   }
 }

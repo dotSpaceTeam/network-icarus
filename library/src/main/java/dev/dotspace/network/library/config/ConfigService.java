@@ -64,7 +64,11 @@ public final class ConfigService implements IConfigService {
         return Optional.empty();
       }
       //Present file, read content.
-      return Optional.ofNullable(READER.readValue(stream, typeClass));
+      final TYPE type = READER.readValue(stream, typeClass);
+      log.info("Successfully read file={}.", file);
+
+      //Return content.
+      return Optional.ofNullable(type);
     }
   }
 

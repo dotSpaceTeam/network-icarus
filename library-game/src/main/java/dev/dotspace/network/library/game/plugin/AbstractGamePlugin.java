@@ -12,6 +12,7 @@ import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.game.message.GameMessageComponent;
+import dev.dotspace.network.library.game.plugin.config.PluginConfig;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -59,6 +61,10 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
    * List modules of system.
    */
   private final @NotNull List<Module> moduleList;
+  /**
+   * Configuartion of plugin.
+   */
+  private @Nullable PluginConfig pluginConfig;
 
   @Getter(AccessLevel.PROTECTED)
   @Setter(AccessLevel.PROTECTED)
@@ -208,6 +214,21 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
       this.entryClass = this.getClass();
     }
 
+    //Load config
+    try {
+      this.pluginConfig = Library.configService()
+          .readResource(this.entryClass, PluginConfig.class, "icarus.json")
+          .orElseGet(() -> {
+            log.info("No config present, using default one.");
+
+            //Default config
+            return PluginConfig.defaultConfig();
+          });
+    } catch (final IOException exception) {
+      log.warn("Error while loading icarus.json.");
+      throw new RuntimeException(exception);
+    }
+
     //Reflections of this plugin.
     final Reflections reflections = new Reflections(this.entryClass.getPackageName());
 
@@ -237,6 +258,13 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
           }
         });
     //Registered commands.
+
+    //Client
+    if (this.pluginConfig.clientAutoConnect()) {
+      log.info("Enabling client.");
+      //Connect.
+      Client.enable();
+    }
 
     //Info
     log.info("Plugin {} loaded and enabled totally. Took a total of {}ms",
