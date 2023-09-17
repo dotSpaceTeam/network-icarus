@@ -25,7 +25,6 @@ import java.time.Duration;
 import java.util.Objects;
 
 
-@Component
 @Accessors(fluent=true)
 @Log4j2
 public final class RestClient implements IRestClient {
@@ -79,6 +78,11 @@ public final class RestClient implements IRestClient {
     this(clientId, "http://localhost:8443", Duration.ofSeconds(5));
 
     log.info("Created default(test) client.");
+  }
+
+  public RestClient(@Nullable final String clientId,
+                    @Nullable final String service) {
+    this(clientId, service, Duration.ofSeconds(5));
   }
 
   /**

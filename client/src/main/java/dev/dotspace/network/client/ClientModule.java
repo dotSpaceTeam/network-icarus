@@ -27,9 +27,12 @@ import org.jetbrains.annotations.NotNull;
 final class ClientModule extends AbstractModule {
 
   private final @NotNull String identifier;
+  private final @NotNull String endPoint;
 
-  ClientModule(@NotNull final String identifier) {
+  ClientModule(@NotNull final String identifier,
+               @NotNull final String endPoint) {
     this.identifier = identifier;
+    this.endPoint = endPoint;
   }
 
   @Override
@@ -41,7 +44,8 @@ final class ClientModule extends AbstractModule {
     final ClientMonitoring clientMonitoring = new ClientMonitoring();
 
     //Create rest client.
-    this.bind(IRestClient.class).toInstance(new RestClient(this.identifier).clientMonitoring(clientMonitoring));
+    this.bind(IRestClient.class)
+        .toInstance(new RestClient(this.identifier, this.endPoint).clientMonitoring(clientMonitoring));
 
     //Bind clientMonitoring
     this.bind(ClientMonitoring.class).toInstance(clientMonitoring);

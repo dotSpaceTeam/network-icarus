@@ -13,11 +13,12 @@ import org.jetbrains.annotations.NotNull;
  * Plugin configuration.
  */
 @NoArgsConstructor
+@Getter
+@Setter(AccessLevel.PRIVATE)
 @Accessors(fluent=true)
 public final class PluginConfig implements IConfigFile {
-  @Getter
-  @Setter(AccessLevel.PRIVATE)
   private boolean clientAutoConnect;
+  private String clientApiEndpoint;
 
   //static
 
@@ -28,6 +29,8 @@ public final class PluginConfig implements IConfigFile {
     // Create new plain config.
     return new PluginConfig()
         //Default no connect.
-        .clientAutoConnect(false);
+        .clientAutoConnect(false)
+        //Default client endpoint, should work in test environment.
+        .clientApiEndpoint("http://localhost:8443");
   }
 }

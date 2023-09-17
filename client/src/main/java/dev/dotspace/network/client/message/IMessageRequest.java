@@ -11,7 +11,7 @@ import java.util.Locale;
 
 public interface IMessageRequest {
   /**
-   * Send message to server and get formated back.
+   * Send message to server and get formatted back.
    *
    * @param message
    * @return

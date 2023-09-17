@@ -15,7 +15,6 @@ import dev.dotspace.network.library.game.message.GameMessageComponent;
 import dev.dotspace.network.library.game.plugin.config.PluginConfig;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageComponent;
-import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -263,7 +262,7 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     if (this.pluginConfig.clientAutoConnect()) {
       log.info("Enabling client.");
       //Connect.
-      Client.enable();
+      Client.connect(this.pluginConfig.clientApiEndpoint());
     }
 
     //Info

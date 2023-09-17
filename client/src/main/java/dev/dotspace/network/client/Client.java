@@ -20,6 +20,9 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+import java.util.Optional;
+
 
 @Log4j2
 @Accessors(fluent=true)
@@ -45,13 +48,14 @@ public final class Client implements IClient {
   /**
    * Only local .
    */
-  private Client() {
+  private Client(@NotNull final String endPoint) {
     this.runtime = ImmutableRuntime.randomOfType(RuntimeType.CLIENT);
     //Create injector.
-    this.injector = Guice.createInjector(new ClientModule(this.runtime.runtimeId()), Library.module());
+    this.injector = Guice.createInjector(
+        new ClientModule(this.runtime.runtimeId(), endPoint), Library.module());
 
     this.thread = Thread.currentThread();
-    log.info("Instance running under id={}.", this.runtime.runtimeId());
+    log.info("Client instance running under id={}.", this.runtime.runtimeId());
     this.clientMonitoring = this.injector.getInstance(ClientMonitoring.class);
 
   }
@@ -114,14 +118,8 @@ public final class Client implements IClient {
 
 
   //static
-  private final static @NotNull Client client = new Client();
+  private static @Nullable Client client;
   //Check if client is enabled.
-  /**
-   * Check if client is enabled.
-   */
-  @Getter
-  @Accessors(fluent=true)
-  private static boolean enabled = false;
 
   /**
    * Get client instance.
@@ -129,23 +127,32 @@ public final class Client implements IClient {
    * @return get singleton instance.
    */
   public static @NotNull IClient client() {
-    return client;
+    return Optional
+        .ofNullable(client)
+        .orElseThrow(() -> new RuntimeException());
   }
 
   /**
    * Enable if not enabled.
    */
-  public static void enable() {
+  public static void connect(@Nullable final String endPoint) {
+    //Null check
+    Objects.requireNonNull(endPoint);
+
     //Already enabled.
-    if (enabled) {
+    if (Client.enabled()) {
       log.warn("Client already enabled.");
       return;
     }
 
     //Init client
-    enabled = true;
+    client = new Client(endPoint);
     log.info("Enabled client.");
     log.info("Checking client status...");
+  }
+
+  public static boolean enabled() {
+    return client != null;
   }
 
   /**
