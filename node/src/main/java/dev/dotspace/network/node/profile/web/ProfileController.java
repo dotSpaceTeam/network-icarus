@@ -155,7 +155,24 @@ public final class ProfileController extends AbstractRestController {
    */
   @PostMapping("/{uniqueId}/experience")
   @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Add experience to profile.",
+      description="Add experience points to profile. With this method multiple experience points can be added.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Experience was added successfully.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=List.class)
+                  )
+              })
+      })
   public ResponseEntity<List<IExperience>> addExperience(@PathVariable @NotNull final String uniqueId,
+                                                         //Swagger
+                                                         @Schema(type="Experience map.", implementation=Map.class)
                                                          @RequestBody @NotNull final Map<String, Long> experienceMap) {
     return ResponseEntity.ok(experienceMap
         .entrySet()

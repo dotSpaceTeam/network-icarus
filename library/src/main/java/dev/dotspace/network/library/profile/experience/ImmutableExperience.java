@@ -1,6 +1,7 @@
 package dev.dotspace.network.library.profile.experience;
 
 import dev.dotspace.network.library.profile.IProfile;
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +10,11 @@ import java.util.Objects;
 
 /**
  * Immutable implementation for {@link IExperience}.
- */
+ *///Swagger
+@Schema(
+    name="Experience",
+    description="Experience pair for "
+)
 public record ImmutableExperience(@NotNull String name,
                                   long experience,
                                   long level

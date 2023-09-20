@@ -1,8 +1,11 @@
 package dev.dotspace.network.library.profile.experience;
 
 import dev.dotspace.network.library.common.Nameable;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 
+//Swagger
+@Schema(implementation=ImmutableExperience.class)
 public interface IExperience extends Nameable {
 
   /**
@@ -10,6 +13,7 @@ public interface IExperience extends Nameable {
    *
    * @return amount as experience.
    */
+  @Schema(example="1000", description="Amount of experience points included.")
   long experience();
 
   /**
@@ -17,5 +21,6 @@ public interface IExperience extends Nameable {
    *
    * @return level for experience.
    */
+  @Schema(example="1", description="Level calculated from experience with an formula. (1 Level equals 1000 exp.)")
   long level();
 }

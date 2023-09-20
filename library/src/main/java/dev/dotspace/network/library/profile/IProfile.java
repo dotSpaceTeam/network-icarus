@@ -1,12 +1,12 @@
 package dev.dotspace.network.library.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.UUID;
 
 
 //Swagger
-@Tag(name="Test")
 @Schema(implementation=ImmutableProfile.class)
 public interface IProfile {
   /**
@@ -15,7 +15,9 @@ public interface IProfile {
    * @return uniqueId as {@link String}.
    */
   //Swagger
-  @Schema(description="UniqueId given by mojang for player.")
+  @Schema(
+      example="aa701217-4b37-4958-8062-037f26740a5d",
+      description="UniqueId given by mojang for player.")
   @NotNull String uniqueId();
 
   /**
@@ -23,6 +25,6 @@ public interface IProfile {
    *
    * @return type of profile.
    */
-  @Schema(description="Type of profile stored under id.")
+  @Schema(example="JAVA", description="Type of profile stored under id.")
   @NotNull ProfileType profileType();
 }
