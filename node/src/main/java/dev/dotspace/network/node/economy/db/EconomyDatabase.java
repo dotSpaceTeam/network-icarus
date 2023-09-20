@@ -11,6 +11,7 @@ import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,15 @@ public final class EconomyDatabase extends AbstractDatabase {
     return ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(symbol, name, pluralName)));
   }
 
+  public @NotNull ICurrency getCurrency(@Nullable final String symbol) throws ElementException {
+    //Null checks
+    Objects.requireNonNull(symbol);
+
+    //Get currency
+    return this.currencyRepository
+        .symbolElseThrow(symbol, "No currency with symbol="+symbol+" found!");
+  }
+
   public @NotNull ITransaction createTransaction(@Nullable final String uniqueId,
                                                  @Nullable final String symbol,
                                                  final int amount,
@@ -71,9 +81,7 @@ public final class EconomyDatabase extends AbstractDatabase {
 
     //Get currency
     final CurrencyEntity currency = this.currencyRepository
-        .findBySymbol(symbol)
-        .orElseThrow(() ->
-            new ElementNotPresentException(null, "No currency with symbol="+symbol+" found to set transaction for."));
+        .symbolElseThrow(symbol, "No currency with symbol="+symbol+" found to set transaction for.");
 
     //Convert amount to positive if deposited, negative if withdrawn.
     final int transactionAmount = Math.abs(amount)*(transactionType == TransactionType.WITHDRAW ? -1 : 1);

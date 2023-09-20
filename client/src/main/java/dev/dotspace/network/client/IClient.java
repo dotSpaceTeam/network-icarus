@@ -5,7 +5,6 @@ import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
-import dev.dotspace.network.client.status.IStatusRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.library.common.StateHandler;
 import org.jetbrains.annotations.NotNull;
@@ -22,13 +21,6 @@ public interface IClient extends StateHandler<ClientState> {
   @Override
   @NotNull IClient handle(final @Nullable ClientState clientState,
                           final @Nullable ThrowableRunnable runnable);
-
-  /**
-   * Get status of api point.
-   *
-   * @return instance of {@link IStatusRequest}.
-   */
-  @NotNull IStatusRequest statusRequest();
 
   /**
    * Get request instance of client.

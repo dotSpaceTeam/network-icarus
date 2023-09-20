@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -46,7 +47,7 @@ public class SpringConfig {
     };
   }
 
-  /**
+    /**
    * Configure thread service.
    */
   @Bean

@@ -57,9 +57,7 @@ public final class ProfileDatabase extends AbstractDatabase {
     //Null checks
     Objects.requireNonNull(uniqueId);
 
-    return this.profileRepository.findByUniqueId(uniqueId)
-        .map(ImmutableProfile::of)
-        .orElseThrow(() -> new ElementNotPresentException(null, "Not profile with  uniqueId="+uniqueId+" present."));
+    return ImmutableProfile.of(this.profileRepository.profileElseThrow(uniqueId));
   }
 
   public @NotNull IProfileAttribute setAttribute(@Nullable String uniqueId,

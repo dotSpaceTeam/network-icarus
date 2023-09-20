@@ -13,9 +13,17 @@ import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileDatabase;
 import dev.dotspace.network.node.profile.db.experience.ExperienceDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +44,9 @@ import java.util.Objects;
 
 @RestController
 @Log4j2
-@RequestMapping("/v1/profile")
+@RequestMapping(value="/v1/profile")
+//Swagger
+@Tag(name="Profile", description="Manipulate and get player profiles.")
 public final class ProfileController extends AbstractRestController {
   /**
    * Profile database.
@@ -51,36 +61,49 @@ public final class ProfileController extends AbstractRestController {
 
   /**
    * Get an profile from unique id.
-   *
-   * @param attributes if true return {@link dev.dotspace.network.library.profile.ICombinedProfile}.
    */
   @GetMapping("/{uniqueId}")
   @ResponseBody
-  public ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId,
-                                             @RequestParam(required=false) final boolean attributes) throws ElementException {
-    final IProfile profile = this.profileDatabase.getProfile(uniqueId);
-
-    /*
-     * Read attributes if requested.
-     */
-    if (attributes) {
-      final List<IProfileAttribute> profileAttributes = this.profileDatabase.getAttributes(uniqueId);
-
-      return ResponseEntity.ok(new ImmutableCombinedProfile(
-          profile.uniqueId(),
-          profile.profileType(),
-          profileAttributes));
-    }
-
-    return ResponseEntity.ok(profile);
+  //Swagger
+  @Operation(
+      summary="Get Profile information of uniqueId.",
+      description="Return Profile associated to uniqueId.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Profile if present.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfile.class)
+                  )
+              })
+      })
+  public ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId) throws ElementException {
+    return ResponseEntity.ok(this.profileDatabase.getProfile(uniqueId));
   }
 
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping()
+  @PutMapping
   @ResponseBody
-  public ResponseEntity<IProfile> insertProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) throws ElementException {
+  //Swagger
+  @Operation(
+      summary="Create new profile for uniqueId.",
+      description="Create new profile. Send endpoint profile.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Profile was created and stored successfully.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfile.class)
+                  )
+              })
+      })
+  public ResponseEntity<IProfile> createProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) throws ElementException {
     return ResponseEntity.ok(this.profileDatabase.createProfile(immutableProfile.uniqueId(), immutableProfile.profileType()));
   }
 

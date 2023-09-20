@@ -1,10 +1,14 @@
 package dev.dotspace.network.node.economy.db;
 
+import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.profile.db.ProfileEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+
 
 /**
  * Queries to manipulate currencies.
@@ -25,4 +29,13 @@ public interface CurrencyRepository extends JpaRepository<CurrencyEntity, Long> 
    * @return currency as entity.
    */
   @NotNull Optional<CurrencyEntity> findBySymbol(@Nullable final String symbol);
+
+  default @NotNull CurrencyEntity symbolElseThrow(@Nullable final String symbol,
+                                                  @NotNull final String message) throws ElementException {
+    return this
+        //Get symbol
+        .findBySymbol(symbol)
+        //Else throw error with message
+        .orElseThrow(() -> new ElementNotPresentException(null, message));
+  }
 }

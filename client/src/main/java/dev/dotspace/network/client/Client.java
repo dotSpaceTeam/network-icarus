@@ -7,7 +7,6 @@ import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
-import dev.dotspace.network.client.status.IStatusRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.Library;
@@ -63,14 +62,6 @@ public final class Client implements IClient {
                                  @Nullable ThrowableRunnable runnable) {
     this.injector.getInstance(IRestClient.class).handle(clientState, runnable);
     return this;
-  }
-
-  /**
-   * See {@link IClient#statusRequest()}
-   */
-  @Override
-  public @NotNull IStatusRequest statusRequest() {
-    return this.request(IStatusRequest.class);
   }
 
   /**

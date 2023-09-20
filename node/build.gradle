@@ -1,16 +1,18 @@
 plugins {
-    id 'java'
+  id 'java'
 }
 dependencies {
-    implementation project(":library")
+  implementation project(":library")
 
-    implementation libs.spring.boot.starter.parent
-    implementation libs.spring.boot.starter.web
-    implementation libs.spring.boot.autoconfigure
-    implementation libs.spring.boot.starter.data.jpa
-    implementation libs.spring.boot.starter.security
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.web
+  implementation libs.spring.boot.autoconfigure
+  implementation libs.spring.boot.starter.data.jpa
+  implementation libs.spring.boot.starter.security
 
-    implementation libs.postgresql
+  implementation libs.spring.doc
 
-    implementation libs.reflections
+  implementation libs.postgresql
+
+  implementation libs.reflections
 }

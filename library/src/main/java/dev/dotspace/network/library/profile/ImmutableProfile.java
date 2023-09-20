@@ -1,12 +1,21 @@
 package dev.dotspace.network.library.profile;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+
+//Swagger
+@Schema(
+    name="Profile",
+    description="Base profile. Pair of id and type of profile."
+)
 public record ImmutableProfile(@NotNull String uniqueId,
-                               @NotNull ProfileType profileType) implements IProfile {
+                               @NotNull ProfileType profileType
+) implements IProfile {
   /**
    * Convert {@link IProfile} to {@link ImmutableProfile}.
    *
