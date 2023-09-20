@@ -1,8 +1,9 @@
 package dev.dotspace.network.client;
 
+import dev.dotspace.network.client.web.ClientState;
+import dev.dotspace.network.library.common.LimitStack;
+import dev.dotspace.network.library.profile.ProfileType;
 import lombok.SneakyThrows;
-
-import java.util.Locale;
 
 
 public class tc {
@@ -10,28 +11,41 @@ public class tc {
   @SneakyThrows
   public static void main(String[] args) {
 
-    Client.enable();
+    Client.connect("http://localhost:8443");
 
     Client.client()
-        .messageRequest()
-        .updateMessage(Locale.GERMANY, "test@message@wow", "{{ KEY:prefix }} Es hat einfach funktioniert")
-        .get();
-
-    Client
-        .client()
-        .messageRequest()
-        .formatString("{{ KEY:prefix }} Diese nachricht sollte eienen prefix besitzen. {{ KEY:prefix2 }}")
-        .ifPresent(iMessage -> {
-          System.out.println(iMessage.message());
+        .handle(ClientState.ESTABLISHED, () -> {
+          System.out.println("Connected");
+        })
+        .handle(ClientState.FAILED, () -> {
+          System.out.println("Disconnected");
         });
 
-    Client
-        .client()
-        .messageRequest()
-        .getMessage(Locale.GERMANY, "test@message@wow")
-        .ifPresent(iMessage -> {
-          System.out.println(iMessage.message());
-        });
+
+    new Thread(() -> {
+
+      while (true) {
+        Client
+            .client()
+            .profileRequest()
+            .getProfile("Test")
+            .ifPresent(iProfile -> {
+              System.out.println(iProfile);
+            })
+            .ifExceptionally(throwable -> {
+              System.out.println(throwable);
+            })
+            .ifAbsent(() -> {
+              System.out.println("Absent");
+            });
+
+        try {
+          Thread.sleep(2500L);
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }).start();
 
   }
 

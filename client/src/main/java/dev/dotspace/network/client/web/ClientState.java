@@ -1,4 +1,4 @@
-package dev.dotspace.network.client;
+package dev.dotspace.network.client.web;
 
 public enum ClientState {
 

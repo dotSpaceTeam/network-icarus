@@ -5,7 +5,6 @@ import com.google.inject.Scopes;
 import com.google.inject.Singleton;
 import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.message.MessageRequest;
-import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.position.PositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
@@ -40,15 +39,9 @@ final class ClientModule extends AbstractModule {
     log.info("Configuring ClientModule...");
     //Configure start.
 
-    //Define new monitoring
-    final ClientMonitoring clientMonitoring = new ClientMonitoring();
-
     //Create rest client.
     this.bind(IRestClient.class)
-        .toInstance(new RestClient(this.identifier, this.endPoint).clientMonitoring(clientMonitoring));
-
-    //Bind clientMonitoring
-    this.bind(ClientMonitoring.class).toInstance(clientMonitoring);
+        .toInstance(new RestClient(this.identifier, this.endPoint));
 
     //Requests.
     this.bind(IPositionRequest.class)

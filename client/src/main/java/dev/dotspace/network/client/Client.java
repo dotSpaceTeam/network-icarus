@@ -4,16 +4,16 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.client.message.IMessageRequest;
-import dev.dotspace.network.client.monitoring.ClientMonitoring;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
 import dev.dotspace.network.client.status.IStatusRequest;
+import dev.dotspace.network.client.web.ClientState;
+import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.runtime.IRuntime;
 import dev.dotspace.network.library.runtime.ImmutableRuntime;
 import dev.dotspace.network.library.runtime.RuntimeType;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -42,9 +42,6 @@ public final class Client implements IClient {
   @Getter
   private final @NotNull Thread thread;
 
-  @Getter(AccessLevel.PROTECTED)
-  private final @NotNull ClientMonitoring clientMonitoring;
-
   /**
    * Only local .
    */
@@ -56,17 +53,15 @@ public final class Client implements IClient {
 
     this.thread = Thread.currentThread();
     log.info("Client instance running under id={}.", this.runtime.runtimeId());
-    this.clientMonitoring = this.injector.getInstance(ClientMonitoring.class);
-
   }
 
   /**
-   * Pass to {@link ClientMonitoring#handle(ClientState, ThrowableRunnable)}.
+   * Pass to {@link IRestClient#handle(Object, ThrowableRunnable)} .
    */
   @Override
   public @NotNull IClient handle(@Nullable ClientState clientState,
                                  @Nullable ThrowableRunnable runnable) {
-    this.clientMonitoring.handle(clientState, runnable);
+    this.injector.getInstance(IRestClient.class).handle(clientState, runnable);
     return this;
   }
 
@@ -159,6 +154,6 @@ public final class Client implements IClient {
    * Check if client is disconnected, only so if enabled and last connections failed.
    */
   public static boolean disconnected() {
-    return Client.enabled() && client.clientMonitoring.clientState() == ClientState.FAILED;
+    return client != null && client.injector.getInstance(IRestClient.class).state() == ClientState.FAILED;
   }
 }

@@ -6,6 +6,7 @@ import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.session.ISessionRequest;
 import dev.dotspace.network.client.status.IStatusRequest;
+import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.library.common.StateHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -11,12 +11,12 @@ public class tc {
 
   @SneakyThrows
   public static void main(String[] args) {
-    new ConfigService()
+    /*new ConfigService()
         .readResource(tc.class, MessageConfig.class, "message.json")
         .ifPresent(messageConfig1 -> {
-          System.out.println(messageConfig1.getMessageMap());
+          System.out.println(messageConfig1.m());
         });
-
+*/
   }
 
 }

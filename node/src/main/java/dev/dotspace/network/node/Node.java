@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.web.client.ResponseExtractor;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public final class Node implements INode {
   private final @NotNull IRuntime runtime;
 
   /**
-   * Srping context.-
+   * Spring context.-
    */
   private final @NotNull ConfigurableApplicationContext applicationContext;
 

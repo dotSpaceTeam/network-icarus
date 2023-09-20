@@ -1,11 +1,12 @@
 package dev.dotspace.network.client.web;
 
-import dev.dotspace.network.client.ClientState;
-import dev.dotspace.network.client.monitoring.ClientMonitoring;
+import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.library.common.LimitStack;
+import dev.dotspace.network.library.common.StateHandler;
+import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.field.RequestField;
 import io.netty.channel.ChannelOption;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -15,9 +16,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.nio.charset.StandardCharsets;
@@ -28,18 +29,37 @@ import java.util.Objects;
 @Accessors(fluent=true)
 @Log4j2
 public final class RestClient implements IRestClient {
+  //################## Config values ######################
   /**
-   * Monitoring of client.
+   * Amount of stored pings for average ping.
    */
-  @Getter
-  @Setter
-  private @Nullable ClientMonitoring clientMonitoring;
+  private final static int PING_COLLECTION = 128;
+  private final static long DEFAULT_PING_INTERVAL = 2000L;
 
   /**
    * Spring webclient for request.
    */
   private final @NotNull WebClient webClient;
 
+  private final @NotNull PingList pingList;
+  /**
+   * Amount of pings in total.
+   */
+  private long totalPingCount;
+  /**
+   * Last time
+   */
+  private long lastStateChange;
+
+  private long longestResponseTime;
+  @Getter
+  private @NotNull ClientState state;
+  /**
+   * Store values of state runnable.
+   */
+  private final @NotNull StateMap<ClientState> stateMap;
+
+  @SuppressWarnings("busy-waiting")
   public RestClient(@Nullable final String clientId,
                     @Nullable final String service,
                     @Nullable final Duration timeoutDuration) {
@@ -48,6 +68,12 @@ public final class RestClient implements IRestClient {
     Objects.requireNonNull(service);
     Objects.requireNonNull(timeoutDuration);
 
+    this.pingList = new PingList();
+
+    //Set first state to failed.
+    this.state = ClientState.FAILED;
+    this.stateMap = StateMap.createMap();
+
     /*
      * Create client instance.
      */
@@ -55,7 +81,7 @@ public final class RestClient implements IRestClient {
         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(timeoutDuration.toMillis()))
         .responseTimeout(timeoutDuration);
 
-    this.webClient = org.springframework.web.reactive.function.client.WebClient.builder()
+    this.webClient = WebClient.builder()
         /*
          * Set base url.
          */
@@ -72,6 +98,33 @@ public final class RestClient implements IRestClient {
         .build();
 
     log.info("Successfully created client to '{}'.", service);
+
+    log.info("Starting client monitoring...");
+
+    final Thread thread = Thread.currentThread();
+
+    //Start new thread.
+    new Thread(() -> {
+      //Run as long client runs.
+      while (!thread.isInterrupted()) {
+        //Ping if time is positive.
+        if (this.lastStateChange-System.currentTimeMillis()<=0) {
+          //Set new ping
+          this.ping();
+          this.totalPingCount++;
+        }
+
+        try {
+          //To keep performance height
+          Thread.sleep(500L);
+          //Ignore.
+        } catch (final InterruptedException ignore) {
+        }
+      }
+      System.out.println("off");
+      //Kill thread if main is also shut down.
+      log.info("Client monitoring stopped.");
+    }).start();
   }
 
   public RestClient(@Nullable final String clientId) {
@@ -132,46 +185,140 @@ public final class RestClient implements IRestClient {
 
     log.debug("Creating '{}' request to '{}'.", httpMethod, apiEndpoint);
 
-    /*
-     * Create request.
-     */
-    final WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpec = this
-        .webClient
-        .method(httpMethod);
+    //Time enabled.
+    final long start = System.currentTimeMillis();
+    final WebClient.RequestBodySpec request = this.baseRequestSpec(apiEndpoint, httpMethod);
 
-
-    final WebClient.RequestBodySpec request = requestBodySpec
-        //Url
-        .uri(apiEndpoint)
-        .acceptCharset(StandardCharsets.UTF_8);
-
+    //If type is present -> set content of request.
     if (type != null) {
-      request
-          .body(BodyInserters.fromValue(type));
+      //Insert object will be converted to json.
+      request.body(BodyInserters.fromValue(type));
     }
-
 
     return request.exchangeToMono(clientResponse -> {
           /*
            * Only  build object if ok.
            */
           if (clientResponse.statusCode().equals(HttpStatus.OK)) {
+            final long responseTime = System.currentTimeMillis()-start;
             //If client monitoring is active reset.
-            if (this.clientMonitoring != null) {
-              this.clientMonitoring.lastState(ClientState.ESTABLISHED);
+            this.lastState(ClientState.ESTABLISHED);
+            //Add average time to ping.
+            this.pingList.push(responseTime);
+
+            //Check for longest response
+            if (this.longestResponseTime<responseTime) {
+              //Set new time
+              this.longestResponseTime = responseTime;
+              log.info("New longest response time defined. Time={}ms", this.longestResponseTime);
             }
+
             return clientResponse.bodyToMono(typeClass);
           }
           //If client monitoring is active error.
-          if (this.clientMonitoring != null) {
-            this.clientMonitoring.lastState(ClientState.FAILED);
-          }
+          this.lastState(ClientState.FAILED);
+
           return clientResponse.createError();
         })
 
-        /*
-         * Block thread until response.
-         */
+        //Block until response.
         .block();
+  }
+
+  private @NotNull WebClient.RequestBodySpec baseRequestSpec(@NotNull final String endPoint,
+                                                             @NotNull final HttpMethod httpMethod) {
+    final WebClient.UriSpec<WebClient.RequestBodySpec> requestBodySpec = this
+        .webClient
+        .method(httpMethod);
+
+
+    return requestBodySpec
+        //Url
+        .uri(endPoint)
+        .acceptCharset(StandardCharsets.UTF_8);
+  }
+
+  @Override
+  public @NotNull Long ping() {
+    //Time enabled.
+    final long start = System.currentTimeMillis();
+
+    ClientState state;
+    try {
+      state = this
+          //Ping any node.
+          .baseRequestSpec("/v1/ping", HttpMethod.GET)
+          //Handle response
+          .exchangeToMono(clientResponse -> {
+            //Check if response was success.
+            if (clientResponse.statusCode().is2xxSuccessful()) {
+              //Ok
+              return Mono.just(ClientState.ESTABLISHED);
+            }
+            //Error code -> error in communication, wrong coding or server down.
+            return Mono.just(ClientState.FAILED);
+          })
+          //Block until server response.
+          .block();
+    } catch (final Exception exception) {
+      //If connections fails (no server) an error will be thrown.
+      state = ClientState.FAILED;
+    }
+
+    final long end = (System.currentTimeMillis()-start);
+
+    if (state == ClientState.ESTABLISHED) {
+      log.info("API endpoint available Took {}ms.", end);
+      this.lastState(ClientState.ESTABLISHED);
+    } else {
+      log.warn("No response from API endpoint. Took {}ms.", end);
+      this.lastState(ClientState.FAILED);
+    }
+
+    return end;
+  }
+
+  @Override
+  public @NotNull StateHandler<ClientState> handle(@Nullable ClientState clientState,
+                                                   @Nullable ThrowableRunnable runnable) {
+    //Null check
+    Objects.requireNonNull(clientState);
+    Objects.requireNonNull(runnable);
+
+    //Add state.
+    this.stateMap.append(clientState, runnable);
+    return this;
+  }
+
+  private void lastState(@NotNull final ClientState lastState) {
+    this.lastStateChange = System.currentTimeMillis()+DEFAULT_PING_INTERVAL;
+    //Ignore change
+    if (this.state == lastState && this.totalPingCount>0) {
+      return;
+    }
+    this.state = lastState;
+
+    if (this.state == ClientState.ESTABLISHED) {
+      log.info("Client connection established.");
+
+      this.stateMap.executeRunnable(ClientState.ESTABLISHED);
+      return;
+    }
+    log.warn("Client connection failed.");
+    this.stateMap.executeRunnable(ClientState.FAILED);
+  }
+
+  private final static class PingList extends LimitStack<Long> {
+
+    public PingList() {
+      super(PING_COLLECTION);
+    }
+
+    public long average() {
+      return (long) this.stream()
+          .mapToLong(value -> value)
+          .average()
+          .orElse(-1d);
+    }
   }
 }
