@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.message.content;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +11,11 @@ import java.util.Objects;
 /**
  * Implementation for {@link IPersistentMessage}.
  */
+//Swagger
+@Schema(
+    name="PersistentMessage",
+    description="Store message for language under a specific key."
+)
 public record ImmutablePersistentMessage(@NotNull String key,
                                          @NotNull Locale locale,
                                          @NotNull String message

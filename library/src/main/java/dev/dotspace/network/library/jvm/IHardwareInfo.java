@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.server;
+package dev.dotspace.network.library.jvm;
 
 /**
  * Info of current system, software running on.

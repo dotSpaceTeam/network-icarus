@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.server;
+package dev.dotspace.network.library.jvm;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -6,26 +6,26 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.util.Date;
 
-import static dev.dotspace.network.library.server.MemoryCalculator.*;
+import static dev.dotspace.network.library.jvm.MemoryCalculator.*;
 
 /**
- * Implementation of {@link IRuntimeInfo}.
+ * Implementation of {@link IResourceInfo}.
  *
- * @param timestamp      see {@link IRuntimeInfo#timestamp()}.
- * @param totalMemory    see {@link IRuntimeInfo#totalMemory()}.
- * @param unusedMemory   see {@link IRuntimeInfo#unusedMemory()}.
- * @param cores          see {@link IRuntimeInfo#cores()}.
- * @param threads        {@link IRuntimeInfo#threads()}.
- * @param processorUsage {@link IRuntimeInfo#processorUsage()}.
+ * @param timestamp      see {@link IResourceInfo#timestamp()}.
+ * @param totalMemory    see {@link IResourceInfo#totalMemory()}.
+ * @param unusedMemory   see {@link IResourceInfo#unusedMemory()}.
+ * @param cores          see {@link IResourceInfo#cores()}.
+ * @param threads        {@link IResourceInfo#threads()}.
+ * @param processorUsage {@link IResourceInfo#processorUsage()}.
  */
-public record ImmutableRuntimeInfo(@NotNull Date timestamp,
-                                   long totalMemory,
-                                   long unusedMemory,
-                                   int cores,
-                                   int threads,
-                                   float processorUsage) implements IRuntimeInfo {
+public record ImmutableResourceInfo(@NotNull Date timestamp,
+                                    long totalMemory,
+                                    long unusedMemory,
+                                    int cores,
+                                    int threads,
+                                    float processorUsage) implements IResourceInfo {
   /**
-   * See {@link IRuntimeInfo#usedMemory()}.
+   * See {@link IResourceInfo#usedMemory()}.
    */
   @Override
   public long usedMemory() {
@@ -33,7 +33,7 @@ public record ImmutableRuntimeInfo(@NotNull Date timestamp,
   }
 
   /**
-   * See {@link IRuntimeInfo#singleCoreUsage()}.
+   * See {@link IResourceInfo#singleCoreUsage()}.
    */
   @Override
   public float singleCoreUsage() {
@@ -41,7 +41,7 @@ public record ImmutableRuntimeInfo(@NotNull Date timestamp,
   }
 
   /**
-   * See {@link IRuntimeInfo#memoryUsage()}.
+   * See {@link IResourceInfo#memoryUsage()}.
    */
   @Override
   public float memoryUsage() {
@@ -61,12 +61,12 @@ public record ImmutableRuntimeInfo(@NotNull Date timestamp,
   /**
    * Get information now of system this method is executed.
    *
-   * @return instance of {@link IRuntimeInfo}.
+   * @return instance of {@link IResourceInfo}.
    */
-  public static @NotNull IRuntimeInfo now() {
+  public static @NotNull IResourceInfo now() {
     final Runtime runtime = Runtime.getRuntime();
 
-    return new ImmutableRuntimeInfo(
+    return new ImmutableResourceInfo(
       new Date(System.currentTimeMillis()),
 
       convertByteToMegabyte(runtime.totalMemory()),

@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.game.plugin.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.dotspace.network.library.config.IConfigFile;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,7 +18,9 @@ import org.jetbrains.annotations.NotNull;
 @Setter(AccessLevel.PRIVATE)
 @Accessors(fluent=true)
 public final class PluginConfig implements IConfigFile {
+  @JsonProperty("clientAutoConnect")
   private boolean clientAutoConnect;
+  @JsonProperty("clientApiEndpoint")
   private String clientApiEndpoint;
 
   //static

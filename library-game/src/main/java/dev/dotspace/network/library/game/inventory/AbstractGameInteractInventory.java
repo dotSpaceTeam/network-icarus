@@ -16,10 +16,14 @@ import java.util.Objects;
 public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     implements GameInteractInventory<INVENTORY, ITEM, PLAYER> {
   @Getter
+  private final @NotNull GameInventoryProvider<INVENTORY, ITEM, PLAYER> provider;
+  @Getter
   private final @NotNull INVENTORY inventory;
   private final @NotNull List<EventConsumer> eventConsumerList;
 
-  protected AbstractGameInteractInventory(@NotNull final INVENTORY inventory) {
+  protected AbstractGameInteractInventory(@NotNull GameInventoryProvider<INVENTORY, ITEM, PLAYER> provider,
+                                          @NotNull final INVENTORY inventory) {
+    this.provider = provider;
     this.inventory = inventory;
     this.eventConsumerList = new ArrayList<>();
   }
@@ -75,9 +79,6 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     Objects.requireNonNull(eventClass);
     Objects.requireNonNull(consumer);
 
-    //Slot check
-    this.checkInventorySlot(slot);
-
     this.eventConsumerList.add(new EventConsumer(eventClass, slot, consumer));
   }
 
@@ -96,7 +97,7 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
     this.eventConsumerList
         .stream()
         //Get all handles of class
-        .filter(eventConsumer -> eventConsumer.getClass() == event.getClass())
+        .filter(eventConsumer -> eventConsumer.eventClass() == event.getClass())
         //Loop trough
         .forEach(gameInventoryEventConsumer -> {
           try {

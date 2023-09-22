@@ -2,8 +2,11 @@ package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.Client;
 import dev.dotspace.network.client.web.ClientState;
+import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.spigot.inventory.InventoryProvider;
+import dev.dotspace.network.library.spigot.itemstack.ItemBuilder;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
 import lombok.Getter;
@@ -11,8 +14,14 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +52,11 @@ public final class IcarusPlugin extends AbstractPlugin {
 
         //Handle client.
         .handle(PluginState.POST_ENABLE, () -> {
+          //Return if client is not enabled.
+          if (!Client.enabled()) {
+            return;
+          }
+
           //Handle client behavior.
           Client.client()
               //Handle establish
@@ -91,6 +105,41 @@ public final class IcarusPlugin extends AbstractPlugin {
               .getBoolean("settings.bungeecord"));
 
           log.info(this.proxy() ? "Proxy present." : "No proxy present.");
+        })
+
+        .handle(PluginState.POST_ENABLE, () -> {
+
+          this.getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class,
+              new Listener() {
+              },
+              EventPriority.NORMAL,
+              (listener, event) -> {
+                final AsyncPlayerChatEvent chatEvent = (AsyncPlayerChatEvent) event;
+
+                if (chatEvent.getMessage().equalsIgnoreCase("test")) {
+                  this.provider(InventoryProvider.class)
+                      .get()
+                      .inventory(Bukkit.createInventory(null, 9))
+                      .handle(InventoryClickEvent.class, inventoryClickEvent -> {
+                        System.out.println("Clicked");
+                      })
+                      .handle(InventoryCloseEvent.class, inventoryCloseEvent -> {
+                        System.out.println("Closed");
+                      })
+                      .open(((AsyncPlayerChatEvent) event).getPlayer());
+                }
+
+                if (chatEvent.getMessage().equalsIgnoreCase("item")) {
+                  new ItemBuilder(Material.DIRT)
+                      .name(MessageContext.key("test", Locale.GERMANY))
+                      .buildAsync(itemStack -> {
+                        ((AsyncPlayerChatEvent) event).getPlayer().getInventory().setItem(0, itemStack);
+                      });
+                }
+
+
+              }, this);
+
         });
   }
 

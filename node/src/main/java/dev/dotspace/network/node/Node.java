@@ -81,6 +81,10 @@ public final class Node implements INode {
     return this;
   }
 
+  public @NotNull String nodeId() {
+    return this.runtime.runtimeId();
+  }
+
   //static
   @Getter
   @Accessors(fluent = true)

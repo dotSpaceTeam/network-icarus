@@ -8,7 +8,5 @@ import java.util.Optional;
 
 public interface GameSkullItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE>
         extends GameItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> {
-    @NotNull Optional<GameSkin<PROFILE>> texture();
-
     @NotNull GameSkullItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> texture(@Nullable final GameSkin<PROFILE> skin);
 }

@@ -22,10 +22,6 @@ public final class ConfigService implements IConfigService {
    * Default jackson mapper for all services.
    */
   private final static ObjectMapper MAPPER = new ObjectMapper();
-  /**
-   * Parser to read content.
-   */
-  private final static ObjectReader READER = MAPPER.reader();
 
   /**
    * See {@link IConfigService#readFile(Class, String)}.
@@ -38,7 +34,7 @@ public final class ConfigService implements IConfigService {
     Objects.requireNonNull(file);
 
 
-    return Optional.ofNullable(READER.readValue(new File(file), typeClass));
+    return Optional.ofNullable(MAPPER.readValue(new File(file), typeClass));
   }
 
   /**
@@ -63,8 +59,9 @@ public final class ConfigService implements IConfigService {
         log.warn("Resource file={} not present!", file);
         return Optional.empty();
       }
+      log.info("Reading file content of file={}.", file);
       //Present file, read content.
-      final TYPE type = READER.readValue(stream, typeClass);
+      final TYPE type = MAPPER.readValue(stream, typeClass);
       log.info("Successfully read file={}.", file);
 
       //Return content.

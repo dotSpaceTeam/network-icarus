@@ -8,13 +8,6 @@ import java.util.Optional;
 public interface GameLeatherArmorBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE>
         extends GameItemBuilder<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> {
     /**
-     * Specifies the color to be used for the builder
-     *
-     * @return color as COLOR
-     */
-    @NotNull Optional<COLOR> color();
-
-    /**
      * Sets the color to be transferred to the armor
      *
      * @param color update builder color with a {@link COLOR}

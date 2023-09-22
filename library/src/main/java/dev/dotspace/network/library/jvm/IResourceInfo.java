@@ -1,10 +1,10 @@
-package dev.dotspace.network.library.server;
+package dev.dotspace.network.library.jvm;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
 
-public interface IRuntimeInfo {
+public interface IResourceInfo {
   /**
    * Timestamp of info.
    *

@@ -2,6 +2,7 @@ package dev.dotspace.network.library.session;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+
 //Swagger
 @Schema(implementation=ImmutablePlaytime.class)
 public interface IPlaytime {
@@ -13,6 +14,6 @@ public interface IPlaytime {
   //Swagger
   @Schema(
       example="20000",
-      description="Total time of all sessions for a client. (Time in ms)")
+      description="Total time of session. (Time in ms)")
   long duration();
 }

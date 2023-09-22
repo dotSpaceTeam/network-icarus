@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.server;
+package dev.dotspace.network.library.jvm;
 
 final class MemoryCalculator {
   /**

@@ -30,4 +30,11 @@ public interface INode {
    * @return instance to chain.
    */
   @NotNull INode executeEvent(@Nullable final Object object);
+
+  /**
+   * Get id of node runtime.
+   *
+   * @return id of node.
+   */
+  @NotNull String nodeId();
 }

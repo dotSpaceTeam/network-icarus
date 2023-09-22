@@ -1,15 +1,22 @@
 package dev.dotspace.network.library.session;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 import java.util.Objects;
 
+
+@Schema(
+    name="Session",
+    description="Duration a player has connected and disconnected from the network."
+)
 public record ImmutableSession(@NotNull Long sessionId,
                                @NotNull Date startDate,
                                @NotNull Date endDate,
-                               long duration) implements ISession {
+                               long duration
+) implements ISession {
   /**
    * Convert {@link ISession} to {@link ImmutableSession}.
    *

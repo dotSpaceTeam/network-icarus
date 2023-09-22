@@ -5,15 +5,25 @@ import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.library.message.parser.MessageParser;
+import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +48,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @RestController
 @RequestMapping("/v1/message")
 @Log4j2
+//Swagger
+@Tag(name="Message", description="Manipulate, format and get messages.")
 public final class MessageController extends AbstractRestController {
   /**
    * Database to handle.
@@ -50,6 +62,21 @@ public final class MessageController extends AbstractRestController {
    */
   @PostMapping("/")
   @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Format message.",
+      description="Format message. Replace keys ins messages.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Returns formatted message.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableMessage.class)
+                  )
+              })
+      })
   public ResponseEntity<IMessage> postMessage(@RequestBody @NotNull final ImmutableMessage message,
                                               @RequestParam(required=false) final String lang) throws ElementException {
     //Get message or default
@@ -63,6 +90,21 @@ public final class MessageController extends AbstractRestController {
    */
   @PutMapping("/key")
   @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Insert a new message to system.",
+      description="Create a brand new message, if you like to update one, use POST mapping.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Returns stored message.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutablePersistentMessage.class)
+                  )
+              })
+      })
   public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
     return ResponseEntity.ok(this.messageDatabase
         .insertMessage(message.locale(), message.key(), message.message()));
@@ -73,6 +115,21 @@ public final class MessageController extends AbstractRestController {
    */
   @PostMapping("/key")
   @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Update a present message.",
+      description="Update a already present message, if you like to create one, use PUT mapping.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Returns stored message.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutablePersistentMessage.class)
+                  )
+              })
+      })
   public ResponseEntity<IPersistentMessage> postKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
     return ResponseEntity.ok(this.messageDatabase
         .updateMessage(message.locale(), message.key(), message.message()));
@@ -83,6 +140,21 @@ public final class MessageController extends AbstractRestController {
    */
   @GetMapping("/key/{key}")
   @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get a present stored message.",
+      description="Read a already present message, from system.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Returns stored message. If no lang param present, system is using Nodes default language.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutablePersistentMessage.class)
+                  )
+              })
+      })
   public ResponseEntity<IPersistentMessage> getKey(@PathVariable @NotNull final String key,
                                                    @RequestParam(required=false) final String lang) throws ElementException {
     //Get message or default

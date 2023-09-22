@@ -3,11 +3,14 @@ package dev.dotspace.network.library.spigot.inventory;
 import dev.dotspace.network.library.game.inventory.AbstractGameInteractInventory;
 import dev.dotspace.network.library.game.inventory.GameInteractInventory;
 import dev.dotspace.network.library.game.inventory.GameInventoryClickConsumer;
+import dev.dotspace.network.library.game.inventory.GameInventoryEventConsumer;
+import dev.dotspace.network.library.game.inventory.GameInventoryProvider;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -17,15 +20,10 @@ import java.util.Objects;
 
 
 public class InteractInventory extends AbstractGameInteractInventory<Inventory, ItemStack, Player> {
-  /**
-   * Plugin instance for interface.
-   */
-  private final @NotNull AbstractPlugin plugin;
 
-  protected InteractInventory(@NotNull AbstractPlugin plugin,
-                              @NotNull Inventory itemStacks) {
-    super(itemStacks);
-    this.plugin = plugin;
+  protected InteractInventory(@NotNull InventoryProvider provider,
+                              @NotNull Inventory inventory) {
+    super(provider, inventory);
   }
 
   @Override
@@ -54,7 +52,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
     Objects.requireNonNull(player);
 
     //Open
-    this.plugin.sync(() -> player.openInventory(this.inventory()));
+    this.provider().plugin().sync(() -> player.openInventory(this.inventory()));
 
     return this;
   }
@@ -69,7 +67,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
 
     //Check if inventory is this, if so close.
     if (player.getOpenInventory().getTopInventory() == this.inventory()) {
-      this.plugin.sync(player::closeInventory);
+      this.provider().plugin().sync(player::closeInventory);
     }
 
     return this;
@@ -80,7 +78,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
    */
   @Override
   public @NotNull GameInteractInventory<Inventory, ItemStack, Player> closeAll() {
-    this.plugin.sync(() -> {
+    this.provider().plugin().sync(() -> {
       this.inventory()
           //All viewers
           .getViewers()
@@ -114,5 +112,29 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
     @Nullable final ItemStack itemStack = this.inventory().getItem(slot);
     //Return true if item is not null and not type of air.
     return itemStack != null && itemStack.getType() != Material.AIR;
+  }
+
+  /**
+   * Handle event.
+   */
+  @Override
+  protected <EVENT> void executeEvent(@Nullable EVENT event) {
+    super.executeEvent(event);
+  }
+
+  @Override
+  protected <EVENT> void registerHandle(@Nullable Class<EVENT> eventClass,
+                                        int slot,
+                                        @Nullable GameInventoryEventConsumer<EVENT> consumer) {
+    super.registerHandle(eventClass, slot, consumer);
+    this.provider().handleEvent(eventClass);
+  }
+
+  /**
+   * Provider instance.
+   */
+  @Override
+  public @NotNull InventoryProvider provider() {
+    return (InventoryProvider) super.provider();
   }
 }

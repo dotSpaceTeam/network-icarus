@@ -11,6 +11,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @NoArgsConstructor
 public final class MojangUtils {
   /**
@@ -59,7 +60,8 @@ public final class MojangUtils {
     final ObjectMapper mapper = new ObjectMapper();
 
     try {
-      final JsonNode jsonNode = mapper.readTree(new String(Base64.getDecoder().decode(base64Input), StandardCharsets.UTF_8)); //Decode Base64 Input into byte[]
+      //Decode Base64 Input into byte[]
+      final JsonNode jsonNode = mapper.readTree(new String(Base64.getDecoder().decode(base64Input), StandardCharsets.UTF_8));
 
       if (jsonNode.has("textures")) {
         jsonNode.get("textures").fields().forEachRemaining(stringJsonNodeEntry -> {
@@ -68,7 +70,8 @@ public final class MojangUtils {
             return;
           }
           String url = valueNode.get("url").asText();
-          url = url.replace((url.startsWith("https") ? "https" : "http")+"://textures.minecraft.net/texture/", ""); //Remove static part of link -> reduce storage
+          //Remove static part of link -> reduce storage
+          url = url.replace((url.startsWith("https") ? "https" : "http")+"://textures.minecraft.net/texture/", "");
 
           stringStringMap.put(stringJsonNodeEntry.getKey(), url);
         });

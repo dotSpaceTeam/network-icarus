@@ -34,7 +34,7 @@ public final class RestClient implements IRestClient {
    * Amount of stored pings for average ping.
    */
   private final static int PING_COLLECTION = 128;
-  private final static long DEFAULT_PING_INTERVAL = 2000L;
+  private final static long DEFAULT_PING_INTERVAL = 10000L;
 
   /**
    * Spring webclient for request.
@@ -125,6 +125,10 @@ public final class RestClient implements IRestClient {
       //Kill thread if main is also shut down.
       log.info("Client monitoring stopped.");
     }).start();
+
+    log.info("Trying to initialize connection.");
+    //First synchronized ping to validate client.
+    this.ping();
   }
 
   public RestClient(@Nullable final String clientId) {

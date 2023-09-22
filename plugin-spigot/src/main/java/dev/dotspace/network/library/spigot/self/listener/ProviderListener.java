@@ -36,15 +36,6 @@ public final class ProviderListener extends AbstractListener {
       event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
       return;
     }
-
-    this.plugin()
-        .persistentMessage(Locale.GERMANY, "")
-        .replace("", "")
-        .complete()
-        .ifPresent(component -> {
-
-        });
-
   }
 
   /**
@@ -57,13 +48,6 @@ public final class ProviderListener extends AbstractListener {
 
     //Set default join message to null.
     event.joinMessage(null);
-
-
-    this.plugin()
-        .message("{{ PLACEHOLDER:Test }} Der test@key funktioniert. {{ PLACEHOLDER:Test2 }} ")
-        .replace("Test", "Ja")
-        .replace("Test2", "Nein");
-
   }
 
   /**

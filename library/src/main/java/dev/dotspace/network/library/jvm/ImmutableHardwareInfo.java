@@ -1,8 +1,8 @@
-package dev.dotspace.network.library.server;
+package dev.dotspace.network.library.jvm;
 
 import org.jetbrains.annotations.NotNull;
 
-import static dev.dotspace.network.library.server.MemoryCalculator.*;
+import static dev.dotspace.network.library.jvm.MemoryCalculator.*;
 
 /**
  * Implementation of {@link IHardwareInfo}.

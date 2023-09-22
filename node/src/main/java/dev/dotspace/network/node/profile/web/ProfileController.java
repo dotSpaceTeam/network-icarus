@@ -3,7 +3,6 @@ package dev.dotspace.network.node.profile.web;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
-import dev.dotspace.network.library.profile.ImmutableCombinedProfile;
 import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.experience.IExperience;
@@ -17,9 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -184,13 +181,16 @@ public final class ProfileController extends AbstractRestController {
           log.debug("Updating experience={}(add {}) for={}.", name, experience, uniqueId);
           //Add Experience.
           try {
+            //Add experience.
             return ImmutableExperience.of(this.experienceDatabase.addExperience(uniqueId, name, experience));
           } catch (final ElementException exception) {
             log.warn("Error while adding experience to "+uniqueId+".");
             return null;
           }
         })
+        //Filter not present instances.
         .filter(Objects::nonNull)
+        //Stream to list.
         .toList());
   }
 

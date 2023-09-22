@@ -1,0 +1,8 @@
+{
+  "messageMap": {
+    "en-US": {
+      "icarus@prefix": "[System]",
+      "icarus@spigot@tps": "<key>core@prefix<!key>Current server information<$$C>:\n       <$$D>Memory<$$C>: <$$P>#USED_MEMORY#<$$D> megabyte<$$C>/<$$P>#MEMORY#<$$D> megabyte <$$C>[<$$S>#USAGE_MEMORY#<$$D>%<$$C>]\n\n       <$$D>CPU<$$C>: <$$P>#USAGE_CPU#<$$D>% load spread over <$$P>#CORES# <$$D>cores\n       <$$D>Threads<$$C>: <$$P>#THREADS#<$$D> threads total\n       <$$D>TPS <$$C>[<$$D>1m 5m 15m<$$C>]: <$$P>#TPS_0#<$$C>, <$$P>#TPS_1#<$$C>, <$$P>#TPS_2#\n\n       <$$D>Players<$$C>: <$$P>#PLAYERS#"
+    }
+  }
+}
