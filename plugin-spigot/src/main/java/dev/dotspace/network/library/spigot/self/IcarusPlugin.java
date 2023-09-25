@@ -6,7 +6,8 @@ import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.inventory.InventoryProvider;
-import dev.dotspace.network.library.spigot.itemstack.ItemBuilder;
+import dev.dotspace.network.library.spigot.itemstack.IItemProvider;
+import dev.dotspace.network.library.spigot.itemstack.ItemEditor;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
 import lombok.Getter;
@@ -130,11 +131,14 @@ public final class IcarusPlugin extends AbstractPlugin {
                 }
 
                 if (chatEvent.getMessage().equalsIgnoreCase("item")) {
-                  new ItemBuilder(Material.DIRT)
+                  this.provider(IItemProvider.class)
+                      .get()
+                      .material(Material.DIRT)
                       .name(MessageContext.key("test", Locale.GERMANY))
-                      .buildAsync(itemStack -> {
+                      .handle(itemStack -> {
                         ((AsyncPlayerChatEvent) event).getPlayer().getInventory().setItem(0, itemStack);
-                      });
+                      })
+                      .complete();
                 }
 
 

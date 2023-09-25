@@ -36,6 +36,7 @@ public interface GamePlugin {
    */
   @NotNull <PROVIDER extends Provider> Optional<PROVIDER> provider(@Nullable final Class<PROVIDER> providerClass);
 
+
   /**
    * Run on state ->
    *

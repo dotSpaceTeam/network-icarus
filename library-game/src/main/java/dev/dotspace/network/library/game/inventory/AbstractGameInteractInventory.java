@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.game.inventory;
 
+import dev.dotspace.network.library.game.itemstack.GameItemEditor;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -13,15 +14,15 @@ import java.util.Objects;
 
 @Log4j2
 @Accessors(fluent=true)
-public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
-    implements GameInteractInventory<INVENTORY, ITEM, PLAYER> {
+public abstract class AbstractGameInteractInventory<INVENTORY, TYPE, ITEM, PLAYER, TEXT, EDITOR extends GameItemEditor<?, ?, ?, ?, ?, ?, ?>>
+    implements GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> {
   @Getter
-  private final @NotNull GameInventoryProvider<INVENTORY, ITEM, PLAYER> provider;
+  private final @NotNull GameInventoryProvider<INVENTORY, TYPE, ITEM, PLAYER, TEXT, EDITOR> provider;
   @Getter
   private final @NotNull INVENTORY inventory;
   private final @NotNull List<EventConsumer> eventConsumerList;
 
-  protected AbstractGameInteractInventory(@NotNull GameInventoryProvider<INVENTORY, ITEM, PLAYER> provider,
+  protected AbstractGameInteractInventory(@NotNull GameInventoryProvider<INVENTORY, TYPE, ITEM, PLAYER, TEXT, EDITOR> provider,
                                           @NotNull final INVENTORY inventory) {
     this.provider = provider;
     this.inventory = inventory;
@@ -29,8 +30,8 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
   }
 
   @Override
-  public @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable ITEM item,
-                                                                         int slot) {
+  public @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> setItem(@Nullable ITEM item,
+                                                                                 int slot) {
     //Remove handles.
     this.removeHandleFromSlot(slot);
 
@@ -41,24 +42,24 @@ public abstract class AbstractGameInteractInventory<INVENTORY, ITEM, PLAYER>
   }
 
   @Override
-  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> setItem(@Nullable ITEM item,
-                                                                                 int slot,
-                                                                                 @Nullable GameInventoryClickConsumer<ITEM, EVENT> consumer) {
+  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> setItem(@Nullable ITEM item,
+                                                                                         int slot,
+                                                                                         @Nullable GameInventoryClickConsumer<ITEM, EVENT> consumer) {
     this.setItem(item, slot);
     this.handleClick(slot, consumer);
     return this;
   }
 
   @Override
-  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handle(@Nullable Class<EVENT> eventClass,
-                                                                                @Nullable GameInventoryEventConsumer<EVENT> consumer) {
+  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> handle(@Nullable Class<EVENT> eventClass,
+                                                                                        @Nullable GameInventoryEventConsumer<EVENT> consumer) {
     this.registerHandle(eventClass, -1, consumer);
     return this;
   }
 
   @Override
-  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER> handleClick(int slot,
-                                                                                     @Nullable GameInventoryClickConsumer<ITEM, EVENT> consumer) {
+  public @NotNull <EVENT> GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> handleClick(int slot,
+                                                                                             @Nullable GameInventoryClickConsumer<ITEM, EVENT> consumer) {
     //Null check
     if (!this.itemInSlotPresent(slot)) {
       return null;

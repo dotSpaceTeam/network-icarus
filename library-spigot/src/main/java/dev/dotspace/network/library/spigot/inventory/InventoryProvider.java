@@ -3,17 +3,21 @@ package dev.dotspace.network.library.spigot.inventory;
 import com.google.inject.Inject;
 import dev.dotspace.network.library.game.inventory.AbstractGameInventoryProvider;
 import dev.dotspace.network.library.game.inventory.GameInteractInventory;
+import dev.dotspace.network.library.game.message.context.IMessageContext;
+import dev.dotspace.network.library.spigot.itemstack.IItemEditor;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +30,8 @@ import java.util.Objects;
 
 @Log4j2
 @Accessors(fluent=true)
-public final class InventoryProvider extends AbstractGameInventoryProvider<Inventory, ItemStack, Player>
+public final class InventoryProvider
+    extends AbstractGameInventoryProvider<Inventory, InventoryType, ItemStack, Player, Component, IItemEditor>
     implements IInventoryProvider, Listener {
 
   @Getter(AccessLevel.PROTECTED)
@@ -34,7 +39,7 @@ public final class InventoryProvider extends AbstractGameInventoryProvider<Inven
   /**
    * List of all handled events.
    */
-  private List<Class<? extends Event>> handledEventList;
+  private final List<Class<? extends Event>> handledEventList;
 
   @Inject
   public InventoryProvider(AbstractPlugin plugin) {
@@ -45,7 +50,7 @@ public final class InventoryProvider extends AbstractGameInventoryProvider<Inven
   }
 
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> inventory(@Nullable Inventory inventory) {
+  public @NotNull IInteractInventory inventory(@Nullable Inventory inventory) {
     //Null check
     Objects.requireNonNull(inventory);
 
@@ -59,11 +64,36 @@ public final class InventoryProvider extends AbstractGameInventoryProvider<Inven
     return interactInventory;
   }
 
+  @Override
+  public @NotNull IInteractInventory inventory(@Nullable IMessageContext messageContext,
+                                               int size) {
+    //Null check
+    Objects.requireNonNull(messageContext);
+
+
+    return null;
+  }
+
   /**
-   * @param eventClass
-   * @param <EVENT>
+   * See {@link dev.dotspace.network.library.game.inventory.GameInventoryProvider#inventory(Object, int)}
    */
-  protected <EVENT extends Event> void handleEvent(@Nullable final Class<?> eventClass) {
+  @Override
+  public @NotNull IInteractInventory inventory(@Nullable Component name,
+                                               int size) {
+    //Null check
+    Objects.requireNonNull(name);
+
+    //Call implemented method.
+    return this.inventory(Bukkit.createInventory(null, size, name));
+  }
+
+  /**
+   * Register new event instance.
+   *
+   * @param eventClass class
+   */
+  @SuppressWarnings("unchecked")
+  void handleEvent(@Nullable final Class<?> eventClass) {
     //Null check
     Objects.requireNonNull(eventClass);
 
@@ -91,21 +121,17 @@ public final class InventoryProvider extends AbstractGameInventoryProvider<Inven
         .getPluginManager()
         //Register inventory event
         .registerEvent(inventoryEvent, this, EventPriority.NORMAL, (listener, event) -> {
-          System.out.println("Rand event");
           //Get inventory for event
           final Inventory inventory = ((InventoryEvent) event).getInventory();
           //Loop trough every inventory.
-          for (final GameInteractInventory<Inventory, ItemStack, Player> interactInventory : this.inventoryList()) {
-            //Return if inventory is not the interact inventory.
+          this.inventoryList().forEach(interactInventory -> {
+            //Return if inventory is not to interact inventory.
             if (interactInventory.inventory() != inventory) {
-              continue; //Next inventory
+              return; //Next inventory
             }
-
-            System.out.println("Event");
-
             //Pass event to handle.
             ((InteractInventory) interactInventory).executeEvent(event);
-          }
+          });
 
         }, this.plugin);
 

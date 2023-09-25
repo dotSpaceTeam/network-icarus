@@ -5,6 +5,8 @@ import com.google.inject.Scopes;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.inventory.IInventoryProvider;
 import dev.dotspace.network.library.spigot.inventory.InventoryProvider;
+import dev.dotspace.network.library.spigot.itemstack.IItemProvider;
+import dev.dotspace.network.library.spigot.itemstack.ItemProvider;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
 import dev.dotspace.network.library.spigot.scoreboard.SidebarProvider;
 import lombok.AccessLevel;
@@ -34,6 +36,9 @@ public final class LibraryModule extends AbstractModule {
 
     //Register inventory provider
     this.bindProvider(IInventoryProvider.class, InventoryProvider.class);
+
+    //Register item provider
+    this.bindProvider(IItemProvider.class, ItemProvider.class);
   }
 
   private <PROVIDER> void bindProvider(@NotNull final Class<PROVIDER> interfaceClass,

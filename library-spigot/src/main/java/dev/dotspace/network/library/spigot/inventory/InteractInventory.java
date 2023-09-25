@@ -4,13 +4,14 @@ import dev.dotspace.network.library.game.inventory.AbstractGameInteractInventory
 import dev.dotspace.network.library.game.inventory.GameInteractInventory;
 import dev.dotspace.network.library.game.inventory.GameInventoryClickConsumer;
 import dev.dotspace.network.library.game.inventory.GameInventoryEventConsumer;
-import dev.dotspace.network.library.game.inventory.GameInventoryProvider;
-import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
+import dev.dotspace.network.library.game.itemstack.GameItemEditor;
+import dev.dotspace.network.library.spigot.itemstack.IItemEditor;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -19,16 +20,39 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 
-public class InteractInventory extends AbstractGameInteractInventory<Inventory, ItemStack, Player> {
+public class InteractInventory
+    extends AbstractGameInteractInventory<Inventory, InventoryType, ItemStack, Player, Component, IItemEditor>
+    implements IInteractInventory {
 
-  protected InteractInventory(@NotNull InventoryProvider provider,
+  protected InteractInventory(@NotNull IInventoryProvider provider,
                               @NotNull Inventory inventory) {
     super(provider, inventory);
   }
 
+
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> setItem(@Nullable ItemStack itemStack,
-                                                                              int slot) {
+  public @NotNull <EVENT> IInteractInventory setEditor(@Nullable IItemEditor editor,
+                                                       int slot,
+                                                       @Nullable GameInventoryClickConsumer<ItemStack, EVENT> consumer) {
+    //Null check
+    Objects.requireNonNull(editor);
+    Objects.requireNonNull(consumer);
+
+    //Run editor.
+    editor.handle(itemStack -> {
+      //Set item in inventory.
+      this.setItem(itemStack, slot);
+    }).complete() /* Set item */;
+
+    //Pass click handle.
+    this.handleClick(slot, consumer);
+
+    return this;
+  }
+
+  @Override
+  public @NotNull IInteractInventory setItem(@Nullable ItemStack itemStack,
+                                             int slot) {
     //Pass to super class.
     super.setItem(itemStack, slot);
 
@@ -37,9 +61,11 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
   }
 
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> removeItem(int slot) {
+  public @NotNull IInteractInventory removeItem(int slot) {
+    //Remove item.
     this.inventory().setItem(slot, null);
-
+    //Remove handle.
+    this.removeHandleFromSlot(slot);
     return this;
   }
 
@@ -47,7 +73,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
    * See {@link GameInteractInventory#open(Object)}.
    */
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> open(@Nullable Player player) {
+  public @NotNull IInteractInventory open(@Nullable Player player) {
     //Null check
     Objects.requireNonNull(player);
 
@@ -61,7 +87,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
    * See {@link GameInteractInventory#close(Object)}.
    */
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> close(@Nullable Player player) {
+  public @NotNull IInteractInventory close(@Nullable Player player) {
     //Null check
     Objects.requireNonNull(player);
 
@@ -77,7 +103,7 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
    * See {@link GameInteractInventory#closeAll()}.
    */
   @Override
-  public @NotNull GameInteractInventory<Inventory, ItemStack, Player> closeAll() {
+  public @NotNull IInteractInventory closeAll() {
     this.provider().plugin().sync(() -> {
       this.inventory()
           //All viewers
@@ -89,8 +115,8 @@ public class InteractInventory extends AbstractGameInteractInventory<Inventory, 
 
   @SuppressWarnings("all")
   @Override
-  public @NotNull <EVENT> GameInteractInventory<Inventory, ItemStack, Player> handleClick(int slot,
-                                                                                          @Nullable GameInventoryClickConsumer<ItemStack, EVENT> consumer) {
+  public @NotNull <EVENT> IInteractInventory handleClick(int slot,
+                                                         @Nullable GameInventoryClickConsumer<ItemStack, EVENT> consumer) {
     super.handleClick(slot, consumer);
 
     //Create new handle with predicate.

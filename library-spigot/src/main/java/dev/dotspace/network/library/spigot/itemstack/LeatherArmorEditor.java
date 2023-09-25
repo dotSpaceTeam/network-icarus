@@ -1,8 +1,9 @@
 package dev.dotspace.network.library.spigot.itemstack;
 
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.bukkit.Color;
-import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,14 +12,17 @@ import java.util.Objects;
 
 
 @Log4j2
-public class LeatherArmorBuilder extends ItemBuilder implements ILeatherArmorBuilder {
-
-  public LeatherArmorBuilder(@Nullable Material material) {
-    super(material);
+@Accessors(fluent=true)
+public class LeatherArmorEditor extends ItemEditor implements ILeatherArmorEditor {
+  /**
+   * Pass to {@link ItemEditor}
+   */
+  protected LeatherArmorEditor(@NotNull ItemStack itemStack) {
+    super(itemStack);
   }
 
   @Override
-  public @NotNull ILeatherArmorBuilder color(@Nullable Color color) {
+  public @NotNull ILeatherArmorEditor color(@Nullable Color color) {
     //Null check
     Objects.requireNonNull(color);
 
