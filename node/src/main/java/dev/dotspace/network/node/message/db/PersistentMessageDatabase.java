@@ -89,14 +89,16 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
   }
 
   public @NotNull IPersistentMessage message(@Nullable Locale locale,
-                                             @Nullable String key) {
+                                             @Nullable String key) throws ElementException {
     //Null check
     Objects.requireNonNull(locale);
     Objects.requireNonNull(key);
 
     final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
         .findByKey(key)
-        .orElseThrow(this.failOptional("No key='%s' present, can't find message.".formatted(key)));
+        .orElseThrow(() ->
+            new ElementException(null,
+                "No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
 
     final String localeTag = locale.toLanguageTag();
 

@@ -14,6 +14,7 @@ public final class ItemProvider implements IItemProvider {
     //Null check
     Objects.requireNonNull(material);
 
+
     return new ItemEditor(material);
   }
 

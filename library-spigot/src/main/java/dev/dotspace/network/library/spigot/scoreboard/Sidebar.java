@@ -1,5 +1,7 @@
 package dev.dotspace.network.library.spigot.scoreboard;
 
+import dev.dotspace.network.library.game.message.ComponentBuilder;
+import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.scoreboard.GameSidebar;
 import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.text.Component;
@@ -8,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+
+import static dev.dotspace.network.library.game.message.ComponentUtils.*;
+
 
 @Log4j2
 public final class Sidebar implements ISidebar {
@@ -28,8 +33,8 @@ public final class Sidebar implements ISidebar {
   public @NotNull Optional<Component> title() {
     //Modify board
     return Optional
-      .ofNullable(this.fastBoard)
-      .map(FastBoard::getTitle);
+        .ofNullable(this.fastBoard)
+        .map(FastBoard::getTitle);
   }
 
   /**
@@ -39,7 +44,30 @@ public final class Sidebar implements ISidebar {
   public @NotNull GameSidebar<Component> title(@Nullable Component component) {
     //Modify board
     this.fastBoard()
-      .ifPresent(fastBoard -> fastBoard.updateTitle(component));
+        .ifPresent(fastBoard -> fastBoard.updateTitle(component));
+    return this;
+  }
+
+  /**
+   * See {@link GameSidebar#title(MessageContext)}
+   */
+  @Override
+  public @NotNull GameSidebar<Component> title(@Nullable MessageContext messageContext) {
+    //Null check
+    Objects.requireNonNull(messageContext);
+
+    //Set loading.
+    this.title(waitingComponent());
+
+    //Handle message context.
+    messageContext
+        .handle(s -> {
+          //Set title.
+          this.title(component(s));
+        })
+        //Run context
+        .complete();
+
     return this;
   }
 
@@ -50,10 +78,10 @@ public final class Sidebar implements ISidebar {
   public @NotNull List<Component> lines() {
     //Modify board
     return this.fastBoard()
-      //Get all lines.
-      .map(FastBoard::getLines)
-      //Else return empty list.
-      .orElse(Collections.emptyList());
+        //Get all lines.
+        .map(FastBoard::getLines)
+        //Else return empty list.
+        .orElse(Collections.emptyList());
   }
 
   /**
@@ -63,7 +91,7 @@ public final class Sidebar implements ISidebar {
   public @NotNull Optional<Component> line(int line) {
     //Modify board
     return this.fastBoard()
-      .map(fastBoard -> fastBoard.getLine(line));
+        .map(fastBoard -> fastBoard.getLine(line));
   }
 
   /**
@@ -80,7 +108,27 @@ public final class Sidebar implements ISidebar {
 
     //Modify board
     this.fastBoard()
-      .ifPresent(fastBoard -> fastBoard.updateLine(line, component));
+        .ifPresent(fastBoard -> fastBoard.updateLine(line, component));
+    return this;
+  }
+
+  @Override
+  public @NotNull GameSidebar<Component> line(int line,
+                                              @Nullable MessageContext messageContext) {
+    //Null check
+    Objects.requireNonNull(messageContext);
+
+    //Set loading.
+    this.line(line, waitingComponent());
+
+    //Handle context.
+    messageContext
+        .handle(s -> {
+          //Set line with context
+          this.line(line, component(s));
+        })
+        .complete();
+
     return this;
   }
 
@@ -97,7 +145,27 @@ public final class Sidebar implements ISidebar {
 
     //Modify board
     this.fastBoard()
-      .ifPresent(fastBoard -> fastBoard.updateLines(components));
+        .ifPresent(fastBoard -> fastBoard.updateLines(components));
+    return this;
+  }
+
+  @Override
+  public @NotNull GameSidebar<Component> lines(@Nullable MessageContext messageContext) {
+    //Null check
+    Objects.requireNonNull(messageContext);
+
+    //Set content lines.
+    this.lines(waitingComponentList());
+
+    //Handle
+    messageContext
+        .handle(s -> {
+          //Set scoreboard lines.
+          this.lines(componentList(s));
+        })
+        //Run context
+        .complete();
+
     return this;
   }
 
@@ -108,7 +176,7 @@ public final class Sidebar implements ISidebar {
   public @NotNull GameSidebar<Component> deleteLine(int line) {
     //Modify board
     this.fastBoard()
-      .ifPresent(fastBoard -> fastBoard.removeLine(line));
+        .ifPresent(fastBoard -> fastBoard.removeLine(line));
     return this;
   }
 

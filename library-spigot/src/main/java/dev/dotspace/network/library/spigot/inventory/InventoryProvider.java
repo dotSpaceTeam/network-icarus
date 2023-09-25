@@ -115,7 +115,7 @@ public final class InventoryProvider
     }
 
     //Return if event is already handled.
-    if (this.handledEventList.contains(eventClass)) {
+    if (this.handledEventList.contains(inventoryEvent)) {
       return;
     }
 

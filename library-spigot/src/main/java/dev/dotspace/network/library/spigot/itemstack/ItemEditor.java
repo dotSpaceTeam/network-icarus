@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -23,11 +22,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import static dev.dotspace.network.library.game.message.ComponentUtils.*;
 
 //Todo
 @Log4j2
@@ -209,7 +208,10 @@ public class ItemEditor implements IItemEditor {
    * See {@link IItemEditor#removeEnchantment(GameEnchantmentInfo)}
    */
   @Override
-  public @NotNull IItemEditor removeEnchantment(@NotNull GameEnchantmentInfo<Enchantment> enchantment) {
+  public @NotNull IItemEditor removeEnchantment(@Nullable GameEnchantmentInfo<Enchantment> enchantment) {
+    //Null check
+    Objects.requireNonNull(enchantment);
+
     this.itemStack.removeEnchantment(enchantment.type());
     return this;
   }
@@ -218,13 +220,13 @@ public class ItemEditor implements IItemEditor {
    * See {@link GameItemEditor#leatherArmor(Object)}
    */
   @Override
-  public @NotNull ILeatherArmorEditor leatherArmor(@NotNull Color color) {
+  public @NotNull ILeatherArmorEditor leatherArmor(@Nullable Color color) {
     return new LeatherArmorEditor(this.itemStack).color(color);
   }
 
   @Override
-  public @NotNull ISkullItemEditor skull(@NotNull GameSkin<PlayerProfile> skin) {
-    return null;
+  public @NotNull ISkullItemEditor skull(@Nullable GameSkin<PlayerProfile> skin) {
+    return new SkullItemEditor(this.itemStack).skull(skin);
   }
 
   @Override
@@ -233,21 +235,23 @@ public class ItemEditor implements IItemEditor {
 
       //Set name.
       if (this.nameContext != null) {
-        this.name(this.component);
+        this.name(waitingComponent());
         //Update item to set loading name.
         this.executeHandle();
 
-        this.name(MiniMessage.miniMessage().deserialize(this.nameContext.complete()));
+        //Set name.
+        this.name(component(this.nameContext.forceComplete()));
       }
 
       //Set lore.
       if (this.loreContext != null) {
         //Single list.
-        this.lore(Collections.singletonList(this.component));
+        this.lore(waitingComponentList());
         //Update item to set loading name.
         this.executeHandle();
 
-        this.lore(Collections.singletonList(MiniMessage.miniMessage().deserialize(this.nameContext.complete())));
+        //Set lore
+        this.lore((List<Component>) componentList(loreContext.forceComplete()));
       }
 
       //Updated item name.
@@ -283,6 +287,4 @@ public class ItemEditor implements IItemEditor {
       }
     }
   }
-
-  private final Component component = MiniMessage.miniMessage().deserialize("<gray>...");
 }

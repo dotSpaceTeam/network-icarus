@@ -3,10 +3,12 @@ package dev.dotspace.network.library.game.message.context;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Singleton;
+import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.Client;
+import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.parser.MessageParser;
 import lombok.AccessLevel;
@@ -17,11 +19,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 
 @Log4j2
@@ -32,6 +37,7 @@ public abstract class AbstractMessageContext implements IMessageContext {
    */
   //static
   private final static @NotNull MessageCache CACHE = new MessageCache();
+  private final @NotNull List<ThrowableConsumer<String>> handleList;
 
   private final @NotNull Map<String, ThrowableSupplier<?>> placeholderMap;
   @Getter
@@ -52,6 +58,7 @@ public abstract class AbstractMessageContext implements IMessageContext {
     Objects.requireNonNull(locale);
 
     this.placeholderMap = new HashMap<>();
+    this.handleList = new ArrayList<>();
     this.contextType = contextType;
     this.content = content;
     this.locale = locale;
@@ -91,13 +98,27 @@ public abstract class AbstractMessageContext implements IMessageContext {
   }
 
   @Override
-  public @NotNull String complete() {
+  public @NotNull String forceComplete() {
     return this.process();
   }
 
   @Override
-  public @NotNull Response<String> completeAsync() {
-    return new CompletableResponse<String>().completeAsync(this::process);
+  public @NotNull Response<String> complete() {
+    return Library.responseService().response(this::process);
+  }
+
+  /**
+   * See {@link IMessageContext#handle(ThrowableConsumer)}
+   */
+  @Override
+  public @NotNull IMessageContext handle(@Nullable ThrowableConsumer<String> handleConsumer) {
+    //Null check
+    Objects.requireNonNull(handleConsumer);
+
+    //Add handler
+    this.handleList.add(handleConsumer);
+
+    return this;
   }
 
   protected @NotNull String process() {
@@ -138,6 +159,17 @@ public abstract class AbstractMessageContext implements IMessageContext {
 
     //Parse message
     messageParser.parse(this.content);
+
+    //Loop trough context.
+    for (final ThrowableConsumer<String> consumer : this.handleList) {
+      try {
+        //Consume content to handle.
+        consumer.accept(this.content);
+      } catch (final Throwable throwable) {
+        //Error
+        log.warn("Error while handling context.", throwable);
+      }
+    }
 
     return this.content;
   }

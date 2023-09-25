@@ -2,7 +2,7 @@ package dev.dotspace.network.library.spigot;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import dev.dotspace.network.library.provider.Provider;
+import com.google.inject.Singleton;
 import dev.dotspace.network.library.spigot.inventory.IInventoryProvider;
 import dev.dotspace.network.library.spigot.inventory.InventoryProvider;
 import dev.dotspace.network.library.spigot.itemstack.IItemProvider;
@@ -10,15 +10,22 @@ import dev.dotspace.network.library.spigot.itemstack.ItemProvider;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
 import dev.dotspace.network.library.spigot.scoreboard.SidebarProvider;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 
+@Singleton
 @Log4j2
 @NoArgsConstructor(access=AccessLevel.PRIVATE) /*Block constructor*/
 public final class LibraryModule extends AbstractModule {
-
+  /**
+   * Singleton get instance.
+   */
+  @Getter
+  @Accessors(fluent=true)
   private final static @NotNull LibraryModule instance;
 
   static {
@@ -49,8 +56,4 @@ public final class LibraryModule extends AbstractModule {
   }
 
   //static
-
-  public static @NotNull LibraryModule instance() {
-    return instance;
-  }
 }

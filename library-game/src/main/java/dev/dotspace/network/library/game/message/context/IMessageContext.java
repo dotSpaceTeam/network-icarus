@@ -1,9 +1,12 @@
 package dev.dotspace.network.library.game.message.context;
 
+import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 
 public interface IMessageContext {
@@ -42,7 +45,9 @@ public interface IMessageContext {
    */
   @NotNull ContextType contextType();
 
-  @NotNull String complete();
+  @NotNull String forceComplete();
 
-  @NotNull Response<String> completeAsync();
+  @NotNull Response<String> complete();
+
+  @NotNull IMessageContext handle(@Nullable final ThrowableConsumer<String> handleConsumer);
 }

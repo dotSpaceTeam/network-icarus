@@ -59,13 +59,13 @@ public interface GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, CO
   GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> enchantment(@Nullable final GameEnchantmentInfo<ENCHANTMENT> enchantmentInfo);
 
   @NotNull
-  GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> removeEnchantment(@NotNull final GameEnchantmentInfo<ENCHANTMENT> enchantment);
+  GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> removeEnchantment(@Nullable final GameEnchantmentInfo<ENCHANTMENT> enchantment);
 
   @NotNull
-  GameLeatherArmorEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> leatherArmor(@NotNull final COLOR color);
+  GameLeatherArmorEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> leatherArmor(@Nullable final COLOR color);
 
   @NotNull
-  GameSkullItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> skull(@NotNull final GameSkin<PROFILE> skin);
+  GameSkullItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> skull(@Nullable final GameSkin<PROFILE> skin);
 
   @NotNull GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> edit(@Nullable final ThrowableConsumer<ITEM> consumer);
 

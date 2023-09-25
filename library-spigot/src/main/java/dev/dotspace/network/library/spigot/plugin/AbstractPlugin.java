@@ -3,6 +3,7 @@ package dev.dotspace.network.library.spigot.plugin;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.library.game.GameModule;
 import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.message.IMessageComponent;
@@ -67,6 +68,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     //Configure.
     this.module(new PluginModule(this));
     this.module(LibraryModule.instance());
+    this.module(GameModule.instance());
     //Define entry.
     this.spigotPlugin.entryClass(this.getClass());
 

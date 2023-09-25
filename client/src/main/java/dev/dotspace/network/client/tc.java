@@ -26,8 +26,18 @@ public class tc {
     Client
         .client()
         .messageRequest()
-        .createMessage(Locale.GERMANY, "test", "Test key");
+        .createMessage(Locale.GERMANY, "sb@test", "<red> Content")
+        .ifPresent(iPersistentMessage -> {
+          System.out.println(iPersistentMessage);
+        });
 
+    Client
+        .client()
+        .messageRequest()
+        .createMessage(Locale.GERMANY, "sb@content", "<red> Line 1\n<blue>Line 2")
+        .ifPresent(iPersistentMessage -> {
+          System.out.println(iPersistentMessage);
+        });
 /*
     new Thread(() -> {
 

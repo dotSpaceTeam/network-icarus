@@ -2,6 +2,7 @@ package dev.dotspace.network.library.spigot.self.listener;
 
 import com.google.inject.Inject;
 import dev.dotspace.network.client.Client;
+import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
 import dev.dotspace.network.library.spigot.self.message.Message;
@@ -48,6 +49,11 @@ public final class ProviderListener extends AbstractListener {
 
     //Set default join message to null.
     event.joinMessage(null);
+
+    this.sidebarProvider
+        .create(player)
+        .title(MessageContext.key("sb@test", Locale.GERMANY))
+        .lines(MessageContext.key("sb@content", Locale.GERMANY));
   }
 
   /**
