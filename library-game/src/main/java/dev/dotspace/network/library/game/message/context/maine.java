@@ -35,9 +35,12 @@ public class maine {
     MessageContext
         .key("serv@join", Locale.GERMANY)
         .replace("Name", "Te")
-        .completeAsync()
+        .handle(s -> {
+          System.out.println("Handled: "+s);
+        })
+        .complete()
         .ifPresent(s -> {
-          System.out.println(s);
+          System.out.println("Present: "+s);
         });
 
 

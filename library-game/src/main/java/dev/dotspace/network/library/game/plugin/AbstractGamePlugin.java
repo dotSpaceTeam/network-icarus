@@ -15,6 +15,7 @@ import dev.dotspace.network.library.game.message.GameMessageComponent;
 import dev.dotspace.network.library.game.plugin.config.PluginConfig;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageComponent;
+import dev.dotspace.network.library.message.config.MessageConfig;
 import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -263,6 +264,33 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
       log.info("Enabling client.");
       //Connect.
       Client.connect(this.pluginConfig.clientApiEndpoint());
+
+      log.info("Searching for local message...");
+      try {
+        Library.configService()
+            .readResource(this.entryClass, MessageConfig.class, "message.json")
+            .ifPresentOrElse(messageConfig -> {
+              log.info("Messages present, sending requests.");
+
+              //Loop trough every locale - key message pair.
+              messageConfig.messageMap().forEach((locale, keyMessageMap) -> {
+                //Loop trough every key message pair.
+                keyMessageMap.forEach((key, message) -> {
+                  //Log
+                  log.info("Requesting persistent message={} for locale={}", locale.toLanguageTag(), key);
+
+                  //Send request
+                  Client.client().messageRequest().createMessage(locale, key, message);
+                });
+              });
+
+            }, () -> {
+              log.info("No message.json present.");
+            });
+      } catch (final IOException exception) {
+        exception.printStackTrace();
+        log.warn("Error while loading message.json.");
+      }
     }
 
     //Info

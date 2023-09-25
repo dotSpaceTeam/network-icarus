@@ -38,5 +38,4 @@ public interface IConfigService {
   <TYPE extends IConfigFile> @NotNull Optional<TYPE> readResource(@Nullable final Class<?> loaderClass,
                                                                   @Nullable final Class<TYPE> typeClass,
                                                                   @Nullable final String file) throws IOException;
-
 }

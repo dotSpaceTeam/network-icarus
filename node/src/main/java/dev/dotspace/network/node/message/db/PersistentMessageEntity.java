@@ -49,7 +49,7 @@ public final class PersistentMessageEntity implements IPersistentMessage {
   /**
    * Content.
    */
-  @Column(name="Message", nullable=false)
+  @Column(name="Message", nullable=false, length=4096)
   @Getter
   @Setter
   private String message;

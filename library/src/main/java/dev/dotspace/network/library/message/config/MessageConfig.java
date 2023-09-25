@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.message.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.dotspace.network.library.config.IConfigFile;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +29,7 @@ public final class MessageConfig implements IConfigFile {
    * }
    * </code>
    */
+  @JsonProperty("messageMap")
   @Getter
   private Map<Locale, Map<String, String>> messageMap;
-
-
 }
