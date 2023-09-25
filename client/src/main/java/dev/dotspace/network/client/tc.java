@@ -5,6 +5,8 @@ import dev.dotspace.network.library.common.LimitStack;
 import dev.dotspace.network.library.profile.ProfileType;
 import lombok.SneakyThrows;
 
+import java.util.Locale;
+
 
 public class tc {
 
@@ -21,7 +23,12 @@ public class tc {
           System.out.println("Disconnected");
         });
 
+    Client
+        .client()
+        .messageRequest()
+        .createMessage(Locale.GERMANY, "test", "Test key");
 
+/*
     new Thread(() -> {
 
       while (true) {
@@ -47,6 +54,8 @@ public class tc {
       }
     }).start();
 
+
+ */
   }
 
 }

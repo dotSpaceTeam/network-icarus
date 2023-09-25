@@ -4,13 +4,14 @@ import dev.dotspace.network.library.game.inventory.AbstractGameInteractInventory
 import dev.dotspace.network.library.game.inventory.GameInteractInventory;
 import dev.dotspace.network.library.game.inventory.GameInventoryClickConsumer;
 import dev.dotspace.network.library.game.inventory.GameInventoryEventConsumer;
-import dev.dotspace.network.library.game.itemstack.GameItemEditor;
+import dev.dotspace.network.library.game.inventory.InventoryConsistency;
 import dev.dotspace.network.library.spigot.itemstack.IItemEditor;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,22 @@ public class InteractInventory
   protected InteractInventory(@NotNull IInventoryProvider provider,
                               @NotNull Inventory inventory) {
     super(provider, inventory);
+
+    //Consume inventory close.
+    this.handle(InventoryCloseEvent.class, event -> {
+      //Ignore if consistency is persistent
+      if (this.consistency() == InventoryConsistency.PERSISTENT) {
+        return;
+      }
+
+      //Return if viewers are bigger than 1
+      if (event.getInventory().getViewers().size()>1) {
+        return;
+      }
+
+      //Unregister inventory.
+      this.provider().unregister(this);
+    });
   }
 
 

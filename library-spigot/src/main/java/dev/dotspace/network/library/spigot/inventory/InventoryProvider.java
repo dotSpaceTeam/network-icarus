@@ -2,7 +2,6 @@ package dev.dotspace.network.library.spigot.inventory;
 
 import com.google.inject.Inject;
 import dev.dotspace.network.library.game.inventory.AbstractGameInventoryProvider;
-import dev.dotspace.network.library.game.inventory.GameInteractInventory;
 import dev.dotspace.network.library.game.message.context.IMessageContext;
 import dev.dotspace.network.library.spigot.itemstack.IItemEditor;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
@@ -61,6 +60,8 @@ public final class InventoryProvider
     //Handle inventory
     this.handle(interactInventory);
 
+    log.info("Registered inventory.");
+
     return interactInventory;
   }
 
@@ -69,7 +70,6 @@ public final class InventoryProvider
                                                int size) {
     //Null check
     Objects.requireNonNull(messageContext);
-
 
     return null;
   }
@@ -85,6 +85,14 @@ public final class InventoryProvider
 
     //Call implemented method.
     return this.inventory(Bukkit.createInventory(null, size, name));
+  }
+
+  /**
+   * Unregister interface
+   */
+  void unregister(@NotNull final InteractInventory interactInventory) {
+    this.forget(interactInventory);
+    log.info("Unregister inventory.");
   }
 
   /**

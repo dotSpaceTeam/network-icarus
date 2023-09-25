@@ -49,6 +49,19 @@ public interface GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR extends G
 
   @NotNull INVENTORY inventory();
 
+  // Consistency
+
+  /**
+   * Set consistency of inventory see {@link InventoryConsistency}.
+   *
+   * @param consistency to set for inventory.
+   */
+  @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> consistency(@Nullable final InventoryConsistency consistency);
+
+  /**
+   * Get consistency.
+   */
+  @NotNull InventoryConsistency consistency();
   /*
    * Handles
    */

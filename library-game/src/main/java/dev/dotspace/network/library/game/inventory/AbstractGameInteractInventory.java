@@ -21,6 +21,8 @@ public abstract class AbstractGameInteractInventory<INVENTORY, TYPE, ITEM, PLAYE
   @Getter
   private final @NotNull INVENTORY inventory;
   private final @NotNull List<EventConsumer> eventConsumerList;
+  @Getter
+  private @NotNull InventoryConsistency consistency = InventoryConsistency.VOLATILE;
 
   protected AbstractGameInteractInventory(@NotNull GameInventoryProvider<INVENTORY, TYPE, ITEM, PLAYER, TEXT, EDITOR> provider,
                                           @NotNull final INVENTORY inventory) {
@@ -64,6 +66,17 @@ public abstract class AbstractGameInteractInventory<INVENTORY, TYPE, ITEM, PLAYE
     if (!this.itemInSlotPresent(slot)) {
       return null;
     }
+
+    return this;
+  }
+
+  @Override
+  public @NotNull GameInteractInventory<INVENTORY, ITEM, PLAYER, EDITOR> consistency(@Nullable InventoryConsistency consistency) {
+    //Null check
+    Objects.requireNonNull(consistency);
+
+    //Set new consistency
+    this.consistency = consistency;
 
     return this;
   }
