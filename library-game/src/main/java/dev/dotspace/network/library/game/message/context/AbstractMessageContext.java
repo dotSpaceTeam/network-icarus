@@ -4,17 +4,19 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Singleton;
 import dev.dotspace.common.function.ThrowableConsumer;
+import dev.dotspace.common.function.ThrowableFunction;
 import dev.dotspace.common.function.ThrowableSupplier;
-import dev.dotspace.common.response.CompletableResponse;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.Library;
+import dev.dotspace.network.library.game.message.ComponentUtils;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.parser.MessageParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +28,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 
 @Log4j2
@@ -37,7 +38,14 @@ public abstract class AbstractMessageContext implements IMessageContext {
    */
   //static
   private final static @NotNull MessageCache CACHE = new MessageCache();
+  private final static Map<Class<?>, ThrowableFunction<String, ?>> MESSAGE_FUNCTION;
   private final @NotNull List<ThrowableConsumer<String>> handleList;
+
+  static {
+    MESSAGE_FUNCTION = new HashMap<>();
+    //Store component as default.
+    MESSAGE_FUNCTION.put(Component.class, ComponentUtils::component);
+  }
 
   private final @NotNull Map<String, ThrowableSupplier<?>> placeholderMap;
   @Getter
@@ -98,13 +106,59 @@ public abstract class AbstractMessageContext implements IMessageContext {
   }
 
   @Override
+  public @NotNull <TYPE> IMessageContext function(@Nullable Class<TYPE> typeClass,
+                                                  @Nullable ThrowableFunction<String, TYPE> stringTYPEFunction) {
+    //Null check
+    Objects.requireNonNull(typeClass);
+    Objects.requireNonNull(stringTYPEFunction);
+
+    //Stores function
+    MESSAGE_FUNCTION.put(typeClass, stringTYPEFunction);
+
+    //Log
+    log.info("Stored MessageContext-function for class={}.", typeClass.getSimpleName());
+    return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  private <TYPE> @NotNull ThrowableFunction<String, TYPE> function(@NotNull final Class<TYPE> typeClass) {
+    return Objects.requireNonNull((ThrowableFunction<String, TYPE>) MESSAGE_FUNCTION.get(typeClass), "");
+  }
+
+  @Override
   public @NotNull String forceComplete() {
     return this.process();
   }
 
   @Override
+  public @NotNull <TYPE> TYPE forceComplete(@Nullable Class<TYPE> typeClass) {
+    //Null check
+    Objects.requireNonNull(typeClass);
+
+    try {
+      return Objects.requireNonNull(this.function(typeClass).apply(this.forceComplete()));
+    } catch (final Throwable throwable) {
+      log.warn("Error while force completing with function.");
+      throw new RuntimeException(throwable);
+    }
+  }
+
+  @Override
   public @NotNull Response<String> complete() {
     return Library.responseService().response(this::process);
+  }
+
+  @Override
+  public @NotNull <TYPE> Response<TYPE> complete(@Nullable Class<TYPE> typeClass) {
+    //Null check
+    Objects.requireNonNull(typeClass);
+
+    try {
+      return this.complete().map(this.function(typeClass));
+    } catch (final Throwable throwable) {
+      log.warn("Error while force completing with function.");
+      throw new RuntimeException(throwable);
+    }
   }
 
   /**
@@ -119,6 +173,17 @@ public abstract class AbstractMessageContext implements IMessageContext {
     this.handleList.add(handleConsumer);
 
     return this;
+  }
+
+  @Override
+  public @NotNull <TYPE> IMessageContext handle(@Nullable Class<TYPE> typeClass,
+                                                @Nullable ThrowableConsumer<TYPE> handleConsumer) {
+    //Null check
+    Objects.requireNonNull(typeClass);
+    Objects.requireNonNull(handleConsumer);
+
+    //Pass handle.
+    return this.handle(s -> handleConsumer.accept(this.function(typeClass).apply(s)));
   }
 
   protected @NotNull String process() {

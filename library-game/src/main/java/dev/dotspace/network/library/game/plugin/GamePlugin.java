@@ -3,17 +3,17 @@ package dev.dotspace.network.library.game.plugin;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
-import dev.dotspace.network.library.message.IMessageComponent;
+import dev.dotspace.network.library.game.message.context.ContextType;
+import dev.dotspace.network.library.game.message.context.IMessageContext;
+import dev.dotspace.network.library.jvm.IResourceInfo;
 import dev.dotspace.network.library.provider.Provider;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Locale;
 import java.util.Optional;
 
 
-public interface GamePlugin {
+public interface GamePlugin<PLAYER> {
   /**
    * Configure plugin.
    */
@@ -42,8 +42,8 @@ public interface GamePlugin {
    *
    * @throws NullPointerException if state or runnable is null.
    */
-  @NotNull GamePlugin handle(@Nullable final PluginState state,
-                             @Nullable final ThrowableRunnable runnable);
+  @NotNull GamePlugin<PLAYER> handle(@Nullable final PluginState state,
+                                     @Nullable final ThrowableRunnable runnable);
 
   /**
    * Register no module for injected. Execute on configure.
@@ -54,13 +54,24 @@ public interface GamePlugin {
    * @throws NullPointerException  if module is null.
    * @throws IllegalStateException if plugin already configured.
    */
-  @NotNull <MODULE extends AbstractModule> GamePlugin module(@Nullable final MODULE module);
+  @NotNull <MODULE extends AbstractModule> GamePlugin<PLAYER> module(@Nullable final MODULE module);
 
-  @NotNull IMessageComponent<Component> message(@Nullable final String message);
+  /**
+   * Get context for player.
+   *
+   * @param player      to get context for.
+   * @param contextType type of context to build message.
+   * @param content     message or key.
+   * @return created context.
+   */
+  @NotNull IMessageContext message(@Nullable final PLAYER player,
+                                   @Nullable final ContextType contextType,
+                                   @Nullable final String content);
 
-  @NotNull IMessageComponent<Component> persistentMessage(@Nullable final Locale locale,
-                                                          @Nullable final String key);
-
-  @NotNull IMessageComponent<Component> persistentMessage(@Nullable final String uniqueId,
-                                                          @Nullable final String key);
+  /**
+   * Get current resources.
+   *
+   * @return instance of current system.
+   */
+  @NotNull IResourceInfo resourceInfo();
 }

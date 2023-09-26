@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
@@ -13,14 +14,18 @@ import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 
 @Log4j2
 @Getter
 @Accessors(fluent=true)
-public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener, AbstractCommand> {
+public abstract class AbstractPlugin extends AbstractGamePlugin<Player, AbstractListener, AbstractCommand> {
   private final @NotNull ProxyServer server;
   private final @NotNull Logger logger;
 
@@ -85,5 +90,17 @@ public abstract class AbstractPlugin extends AbstractGamePlugin<AbstractListener
    */
   public @NotNull String name() {
     return this.getClass().getName();
+  }
+
+  /**
+   * See {@link AbstractGamePlugin#playerLocale(Object)}.
+   */
+  @Override
+  protected @NotNull Locale playerLocale(@Nullable Player player) {
+    return Optional.ofNullable(player)
+        //Get player locale.
+        .map(Player::getEffectiveLocale)
+        //If player or player locale is null, use default.
+        .orElse(Locale.getDefault());
   }
 }

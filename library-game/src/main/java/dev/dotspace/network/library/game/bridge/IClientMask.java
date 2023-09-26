@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Parameters for basic communication.
  */
-public interface IDataBridge {
+public interface IClientMask {
   /**
    * Connect a client.
    *
@@ -22,7 +22,8 @@ public interface IDataBridge {
   @NotNull Response<Boolean> connect(@Nullable final ProfileType profileType,
                                      @Nullable final String uniqueId,
                                      @Nullable final String name,
-                                     @Nullable final String texture);
+                                     @Nullable final String texture,
+                                     @Nullable final String signature);
 
   @NotNull Response<Boolean> disconnect(@Nullable final String uniqueId);
 }

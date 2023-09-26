@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-
 public final class MessageContext extends AbstractMessageContext {
 
   public MessageContext(@Nullable ContextType contextType,

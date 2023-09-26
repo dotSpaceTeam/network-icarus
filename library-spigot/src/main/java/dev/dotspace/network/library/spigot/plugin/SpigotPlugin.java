@@ -2,14 +2,14 @@ package dev.dotspace.network.library.spigot.plugin;
 
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
-import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
-import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * Class exists, because {@link org.bukkit.plugin.java.JavaPlugin} needs to be extended.
  * Hacky class.
  */
-final class SpigotPlugin extends AbstractGamePlugin<AbstractListener, AbstractCommand> {
+final class SpigotPlugin extends AbstractGamePlugin<Player, AbstractListener, AbstractCommand> {
 
   /**
    * See {@link AbstractGamePlugin#executeRunnable(PluginState)}
@@ -47,12 +47,6 @@ final class SpigotPlugin extends AbstractGamePlugin<AbstractListener, AbstractCo
     /*
      * Ignore
      */
-  }
-
-  @Override
-  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable String uniqueId,
-                                                                 @Nullable String key) {
-    return null;
   }
 
   /**
@@ -102,11 +96,19 @@ final class SpigotPlugin extends AbstractGamePlugin<AbstractListener, AbstractCo
   }
 
   /**
+   * See {@link AbstractGamePlugin#playerLocale(Object)}
+   */
+  @Override
+  protected @NotNull Locale playerLocale(@Nullable Player player) {
+    return player == null ? Locale.getDefault() : player.locale();
+  }
+
+  /**
    * See {@link AbstractGamePlugin#entryClass()}
    * There to be used in code.
    */
   @Override
-  protected AbstractGamePlugin<AbstractListener, AbstractCommand> entryClass(@Nullable Class<?> entryClass) {
+  protected AbstractGamePlugin<Player, AbstractListener, AbstractCommand> entryClass(@Nullable Class<?> entryClass) {
     return super.entryClass(entryClass);
   }
 }

@@ -1,8 +1,6 @@
 package dev.dotspace.network.node.web.error;
 
-import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.node.exception.ElementException;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

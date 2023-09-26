@@ -1,13 +1,16 @@
 package dev.dotspace.network.library.game.message.context;
 
 import dev.dotspace.common.function.ThrowableConsumer;
+import dev.dotspace.common.function.ThrowableFunction;
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.context.IContext;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 
 public interface IMessageContext extends IContext<String> {
@@ -46,6 +49,15 @@ public interface IMessageContext extends IContext<String> {
    */
   @NotNull ContextType contextType();
 
-  @Override
+  @NotNull <TYPE> IMessageContext function(@Nullable final Class<TYPE> typeClass,
+                                           @Nullable final ThrowableFunction<String, TYPE> typeFunction);
+
+  @NotNull <TYPE> TYPE forceComplete(@Nullable final Class<TYPE> typeClass);
+
+  @NotNull <TYPE> Response<TYPE> complete(@Nullable final Class<TYPE> typeClass);
+
+  @NotNull <TYPE> IMessageContext handle(@Nullable final Class<TYPE> typeClass,
+                                         @Nullable final ThrowableConsumer<TYPE> handleConsumer);
+
   @NotNull IMessageContext handle(@Nullable final ThrowableConsumer<String> handleConsumer);
 }

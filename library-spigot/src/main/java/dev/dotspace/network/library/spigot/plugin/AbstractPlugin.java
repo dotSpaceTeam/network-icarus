@@ -4,8 +4,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.library.game.GameModule;
+import dev.dotspace.network.library.game.message.context.ContextType;
+import dev.dotspace.network.library.game.message.context.IMessageContext;
 import dev.dotspace.network.library.game.plugin.GamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
+import dev.dotspace.network.library.jvm.IResourceInfo;
 import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.provider.Provider;
 import dev.dotspace.network.library.spigot.LibraryModule;
@@ -14,6 +17,7 @@ import dev.dotspace.network.library.spigot.event.AbstractListener;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +28,7 @@ import java.util.Optional;
 
 @Log4j2
 @Accessors(fluent=true)
-public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
+public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin<Player> {
   /**
    * Plugin to handle system, cant be extended because {@link JavaPlugin} needed by default.
    */
@@ -50,8 +54,8 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
    * Pass {@link SpigotPlugin#handle(PluginState, ThrowableRunnable)}
    */
   @Override
-  public @NotNull GamePlugin handle(@Nullable PluginState state,
-                                    @Nullable ThrowableRunnable runnable) {
+  public @NotNull GamePlugin<Player> handle(@Nullable PluginState state,
+                                            @Nullable ThrowableRunnable runnable) {
     return this.spigotPlugin.handle(state, runnable);
   }
 
@@ -114,23 +118,6 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
     this.spigotPlugin.executeRunnable(PluginState.POST_DISABLE);
   }
 
-  @Override
-  public @NotNull IMessageComponent<Component> message(@Nullable String message) {
-    return this.spigotPlugin.message(message);
-  }
-
-  @Override
-  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable Locale locale,
-                                                                 @Nullable String key) {
-    return this.spigotPlugin.persistentMessage(locale, key);
-  }
-
-  @Override
-  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable String uniqueId,
-                                                                 @Nullable String key) {
-    return this.spigotPlugin.persistentMessage(uniqueId, key);
-  }
-
   /**
    * Synchronize {@link Runnable}.
    *
@@ -159,5 +146,23 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin {
       this.getServer().getScheduler().runTaskAsynchronously(this, runnable);
     }
     return this;
+  }
+
+  /**
+   * Pass to {@link SpigotPlugin}.
+   */
+  @Override
+  public @NotNull IMessageContext message(@Nullable Player player,
+                                          @Nullable ContextType contextType,
+                                          @Nullable String content) {
+    return this.spigotPlugin.message(player, contextType, content);
+  }
+  
+  /**
+   * Pass to {@link SpigotPlugin}.
+   */
+  @Override
+  public @NotNull IResourceInfo resourceInfo() {
+    return this.spigotPlugin.resourceInfo();
   }
 }

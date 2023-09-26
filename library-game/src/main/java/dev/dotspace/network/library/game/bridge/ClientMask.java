@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.game.bridge;
 
+import com.google.inject.Singleton;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.Library;
@@ -14,12 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@Singleton
 @Log4j2
-public class AbstractDataBridge implements IDataBridge {
-
+public final class ClientMask implements IClientMask {
   private final Map<String, ISession> localSessions;
 
-  public AbstractDataBridge() {
+  public ClientMask() {
     this.localSessions = new HashMap<>();
   }
 
@@ -28,45 +29,41 @@ public class AbstractDataBridge implements IDataBridge {
   public @NotNull Response<Boolean> connect(@Nullable ProfileType profileType,
                                             @Nullable String uniqueId,
                                             @Nullable String name,
-                                            @Nullable String texture) {
+                                            @Nullable String texture,
+                                            @Nullable String signature) {
     return Library.responseService().response(() -> {
       //Create client if present.
-      if (Client.client()
+      Client.client()
           .profileRequest()
           .createProfile(uniqueId, profileType)
-          .get() == null) {
-        throw new LibraryException("Error while creating profile.");
-      }
+          .getOptional()
+          .orElseThrow(() -> new LibraryException("Error while creating profile."));
 
       log.info("Updated client={}.", uniqueId);
 
-      if (Client.client()
+      Client.client()
           .profileRequest()
           .setAttribute(uniqueId, "name", name)
-          .get() == null) {
-        throw new LibraryException("Error while updating name of "+uniqueId+".");
-      }
+          .getOptional()
+          .orElseThrow(() -> new LibraryException("Error while updating name of "+uniqueId+"."));
 
       log.info("Updated client={} -> name={}.", uniqueId, name);
 
-      if (Client.client()
+      Client.client()
           .profileRequest()
           .setAttribute(uniqueId, "skin", texture)
-          .get() == null) {
-        throw new LibraryException("Error while updating skin for "+uniqueId+".");
-      }
+          .getOptional()
+          .orElseThrow(() -> new LibraryException("Error while updating skin for "+uniqueId+"."));
+
 
       log.info("Update client={} -> texture={}.", uniqueId, texture);
 
-      @Nullable final ISession session = Client.client()
+      final ISession session = Client.client()
           .sessionRequest()
           .createSession(uniqueId)
-          .get();
-
-      //If session is null.
-      if (session == null) {
-        throw new LibraryException("Error while creating session for "+uniqueId+".");
-      }
+          .getOptional()
+          //If session is null.
+          .orElseThrow(() -> new LibraryException("Error while creating session for "+uniqueId+"."));
 
       log.info("Created new session for client={} -> session={}.", uniqueId, session.sessionId());
 

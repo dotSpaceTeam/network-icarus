@@ -8,6 +8,7 @@ import java.util.Date;
 
 import static dev.dotspace.network.library.jvm.MemoryCalculator.*;
 
+
 /**
  * Implementation of {@link IResourceInfo}.
  *
@@ -23,13 +24,14 @@ public record ImmutableResourceInfo(@NotNull Date timestamp,
                                     long unusedMemory,
                                     int cores,
                                     int threads,
-                                    float processorUsage) implements IResourceInfo {
+                                    float processorUsage
+) implements IResourceInfo {
   /**
    * See {@link IResourceInfo#usedMemory()}.
    */
   @Override
   public long usedMemory() {
-    return this.totalMemory() - this.unusedMemory();
+    return this.totalMemory()-this.unusedMemory();
   }
 
   /**
@@ -37,7 +39,7 @@ public record ImmutableResourceInfo(@NotNull Date timestamp,
    */
   @Override
   public float singleCoreUsage() {
-    return this.processorUsage() / this.cores();
+    return this.processorUsage()/this.cores();
   }
 
   /**
@@ -45,7 +47,7 @@ public record ImmutableResourceInfo(@NotNull Date timestamp,
    */
   @Override
   public float memoryUsage() {
-    return (float) this.usedMemory() / (float) this.totalMemory();
+    return (float) this.usedMemory()/(float) this.totalMemory();
   }
 
   //static
@@ -67,14 +69,14 @@ public record ImmutableResourceInfo(@NotNull Date timestamp,
     final Runtime runtime = Runtime.getRuntime();
 
     return new ImmutableResourceInfo(
-      new Date(System.currentTimeMillis()),
+        new Date(System.currentTimeMillis()),
 
-      convertByteToMegabyte(runtime.totalMemory()),
-      convertByteToMegabyte(runtime.freeMemory()),
+        convertByteToMegabyte(runtime.totalMemory()),
+        convertByteToMegabyte(runtime.freeMemory()),
 
-      runtime.availableProcessors(),
-      ManagementFactory.getThreadMXBean().getThreadCount(),
-      (float) OPERATING_SYSTEM_MX_BEAN.getSystemLoadAverage()
+        runtime.availableProcessors(),
+        ManagementFactory.getThreadMXBean().getThreadCount(),
+        Math.max(0f, (float) OPERATING_SYSTEM_MX_BEAN.getSystemLoadAverage())
     );
   }
 }

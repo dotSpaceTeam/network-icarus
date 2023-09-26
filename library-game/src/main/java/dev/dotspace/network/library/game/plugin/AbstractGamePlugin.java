@@ -12,7 +12,12 @@ import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.game.message.GameMessageComponent;
+import dev.dotspace.network.library.game.message.context.ContextType;
+import dev.dotspace.network.library.game.message.context.IMessageContext;
+import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.plugin.config.PluginConfig;
+import dev.dotspace.network.library.jvm.IResourceInfo;
+import dev.dotspace.network.library.jvm.ImmutableResourceInfo;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.message.config.MessageConfig;
@@ -43,7 +48,8 @@ import java.util.stream.Stream;
 @Log4j2
 @SuppressWarnings("all")
 @Accessors(fluent=true)
-public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMAND extends AbstractCloudCommand> implements GamePlugin {
+public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?>,
+    COMMAND extends AbstractCloudCommand> implements GamePlugin<PLAYER> {
   /**
    * Injector of plugin -> {@link GamePlugin#injector()}
    */
@@ -144,33 +150,25 @@ public abstract class AbstractGamePlugin<LISTENER extends GameListener<?>, COMMA
     return this;
   }
 
+  /**
+   * See {@link GamePlugin#message(Object, ContextType, String)}
+   */
   @Override
-  public @NotNull IMessageComponent<Component> message(@Nullable String message) {
-    //Null check
-    Objects.requireNonNull(message);
-
-    return new GameMessageComponent(() -> message);
+  public @NotNull IMessageContext message(@Nullable PLAYER player,
+                                          @Nullable ContextType contextType,
+                                          @Nullable String content) {
+    return new MessageContext(contextType, content, this.playerLocale(player));
   }
 
   @Override
-  public @NotNull IMessageComponent<Component> persistentMessage(@Nullable Locale locale,
-                                                                 @Nullable String key) {
-    //Null check
-    Objects.requireNonNull(locale);
-    Objects.requireNonNull(key);
-
-    return new GameMessageComponent(() -> {
-      return Client.client()
-          .messageRequest()
-          //Request message from master.
-          .getMessage(locale, key)
-          .getOptional()
-          //Get stored message
-          .map(IMessage::message)
-          //Else set error.
-          .orElse("Error while requesting message.");
-    });
+  public @NotNull IResourceInfo resourceInfo() {
+    return ImmutableResourceInfo.now();
   }
+
+  /**
+   * Get locale of player.
+   */
+  protected abstract @NotNull Locale playerLocale(@Nullable final PLAYER player);
 
   /**
    * Check if system is already configured.

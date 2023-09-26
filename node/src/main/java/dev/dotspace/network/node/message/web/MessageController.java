@@ -5,20 +5,15 @@ import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.library.message.parser.MessageParser;
-import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -161,6 +156,8 @@ public final class MessageController extends AbstractRestController {
     final Locale locale = this.localeFromTag(lang);
     //Get stored message.
     final IPersistentMessage persistentMessage = this.messageDatabase.message(locale, key);
+
+    System.out.println(persistentMessage.message());
 
     //Return value
     return ResponseEntity.ok(

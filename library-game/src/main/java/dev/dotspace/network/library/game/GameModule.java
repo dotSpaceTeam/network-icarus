@@ -2,6 +2,8 @@ package dev.dotspace.network.library.game;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
+import dev.dotspace.network.library.game.bridge.ClientMask;
+import dev.dotspace.network.library.game.bridge.IClientMask;
 import dev.dotspace.network.library.game.message.ComponentBuilder;
 import dev.dotspace.network.library.game.message.IComponentBuilder;
 import lombok.Getter;
@@ -36,5 +38,8 @@ public final class GameModule extends AbstractModule {
   protected void configure() {
     //Bind component builder.
     this.bind(IComponentBuilder.class).to(ComponentBuilder.class);
+
+    //Bind client mask.
+    this.bind(IClientMask.class).to(ClientMask.class).in(Singleton.class);
   }
 }

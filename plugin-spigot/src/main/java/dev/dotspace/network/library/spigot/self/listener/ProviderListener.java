@@ -3,11 +3,13 @@ package dev.dotspace.network.library.spigot.self.listener;
 import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.google.inject.Inject;
 import dev.dotspace.network.client.Client;
+import dev.dotspace.network.library.game.bridge.IClientMask;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.mojang.MojangUtils;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
+import dev.dotspace.network.library.spigot.self.IcarusPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +31,9 @@ public final class ProviderListener extends AbstractListener {
   @Inject
   private ISidebarProvider sidebarProvider;
 
+  @Inject
+  private IClientMask clientMask;
+
   /**
    * Handle if player login to server.
    * LOWEST priority means this event will be triggered as first.
@@ -42,21 +47,8 @@ public final class ProviderListener extends AbstractListener {
       return;
     }
 
-    final ProfileType profileType = ProfileType.JAVA;
-    final String uniqueId = event.getUniqueId().toString();
-    final String name = event.getName();
-    final String inetSocketAddress = event.getAddress().getHostAddress();
-
-    System.out.println("UUID "+uniqueId);
-    System.out.println("Name "+name);
-    System.out.println("Ip "+inetSocketAddress);
-
-
-    event.getPlayerProfile().getProperties().forEach(profileProperty -> {
-      System.out.println("Texture "+
-          MojangUtils.texturesIdMapFromBase64(profileProperty.getValue()));
-      System.out.println("Signature "+profileProperty.getSignature());
-    });
+    //Pass connect
+    this.handleConnect(event);
   }
 
   /**
@@ -84,5 +76,70 @@ public final class ProviderListener extends AbstractListener {
 
     //Remove from sidebar.
     this.sidebarProvider.remove(player);
+
+    //Pass disconnect.
+    this.handleDisconnect(event);
+  }
+
+  private void handleConnect(@NotNull final AsyncPlayerPreLoginEvent event) {
+    //Check if proxy is present.
+    if (presentProxy()) {
+      return;
+    }
+
+    //Return if client is absent.
+    if (Client.disconnected()) {
+      return;
+    }
+
+    final ProfileType profileType = ProfileType.JAVA;
+    final String uniqueId = event.getUniqueId().toString();
+    final String name = event.getName();
+    final String inetSocketAddress = event.getAddress().getHostAddress();
+
+    System.out.println("Ip "+inetSocketAddress);
+
+    event.getPlayerProfile().getProperties().forEach(profileProperty -> {
+      System.out.println("Texture "+
+          MojangUtils.texturesIdMapFromBase64(profileProperty.getValue()));
+      System.out.println("Signature "+profileProperty.getSignature());
+    });
+
+    try {
+      if (!this.clientMask.connect(profileType, uniqueId, name, "", "")
+          .getOptional()
+          .orElse(false)) {
+        event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
+        return;
+      }
+    } catch (final InterruptedException exception) {
+    }
+  }
+
+  private void handleDisconnect(@NotNull final PlayerQuitEvent event) {
+//Check if proxy is present.
+    if (presentProxy()) {
+      return;
+    }
+
+    //Return if client is absent.
+    if (Client.disconnected()) {
+      return;
+    }
+
+    final String uniqueId = event.getPlayer().getUniqueId().toString();
+
+    try {
+      if (!this.clientMask.disconnect(uniqueId)
+          .getOptional()
+          .orElse(false)) {
+        return;
+      }
+    } catch (final InterruptedException exception) {
+    }
+  }
+
+  private boolean presentProxy() {
+    return ((IcarusPlugin) this.plugin()).proxy();
   }
 }

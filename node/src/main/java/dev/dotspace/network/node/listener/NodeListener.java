@@ -18,7 +18,7 @@ import java.util.concurrent.Executor;
 @Log4j2
 public final class NodeListener {
   /**
-   *
+   * Database to store all requests.
    */
   @Autowired
   private RestRequestDatabase database;
@@ -31,12 +31,11 @@ public final class NodeListener {
     //Store request parameters.
     final String requestUrl = event.getRequestUrl();
     //If true, request will not be logged.
-    final boolean pseudoRequest = requestUrl.endsWith("ping");
+    final boolean pseudoRequest = this.pseudoRequest(requestUrl);
     //Method of request.
     final String method = event.getMethod();
     //Time request took for system
     final long time = event.getProcessingTimeMillis();
-
     //Log
     log.info("{}-Request '{}' done after {} ms. (pseudoRequest={})", method, requestUrl, time, pseudoRequest);
 
@@ -58,5 +57,11 @@ public final class NodeListener {
           Optional.ofNullable(event.getFailureCause()).map(Throwable::getMessage).orElse(null),
           new Date());
     });
+  }
+
+  private boolean pseudoRequest(@NotNull final String url) {
+    return url.endsWith("ping") ||
+        //Fallback if something fails.
+        url.endsWith("/error");
   }
 }

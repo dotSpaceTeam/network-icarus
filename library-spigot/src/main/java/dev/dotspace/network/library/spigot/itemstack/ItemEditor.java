@@ -6,6 +6,7 @@ import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.itemstack.GameEnchantmentInfo;
 import dev.dotspace.network.library.game.itemstack.GameItemEditor;
+import dev.dotspace.network.library.game.message.ComponentUtils;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.profile.GameSkin;
 import lombok.AccessLevel;
@@ -239,7 +240,7 @@ public class ItemEditor implements IItemEditor {
       this.executeHandle();
 
       //Set name.
-      this.name(component(this.nameContext.forceComplete()));
+      this.name(this.nameContext.forceComplete(Component.class));
     }
 
     //Set lore.
