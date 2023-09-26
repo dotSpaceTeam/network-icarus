@@ -1,11 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Icarus Node</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icarus Node</title>
+  <!-- Control color here -->
+  <style>
+    :root {
+      /* Colors */
+      --BACKGROUND-COLOR: #18181C;
+      --HEADER-FOOTER-COLOR: #101014;
+      --INFO-COLOR: #000294;
+      --TEXT-COLOR: #3B82F6;
+      --HEADLINE-COLOR: white;
+
+      /* banner */
+      --BACKGROUND: url("../img/background.png");
+    }
+  </style>
+
+  <link rel="stylesheet" type="text/css" href="css/base.css">
 </head>
+
 <body>
-    <h1>System running...</h1>
+  <div class="image"></div>
+  <div class="root">
+    <div class="text">
+      <h1>Icarus</h1>
+      <span>Version 1.0</span>
+    </div>
+
+    <div class="text">
+      <h2>Rest-API Documentation</h2>
+      <h3>Description and documentation of the api and data schema</h3>
+      <span><a href="/api">Swagger</a></span>
+
+    </div>
+
+    <div class="text">
+      <h2>Current Git Repository</h2>
+      <h3>Current location of the project</h3>
+      <span><a href="https://git.pluginstube.dev/pluginstube/development/icarus">PluginStube GitLab</a></span>
+    </div>
+  </div>
+
 </body>
+
 </html>

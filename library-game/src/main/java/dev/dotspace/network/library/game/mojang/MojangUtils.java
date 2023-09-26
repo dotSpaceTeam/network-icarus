@@ -55,6 +55,7 @@ public final class MojangUtils {
    * @param base64Input to get textures from.
    * @return map with present textures.
    */
+  //Todo metadata.
   public static @NotNull Map<String, String> texturesIdMapFromBase64(@NotNull final String base64Input) {
     final Map<String, String> stringStringMap = new HashMap<>();
     final ObjectMapper mapper = new ObjectMapper();

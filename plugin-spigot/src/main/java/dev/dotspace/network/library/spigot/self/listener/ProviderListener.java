@@ -1,8 +1,11 @@
 package dev.dotspace.network.library.spigot.self.listener;
 
+import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.google.inject.Inject;
 import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.game.message.context.MessageContext;
+import dev.dotspace.network.library.game.mojang.MojangUtils;
+import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
 import dev.dotspace.network.library.spigot.scoreboard.ISidebarProvider;
 import dev.dotspace.network.library.spigot.self.message.Message;
@@ -16,6 +19,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Optional;
 
 
 /**
@@ -37,6 +41,22 @@ public final class ProviderListener extends AbstractListener {
       event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
       return;
     }
+
+    final ProfileType profileType = ProfileType.JAVA;
+    final String uniqueId = event.getUniqueId().toString();
+    final String name = event.getName();
+    final String inetSocketAddress = event.getAddress().getHostAddress();
+
+    System.out.println("UUID "+uniqueId);
+    System.out.println("Name "+name);
+    System.out.println("Ip "+inetSocketAddress);
+
+
+    event.getPlayerProfile().getProperties().forEach(profileProperty -> {
+      System.out.println("Texture "+
+          MojangUtils.texturesIdMapFromBase64(profileProperty.getValue()));
+      System.out.println("Signature "+profileProperty.getSignature());
+    });
   }
 
   /**
@@ -49,11 +69,6 @@ public final class ProviderListener extends AbstractListener {
 
     //Set default join message to null.
     event.joinMessage(null);
-
-    this.sidebarProvider
-        .create(player)
-        .title(MessageContext.key("sb@test", Locale.GERMANY))
-        .lines(MessageContext.key("sb@content", Locale.GERMANY));
   }
 
   /**

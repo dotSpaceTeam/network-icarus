@@ -5,7 +5,6 @@ import dev.dotspace.common.response.ResponseService;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 
-
 /**
  * Singleton library module
  */

@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
@@ -203,7 +204,7 @@ public final class RestClient implements IRestClient {
           /*
            * Only  build object if ok.
            */
-          if (clientResponse.statusCode().equals(HttpStatus.OK)) {
+          if (this.validResponse(clientResponse)) {
             final long responseTime = System.currentTimeMillis()-start;
             //If client monitoring is active reset.
             this.lastState(ClientState.ESTABLISHED);
@@ -240,6 +241,14 @@ public final class RestClient implements IRestClient {
         //Url
         .uri(endPoint)
         .acceptCharset(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * True if {@link ClientResponse} was valid.
+   */
+  private boolean validResponse(@NotNull final ClientResponse clientResponse) {
+    return clientResponse.statusCode().is2xxSuccessful()
+        || clientResponse.statusCode().value() == 409;
   }
 
   @Override

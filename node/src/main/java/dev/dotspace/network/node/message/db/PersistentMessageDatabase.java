@@ -111,7 +111,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
          * Map to message.
          */
         .map(ImmutablePersistentMessage::of)
-        .orElseThrow();
+        .orElseThrow(() -> new ElementException(null, ""));
   }
 
   /**

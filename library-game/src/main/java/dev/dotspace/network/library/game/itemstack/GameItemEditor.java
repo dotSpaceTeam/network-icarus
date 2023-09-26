@@ -2,6 +2,7 @@ package dev.dotspace.network.library.game.itemstack;
 
 import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.response.Response;
+import dev.dotspace.network.library.context.IContext;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.profile.GameSkin;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> {
+public interface GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE>
+    extends IContext<ITEM> {
   /**
    * Set amount of stack for itemStack
    *
@@ -70,18 +72,12 @@ public interface GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, CO
   @NotNull GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> edit(@Nullable final ThrowableConsumer<ITEM> consumer);
 
   /**
-   * Get item.
-   *
-   * @return item that was configured.
-   */
-  @NotNull Response<ITEM> complete();
-
-  /**
    * Handle state of item. Also update every stage of complete method.
    *
-   * @param itemConsumer every update of text will be executed here.
+   * @param handleConsumer every update of text will be executed here.
    * @return item that was configured.
    */
+  @Override
   @NotNull
   GameItemEditor<ITEM, MATERIAL, TEXT, ITEM_FLAG, ENCHANTMENT, COLOR, PROFILE> handle(@Nullable final ThrowableConsumer<ITEM> handleConsumer);
 }

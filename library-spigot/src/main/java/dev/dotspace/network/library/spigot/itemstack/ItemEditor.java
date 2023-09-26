@@ -28,6 +28,7 @@ import java.util.Set;
 
 import static dev.dotspace.network.library.game.message.ComponentUtils.*;
 
+
 //Todo
 @Log4j2
 @Accessors(fluent=true)
@@ -230,36 +231,38 @@ public class ItemEditor implements IItemEditor {
   }
 
   @Override
-  public @NotNull Response<ItemStack> complete() {
-    return Library.responseService().response(() -> {
-
-      //Set name.
-      if (this.nameContext != null) {
-        this.name(waitingComponent());
-        //Update item to set loading name.
-        this.executeHandle();
-
-        //Set name.
-        this.name(component(this.nameContext.forceComplete()));
-      }
-
-      //Set lore.
-      if (this.loreContext != null) {
-        //Single list.
-        this.lore(waitingComponentList());
-        //Update item to set loading name.
-        this.executeHandle();
-
-        //Set lore
-        this.lore((List<Component>) componentList(loreContext.forceComplete()));
-      }
-
-      //Updated item name.
+  public @NotNull ItemStack forceComplete() {
+    //Set name.
+    if (this.nameContext != null) {
+      this.name(waitingComponent());
+      //Update item to set loading name.
       this.executeHandle();
 
-      //Return local stack.
-      return this.itemStack;
-    });
+      //Set name.
+      this.name(component(this.nameContext.forceComplete()));
+    }
+
+    //Set lore.
+    if (this.loreContext != null) {
+      //Single list.
+      this.lore(waitingComponentList());
+      //Update item to set loading name.
+      this.executeHandle();
+
+      //Set lore
+      this.lore((List<Component>) componentList(loreContext.forceComplete()));
+    }
+
+    //Updated item name.
+    this.executeHandle();
+
+    //Return local stack.
+    return this.itemStack;
+  }
+
+  @Override
+  public @NotNull Response<ItemStack> complete() {
+    return Library.responseService().response(this::forceComplete);
   }
 
   @Override
