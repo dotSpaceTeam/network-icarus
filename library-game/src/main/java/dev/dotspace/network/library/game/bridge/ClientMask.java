@@ -43,7 +43,7 @@ public final class ClientMask implements IClientMask {
 
       Client.client()
           .profileRequest()
-          .setAttribute(uniqueId, "name", name)
+          .setAttribute(uniqueId, "mojang.name", name)
           .getOptional()
           .orElseThrow(() -> new LibraryException("Error while updating name of "+uniqueId+"."));
 

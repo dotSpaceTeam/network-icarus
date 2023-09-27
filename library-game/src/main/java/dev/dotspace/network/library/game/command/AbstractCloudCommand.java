@@ -21,7 +21,6 @@ public abstract class AbstractCloudCommand<PLUGIN, SENDER> implements GameCloudC
   /**
    * Variable for {@link GameCloudCommand#manager()}
    */
-  @Inject
   private @Nullable CommandManager<SENDER> manager;
 
   /**

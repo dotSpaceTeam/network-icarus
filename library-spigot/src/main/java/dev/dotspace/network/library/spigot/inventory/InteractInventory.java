@@ -142,6 +142,10 @@ public class InteractInventory
       if (inventoryClickEvent.getSlot() != slot) {
         return;
       }
+
+      //Cancel click
+      inventoryClickEvent.setCancelled(true);
+
       //accept, errors will be passed to parent.
       ((GameInventoryClickConsumer) consumer).accept(inventoryClickEvent,
           inventoryClickEvent.getCurrentItem(),

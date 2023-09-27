@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 @Table(name="ProfileAttributes",
     uniqueConstraints={@UniqueConstraint(columnNames={"Profile", "Key"})})
 @NoArgsConstructor
+@Getter
 @Accessors(fluent=true)
 public final class ProfileAttributeEntity implements IProfileAttribute {
   /**
@@ -22,7 +23,6 @@ public final class ProfileAttributeEntity implements IProfileAttribute {
    */
   @Id
   @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @Getter
   private Long id;
 
   @ManyToOne
@@ -30,11 +30,9 @@ public final class ProfileAttributeEntity implements IProfileAttribute {
   private ProfileEntity profile;
 
   @Column(nullable=false)
-  @Getter
   private String key;
 
   @Column
-  @Getter
   @Setter
   private String value;
 

@@ -55,7 +55,6 @@ public final class ProfileController extends AbstractRestController {
    */
   @Autowired
   private ExperienceDatabase experienceDatabase;
-
   /**
    * Get an profile from unique id.
    */

@@ -137,6 +137,7 @@ public final class InventoryProvider
             if (interactInventory.inventory() != inventory) {
               return; //Next inventory
             }
+
             //Pass event to handle.
             ((InteractInventory) interactInventory).executeEvent(event);
           });

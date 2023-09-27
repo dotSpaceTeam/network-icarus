@@ -157,7 +157,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin<Pl
                                           @Nullable String content) {
     return this.spigotPlugin.message(player, contextType, content);
   }
-  
+
   /**
    * Pass to {@link SpigotPlugin}.
    */

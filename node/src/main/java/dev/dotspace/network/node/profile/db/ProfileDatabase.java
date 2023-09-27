@@ -1,6 +1,8 @@
 package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.profile.IProfile;
+import dev.dotspace.network.library.profile.IProfileRecord;
+import dev.dotspace.network.library.profile.ImmutableProfileRecord;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
@@ -106,17 +108,11 @@ public final class ProfileDatabase extends AbstractDatabase {
         .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
   }
 
-  /**
-   * See {@link IProfileManipulator#removeAttribute(String, String)}.
-   */
   public @NotNull IProfileAttribute removeAttribute(@Nullable String uniqueId,
                                                     @Nullable String key) throws ElementException {
     return this.setAttribute(uniqueId, key, null);
   }
 
-  /**
-   * See {@link IProfileManipulator#getAttributes(String)}.
-   */
   public @NotNull List<IProfileAttribute> getAttributes(@Nullable String uniqueId) throws ElementNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
@@ -139,9 +135,6 @@ public final class ProfileDatabase extends AbstractDatabase {
         .orElseThrow(() -> new ElementNotPresentException(null, "Not attributes found for uniqueId="+uniqueId));
   }
 
-  /**
-   * See {@link IProfileManipulator#getAttribute(String, String)}.
-   */
   public @NotNull IProfileAttribute getAttribute(@Nullable String uniqueId,
                                                  @Nullable String key) throws ElementNotPresentException {
 
@@ -157,5 +150,42 @@ public final class ProfileDatabase extends AbstractDatabase {
         .flatMap(profileEntity -> this.profileAttributeRepository.findByProfileAndKey(profileEntity, key))
         .map(ImmutableProfileAttribute::of)
         .orElseThrow(() -> new ElementNotPresentException(null, "Not attribute="+key+" found for uniqueId="+uniqueId));
+  }
+
+  /**
+   * Get name of uniqueId.
+   *
+   * @param uniqueId to get name from.
+   * @return name wrapped in {@link IProfileRecord}.
+   * @throws ElementNotPresentException if uniqueId has no matching name.
+   */
+  public @NotNull IProfileRecord nameFromUniqueId(@Nullable final String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Return record.
+    return new ImmutableProfileRecord(uniqueId, this.getAttribute(uniqueId, "mojang.name").value());
+  }
+
+  /**
+   * Get uniqueId of name.
+   *
+   * @param name to get uniqueId from.
+   * @return name and uniqueId.
+   * @throws ElementNotPresentException if not present uniqueId was found for name.
+   */
+  public @NotNull IProfileRecord uniqueIdFromName(@Nullable final String name) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(name);
+
+    final ProfileAttributeEntity attribute = this
+        .profileAttributeRepository
+        //Get content in field.
+        .findByKeyAndValueIgnoreCase("mojang.name", name)
+        //Else error.
+        .orElseThrow(() -> new ElementNotPresentException(null, "No profile present for name="+name));
+
+    //Return record.
+    return new ImmutableProfileRecord(attribute.profile().uniqueId(), attribute.value());
   }
 }

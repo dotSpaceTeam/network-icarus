@@ -42,6 +42,7 @@ public final class MessageParser implements IMessageParser {
 
   @Override
   public void parse(@Nullable final String text) {
+    //Return if text is null.
     if (text == null) {
       return;
     }
@@ -71,9 +72,7 @@ public final class MessageParser implements IMessageParser {
           .get(elementType)
           .forEach(contextConsumer -> {
             try {
-
               contextConsumer.accept(context);
-
             } catch (final Throwable error) {
               throw new RuntimeException(error);
             }
