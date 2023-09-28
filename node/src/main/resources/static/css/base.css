@@ -1,0 +1,129 @@
+/* Imports fonts */
+@font-face {
+  font-family: Poppins;
+  src: url("../fonts/Poppins-SemiBold.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: Signika;
+  src: url("../fonts/Signika-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: Signika;
+  src: url("../fonts/Signika-SemiBold.ttf");
+  font-weight: 600;
+}
+
+/* General style */
+* {
+  margin: 0;
+  padding: 0;
+
+  color: var(--HEADLINE-COLOR);
+  scrollbar-width: none;
+}
+
+/*
+ * Hide scrolbard on webkit browsers.
+ */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * General design
+ */
+body {
+  /* Default font for texts */
+  font-family: "signika", sans-serif;
+
+  font-size: 2em;
+
+  /* Full height */
+  height: 100%;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+.image {
+  /* Add background img */
+  background-image: var(--BACKGROUND);
+
+  /* Use filter to add blur effect */
+  filter: blur(6px);
+
+  height: 100%;
+
+  /* Center the image */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  position: absolute;
+  width: 100%;
+
+  top: 0;
+
+  margin: auto;
+
+  z-index: 1;
+}
+
+/* Style the text */
+.text {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.4
+  ); /* Black partially transparent background */
+  color: white;
+  font-weight: bold;
+  border: 3px solid #ffffff;
+  width: 75%;
+  padding: 20px;
+  margin: 25px;
+  text-align: center;
+
+  user-select: none;
+
+  border-radius: 25px;
+
+  transition: 0.5s;
+}
+
+.text:hover {
+  border-radius: 0px;
+
+  transform: scale(101%);
+}
+
+/*
+ * General headlines
+ */
+h1,
+h2 {
+  font-family: "poppins", sans-serif;
+
+  font-size: 2em;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+span {
+  font-weight: 600;
+}
