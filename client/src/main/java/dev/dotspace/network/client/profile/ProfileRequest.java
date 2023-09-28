@@ -100,4 +100,26 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
           new ImmutableKey(key));
     });
   }
+
+  @Override
+  public @NotNull Response<IProfileRecord> getNameFromUniqueId(@Nullable String uniqueId) {
+    return this.responseService().response(() -> {
+      //Null check
+      Objects.requireNonNull(uniqueId);
+
+      return this.client()
+          .get("/v1/profile-query/nameFromUniqueId/"+uniqueId, ImmutableProfileRecord.class);
+    });
+  }
+
+  @Override
+  public @NotNull Response<IProfileRecord> getUniqueIdFromName(@Nullable String name) {
+    return this.responseService().response(() -> {
+      //Null check
+      Objects.requireNonNull(name);
+
+      return this.client()
+          .get("/v1/profile-query/uniqueIdFromName/"+name, ImmutableProfileRecord.class);
+    });
+  }
 }

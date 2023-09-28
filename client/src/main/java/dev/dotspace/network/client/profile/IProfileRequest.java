@@ -2,6 +2,7 @@ package dev.dotspace.network.client.profile;
 
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.library.profile.IProfile;
+import dev.dotspace.network.library.profile.IProfileRecord;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import org.jetbrains.annotations.NotNull;
@@ -37,4 +38,8 @@ public interface IProfileRequest {
 
   @NotNull Response<IProfileAttribute> removeAttribute(@Nullable final String uniqueId,
                                                        @Nullable final String key);
+
+  @NotNull Response<IProfileRecord> getNameFromUniqueId(@Nullable final String uniqueId);
+
+  @NotNull Response<IProfileRecord> getUniqueIdFromName(@Nullable final String name);
 }
