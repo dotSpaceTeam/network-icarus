@@ -44,7 +44,7 @@ public final class PlaytimeCommand extends AbstractCommand {
 
           Client
               .client()
-              .sessionRequest()
+              .profileRequest()
               .getPlaytime(player.getUniqueId().toString())
               .ifPresent(iPlaytime -> {
                 //Ignore if playtime is null.

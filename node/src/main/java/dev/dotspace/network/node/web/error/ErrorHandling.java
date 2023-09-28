@@ -34,10 +34,8 @@ public final class ErrorHandling {
           )
       }
   )
-  private ImmutableResponse authenticationHandler(AuthenticationException exception) {
-    return new ImmutableResponse(
-        "Not allowed! ("+exception.getMessage()+")",
-        HttpStatus.UNAUTHORIZED.value());
+  private ImmutableResponse authenticationHandler(@NotNull final AuthenticationException exception) {
+    return new ImmutableResponse("Not allowed! ("+exception.getMessage()+")", HttpStatus.UNAUTHORIZED.value());
   }
 
   /**

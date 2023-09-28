@@ -142,17 +142,6 @@ public final class IcarusPlugin extends AbstractPlugin {
                       .complete();
                 }
 
-                if (chatEvent.getMessage().equalsIgnoreCase("pt")) {
-                  Client
-                      .client()
-                      .sessionRequest()
-                      .getPlaytime(((AsyncPlayerChatEvent) event).getPlayer().getUniqueId().toString())
-                      .ifPresent(iPlaytime -> {
-                        ((AsyncPlayerChatEvent) event).getPlayer().sendMessage("Pt: "+iPlaytime.duration());
-                      });
-                }
-
-
               }, this);
 
         });

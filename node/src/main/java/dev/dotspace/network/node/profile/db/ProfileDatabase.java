@@ -24,8 +24,13 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -97,6 +102,42 @@ public final class ProfileDatabase extends AbstractDatabase {
     Objects.requireNonNull(uniqueId);
 
     return ImmutableProfile.of(this.profileRepository.profileElseThrow(uniqueId));
+  }
+
+  public @NotNull List<IProfile> getProfileList() {
+    return this.profileRepository
+        //Get all profiles.
+        .findAll()
+        .stream()
+        //Create new instances.
+        .map(ImmutableProfile::of)
+        .toList();
+  }
+
+  public @NotNull List<IProfile> getProfileList(@Nullable final Pageable pageable) {
+    //Null check
+    Objects.requireNonNull(pageable);
+
+    return this.profileRepository
+        //Get all from pageable.
+        .findAll(pageable)
+        .stream()
+        //Create new instances.
+        .map(ImmutableProfile::of)
+        .toList();
+  }
+
+  public @NotNull List<IProfile> getProfileList(@Nullable final Sort sort) {
+    //Null check
+    Objects.requireNonNull(sort);
+
+    return this.profileRepository
+        //Get all from pageable.
+        .findAll(sort)
+        .stream()
+        //Create new instances.
+        .map(ImmutableProfile::of)
+        .toList();
   }
 
   public @NotNull IProfile getProfileFromName(@Nullable final String name) throws ElementNotPresentException {
@@ -236,15 +277,18 @@ public final class ProfileDatabase extends AbstractDatabase {
             new ElementNotPresentException(null, "No session="+sessionId+" found for uniqueId="+uniqueId+"."));
   }
 
-  public @NotNull ISession createSession(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ISession createSession(@Nullable final String uniqueId,
+                                         @Nullable final String address) throws ElementNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(address);
 
     //Profile to create
     final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
 
     //Create and store new session.
-    return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
+    return ImmutableSession.of(
+        this.sessionRepository.save(new SessionEntity(profile, new Date(), null, address)));
   }
 
   public @NotNull ISession completeSession(@Nullable final String uniqueId,

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 //Swagger
-@Tag(name="Ping", description="Ping node instance.")
+@Tag(name="Ping Endpoint", description="Ping node instance.")
 public final class PingController {
   /**
    * Get if system is running.

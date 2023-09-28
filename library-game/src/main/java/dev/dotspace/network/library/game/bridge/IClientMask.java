@@ -22,6 +22,7 @@ public interface IClientMask {
   @NotNull Response<Boolean> connect(@Nullable final ProfileType profileType,
                                      @Nullable final String uniqueId,
                                      @Nullable final String name,
+                                     @Nullable String address,
                                      @Nullable final String texture,
                                      @Nullable final String signature);
 

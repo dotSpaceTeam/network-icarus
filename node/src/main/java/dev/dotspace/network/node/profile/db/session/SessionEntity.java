@@ -1,5 +1,7 @@
 package dev.dotspace.network.node.profile.db.session;
 
+import dev.dotspace.network.library.connection.IAddress;
+import dev.dotspace.network.library.connection.ImmutableAddress;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import jakarta.persistence.*;
@@ -44,12 +46,17 @@ public final class SessionEntity implements ISession {
   @Setter
   private Date endDate;
 
+  @Column(name = "Address")
+  private String address;
+
   public SessionEntity(@NotNull final ProfileEntity profile,
                        @NotNull final Date startDate,
-                       @Nullable final Date endDate) {
+                       @Nullable final Date endDate,
+                       @NotNull final String address) {
     this.profile = profile;
     this.startDate = startDate;
     this.endDate = endDate;
+    this.address = address;
   }
 
   @Override
@@ -65,6 +72,14 @@ public final class SessionEntity implements ISession {
     }
     //Calculate difference
     return this.endDate.getTime() - this.startDate.getTime();
+  }
+
+  /**
+   * See {@link ISession#connectionAddress()}
+   */
+  @Override
+  public @NotNull IAddress connectionAddress() {
+    return ImmutableAddress.of(this.address);
   }
 
   /**

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.server.PathParam;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,10 +42,10 @@ import java.util.concurrent.atomic.AtomicReference;
  * Rest controller for messages.
  */
 @RestController
-@RequestMapping("/v1/message")
+@RequestMapping("/api/v1/message")
 @Log4j2
 //Swagger
-@Tag(name="Message", description="Manipulate, format and get messages.")
+@Tag(name="Message Endpoint", description="Manipulate, format and get messages.")
 public final class MessageController extends AbstractRestController {
   /**
    * Database to handle.
@@ -83,7 +84,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get an profile from unique id.
    */
-  @PutMapping("/key")
+  @PutMapping("/key/")
   @ResponseBody
   //Swagger
   @Operation(
@@ -100,32 +101,16 @@ public final class MessageController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
-    return ResponseEntity.ok(this.messageDatabase
-        .insertMessage(message.locale(), message.key(), message.message()));
-  }
+  public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message,
+                                                   @RequestParam(required=false, defaultValue="false") final boolean createOnly) throws ElementException {
+    //Get create only.
+    if (createOnly) {
+      //Insert message.
+      return ResponseEntity.ok(this.messageDatabase
+          .insertMessage(message.locale(), message.key(), message.message()));
+    }
 
-  /**
-   * Get an profile from unique id.
-   */
-  @PostMapping("/key")
-  @ResponseBody
-  //Swagger
-  @Operation(
-      summary="Update a present message.",
-      description="Update a already present message, if you like to create one, use PUT mapping.",
-      responses={
-          @ApiResponse(
-              responseCode="200",
-              description="Returns stored message.",
-              content={
-                  @Content(
-                      mediaType=MediaType.APPLICATION_JSON_VALUE,
-                      schema=@Schema(implementation=ImmutablePersistentMessage.class)
-                  )
-              })
-      })
-  public ResponseEntity<IPersistentMessage> postKey(@RequestBody @NotNull final ImmutablePersistentMessage message) throws ElementException {
+    //Update message.
     return ResponseEntity.ok(this.messageDatabase
         .updateMessage(message.locale(), message.key(), message.message()));
   }
@@ -133,7 +118,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get an profile from unique id.
    */
-  @GetMapping("/key/{key}")
+  @GetMapping("/key/{key}/{lang}")
   @ResponseBody
   //Swagger
   @Operation(
@@ -151,13 +136,16 @@ public final class MessageController extends AbstractRestController {
               })
       })
   public ResponseEntity<IPersistentMessage> getKey(@PathVariable @NotNull final String key,
-                                                   @RequestParam(required=false) final String lang) throws ElementException {
+                                                   @PathVariable @NotNull final String lang,
+                                                   @RequestParam(required=false, defaultValue="false") final boolean findAny)
+      throws ElementException {
     //Get message or default
-    final Locale locale = this.localeFromTag(lang);
+    Locale locale = this.localeFromTag(lang);
     //Get stored message.
-    final IPersistentMessage persistentMessage = this.messageDatabase.message(locale, key);
+    final IPersistentMessage persistentMessage = this.messageDatabase.message(locale, key, findAny);
 
-    System.out.println(persistentMessage.message());
+    //Update locale to message locale.
+    locale = persistentMessage.locale();
 
     //Return value
     return ResponseEntity.ok(
@@ -170,7 +158,7 @@ public final class MessageController extends AbstractRestController {
    * @param lang to convert.
    * @return present locale otherwise using {@link Locale#getDefault()}.
    */
-  private @NotNull Locale localeFromTag(@Nullable final String lang) throws ElementNotPresentException {
+  private @NotNull Locale localeFromTag(@Nullable final String lang) {
     return Optional
         .ofNullable(lang)
         .map(s -> s.replaceAll("_", "-"))
@@ -209,7 +197,7 @@ public final class MessageController extends AbstractRestController {
 
           //Get message of key.
           final IPersistentMessage persistentMessage = this.messageDatabase
-              .message(locale, key);
+              .message(locale, key, false);
 
           //Get message else replace.
           final String replaceText = persistentMessage.message();

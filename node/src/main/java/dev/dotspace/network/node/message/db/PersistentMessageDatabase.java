@@ -5,6 +5,7 @@ import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
 import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Component("messageDatabase")
@@ -89,7 +91,13 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
   }
 
   public @NotNull IPersistentMessage message(@Nullable Locale locale,
-                                             @Nullable String key) throws ElementException {
+                                             @Nullable String key) throws ElementNotPresentException {
+    return this.message(locale, key, false);
+  }
+
+  public @NotNull IPersistentMessage message(@Nullable final Locale locale,
+                                             @Nullable final String key,
+                                             final boolean findAny) throws ElementNotPresentException {
     //Null check
     Objects.requireNonNull(locale);
     Objects.requireNonNull(key);
@@ -97,21 +105,27 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
     final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
         .findByKey(key)
         .orElseThrow(() ->
-            new ElementException(null,
-                "No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
+            new ElementNotPresentException("No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
 
     final String localeTag = locale.toLanguageTag();
 
     return this.messageRepository
-        /*
-         * Find key and locale.
-         */
+        // Find key and locale.
         .findByKeyAndLocale(messageKey, localeTag)
-        /*
-         * Map to message.
-         */
+        .or(() -> {
+          //If findAny is false -> just ignore this tree. No message will be returned.
+          if (!findAny) {
+            return Optional.empty();
+          }
+          //Just search for key.
+          return this.messageRepository.findByKey(messageKey)
+              //Stream list
+              .stream()
+              //Find first.
+              .findAny();
+        })
         .map(ImmutablePersistentMessage::of)
-        .orElseThrow(() -> new ElementException(null, ""));
+        .orElseThrow(() -> new ElementNotPresentException("Key is not present in locale="+localeTag+"."));
   }
 
   /**

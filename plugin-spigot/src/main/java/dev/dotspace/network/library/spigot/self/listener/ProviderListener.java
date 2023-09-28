@@ -95,9 +95,7 @@ public final class ProviderListener extends AbstractListener {
     final ProfileType profileType = ProfileType.JAVA;
     final String uniqueId = event.getUniqueId().toString();
     final String name = event.getName();
-    final String inetSocketAddress = event.getAddress().getHostAddress();
-
-    System.out.println("Ip "+inetSocketAddress);
+    final String address = event.getAddress().getHostAddress();
 
     event.getPlayerProfile().getProperties().forEach(profileProperty -> {
       System.out.println("Texture "+
@@ -106,7 +104,7 @@ public final class ProviderListener extends AbstractListener {
     });
 
     try {
-      if (!this.clientMask.connect(profileType, uniqueId, name, "", "")
+      if (!this.clientMask.connect(profileType, uniqueId, name, address, "", "")
           .getOptional()
           .orElse(false)) {
         event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);

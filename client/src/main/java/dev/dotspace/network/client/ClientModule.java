@@ -9,8 +9,6 @@ import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.position.PositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.profile.ProfileRequest;
-import dev.dotspace.network.client.session.ISessionRequest;
-import dev.dotspace.network.client.session.SessionRequest;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.client.web.RestClient;
 import lombok.extern.log4j.Log4j2;
@@ -48,10 +46,6 @@ final class ClientModule extends AbstractModule {
 
     this.bind(IProfileRequest.class)
         .to(ProfileRequest.class)
-        .in(Scopes.SINGLETON);
-
-    this.bind(ISessionRequest.class)
-        .to(SessionRequest.class)
         .in(Scopes.SINGLETON);
 
     this.bind(IMessageRequest.class)

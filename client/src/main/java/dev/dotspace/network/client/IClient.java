@@ -4,7 +4,6 @@ import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
-import dev.dotspace.network.client.session.ISessionRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.library.common.StateHandler;
 import org.jetbrains.annotations.NotNull;
@@ -42,13 +41,6 @@ public interface IClient extends StateHandler<ClientState> {
    * @return inst ance of {@link IMessageRequest}.
    */
   @NotNull IMessageRequest messageRequest();
-
-  /**
-   * Get request instance of client.
-   *
-   * @return instance of {@link ISessionRequest}.
-   */
-  @NotNull ISessionRequest sessionRequest();
 
   /**
    * Get main thread of client.

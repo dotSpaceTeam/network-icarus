@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.profile.session;
 
+import dev.dotspace.network.library.connection.IAddress;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,4 +37,11 @@ public interface ISession extends IPlaytime {
   //Swagger
   @Schema(description="Timestamp whenever session has been closed. (Or is still open because something went wrong.)")
   @NotNull Date endDate();
+
+  /**
+   * Get ip used for session.
+   */
+  //Swagger
+  @Schema(description="Address of connected client.")
+  @NotNull IAddress connectionAddress();
 }

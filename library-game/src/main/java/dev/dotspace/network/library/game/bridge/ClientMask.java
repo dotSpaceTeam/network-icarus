@@ -29,25 +29,19 @@ public final class ClientMask implements IClientMask {
   public @NotNull Response<Boolean> connect(@Nullable ProfileType profileType,
                                             @Nullable String uniqueId,
                                             @Nullable String name,
+                                            @Nullable String address,
                                             @Nullable String texture,
                                             @Nullable String signature) {
     return Library.responseService().response(() -> {
       //Create client if present.
       Client.client()
           .profileRequest()
-          .createProfile(uniqueId, profileType)
+          .updateProfile(uniqueId, name, profileType)
           .getOptional()
           .orElseThrow(() -> new LibraryException("Error while creating profile."));
 
       log.info("Updated client={}.", uniqueId);
 
-      Client.client()
-          .profileRequest()
-          .setAttribute(uniqueId, "mojang.name", name)
-          .getOptional()
-          .orElseThrow(() -> new LibraryException("Error while updating name of "+uniqueId+"."));
-
-      log.info("Updated client={} -> name={}.", uniqueId, name);
 
       Client.client()
           .profileRequest()
@@ -59,8 +53,8 @@ public final class ClientMask implements IClientMask {
       log.info("Update client={} -> texture={}.", uniqueId, texture);
 
       final ISession session = Client.client()
-          .sessionRequest()
-          .createSession(uniqueId)
+          .profileRequest()
+          .createSession(uniqueId, address)
           .getOptional()
           //If session is null.
           .orElseThrow(() -> new LibraryException("Error while creating session for "+uniqueId+"."));
@@ -82,7 +76,7 @@ public final class ClientMask implements IClientMask {
       if (session != null) {
         if (Client
             .client()
-            .sessionRequest()
+            .profileRequest()
             .completeSession(uniqueId, session.sessionId())
             .get() == null) {
           //Error while closing session.

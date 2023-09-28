@@ -6,7 +6,6 @@ import dev.dotspace.common.function.ThrowableRunnable;
 import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
-import dev.dotspace.network.client.session.ISessionRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.Library;
@@ -87,14 +86,6 @@ public final class Client implements IClient {
   @Override
   public @NotNull IMessageRequest messageRequest() {
     return this.request(IMessageRequest.class);
-  }
-
-  /**
-   * See {@link IClient#sessionRequest()}
-   */
-  @Override
-  public @NotNull ISessionRequest sessionRequest() {
-    return this.request(ISessionRequest.class);
   }
 
   //Get provider else throw

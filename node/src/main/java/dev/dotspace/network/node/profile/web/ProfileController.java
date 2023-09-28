@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.profile.web;
 
+import dev.dotspace.network.library.connection.ImmutableAddressName;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.ImmutableProfile;
@@ -22,7 +23,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -78,7 +83,7 @@ public final class ProfileController extends AbstractRestController {
                                                       @RequestParam(required=false, defaultValue="false") final boolean nameSearch) throws ElementNotPresentException {
     //If true search profile with name
     if (nameSearch) {
-      ResponseEntity.ok(this.profileDatabase.getProfileFromName(uniqueId));
+      return ResponseEntity.ok(this.profileDatabase.getProfileFromName(uniqueId));
     }
 
     return ResponseEntity.ok(this.profileDatabase.getProfile(uniqueId));
@@ -130,8 +135,40 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<List<IProfile>> getProfileList() {
-    return ResponseEntity.ok(Collections.emptyList());
+  public @NotNull ResponseEntity<List<IProfile>> getProfileList(@RequestParam(required=false) @Nullable final Integer page,
+                                                                @RequestParam(required=false) @Nullable final Integer pageContent,
+                                                                @RequestParam(required=false) @Nullable final String sortBy,
+                                                                @RequestParam(required=false, defaultValue="false") final boolean ascending) {
+    //Use pageable.
+    if (page != null && pageContent != null && sortBy != null) {
+      //Return request.
+      return ResponseEntity.ok(this.profileDatabase
+          .getProfileList(PageRequest.of(page, pageContent, this.sortBy(sortBy, ascending))));
+    }
+
+    if (sortBy != null) {
+      //Return request.
+      return ResponseEntity.ok(this.profileDatabase
+          .getProfileList(this.sortBy(sortBy, ascending)));
+    }
+
+    //Plain get all.
+    return ResponseEntity.ok(this.profileDatabase
+        .getProfileList());
+  }
+
+  private @NotNull Sort sortBy(@NotNull final String sortBy,
+                               final boolean ascending) {
+    final Sort sort = Sort.by(sortBy);
+
+    //Check if sorting is ascending or descending.
+    if (ascending) {
+      sort.ascending();
+    } else {
+      sort.descending();
+    }
+
+    return sort;
   }
 
   /*
@@ -313,8 +350,9 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<ISession> createSession(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
-    return ResponseEntity.ok(this.profileDatabase.createSession(uniqueId));
+  public @NotNull ResponseEntity<ISession> createSession(@PathVariable @NotNull final String uniqueId,
+                                                         @RequestBody @NotNull final ImmutableAddressName addressName) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.createSession(uniqueId, addressName.address()));
   }
 
   /**
@@ -398,7 +436,7 @@ public final class ProfileController extends AbstractRestController {
   public @NotNull ResponseEntity<List<IExperience>> addExperience(@PathVariable @NotNull final String uniqueId,
                                                                   //Swagger
                                                                   @Schema(type="Experience map.", implementation=Map.class)
-                                                         @RequestBody @NotNull final Map<String, Long> experienceMap) {
+                                                                  @RequestBody @NotNull final Map<String, Long> experienceMap) {
     return ResponseEntity.ok(experienceMap
         .entrySet()
         .stream()
