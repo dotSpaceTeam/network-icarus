@@ -29,16 +29,16 @@ public final class ViewPositionElement implements IViewPosition {
   @Column(name="Yaw", nullable=false)
   @Getter
   @Setter
-  private long yaw;
+  private double yaw;
 
   @Column(name="Pitch", nullable=false)
   @Getter
   @Setter
-  private long pitch;
+  private double pitch;
 
   public ViewPositionElement(@NotNull final PositionElement position,
-                             final long yaw,
-                             final long pitch) {
+                             final double yaw,
+                             final double pitch) {
     this.position = position;
     this.yaw = yaw;
     this.pitch = pitch;
@@ -50,17 +50,17 @@ public final class ViewPositionElement implements IViewPosition {
   }
 
   @Override
-  public long x() {
+  public double x() {
     return this.position.x();
   }
 
   @Override
-  public long y() {
+  public double y() {
     return this.position.y();
   }
 
   @Override
-  public long z() {
+  public double z() {
     return this.position.z();
   }
 }

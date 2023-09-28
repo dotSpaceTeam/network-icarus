@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.session;
+package dev.dotspace.network.library.profile.session;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

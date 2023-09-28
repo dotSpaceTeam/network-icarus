@@ -8,6 +8,7 @@ import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.position.db.PositionDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,9 @@ import java.util.Objects;
 
 
 @RestController
-@RequestMapping("/v1/position")
+@RequestMapping("/api/v1/position")
+//Swagger
+@Tag(name="Position Endpoint", description="Manipulate and get positions.")
 public final class PositionController extends AbstractRestController {
   /**
    * Position database.
@@ -28,11 +31,11 @@ public final class PositionController extends AbstractRestController {
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping
+  @PutMapping("/")
   @ResponseBody
   public ResponseEntity<IPosition> setPosition(@RequestBody @NotNull final ImmutablePosition immutablePosition) {
     return ResponseEntity.ok(this.positionDatabase.setPosition(
-        Objects.requireNonNull(immutablePosition.key(), "Key of body is null"),
+        immutablePosition.key(),
         immutablePosition.x(),
         immutablePosition.y(),
         immutablePosition.z()));
@@ -50,7 +53,7 @@ public final class PositionController extends AbstractRestController {
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping("/view")
+  @PutMapping("/view/")
   @ResponseBody
   public ResponseEntity<IViewPosition> setViewPosition(@RequestBody @NotNull final ImmutableViewPosition immutableViewPosition,
                                                        @RequestParam(required=false) final boolean updateView) throws ElementException {

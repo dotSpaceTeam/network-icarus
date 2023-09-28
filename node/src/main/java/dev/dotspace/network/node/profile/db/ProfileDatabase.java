@@ -1,29 +1,37 @@
 package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.IProfileRecord;
-import dev.dotspace.network.library.profile.ImmutableProfileRecord;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableProfile;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.ProfileType;
+import dev.dotspace.network.library.profile.experience.IExperience;
+import dev.dotspace.network.library.profile.experience.ImmutableExperience;
+import dev.dotspace.network.library.profile.session.IPlaytime;
+import dev.dotspace.network.library.profile.session.ISession;
+import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
+import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
-import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeEntity;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeRepository;
+import dev.dotspace.network.node.profile.db.experience.ExperienceEntity;
+import dev.dotspace.network.node.profile.db.experience.ExperienceRepository;
+import dev.dotspace.network.node.profile.db.experience.LevelFunction;
+import dev.dotspace.network.node.profile.db.session.SessionEntity;
+import dev.dotspace.network.node.profile.db.session.SessionRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 
-@Component("profileDatabase")
+@Component
 @Log4j2
 public final class ProfileDatabase extends AbstractDatabase {
   /**
@@ -37,40 +45,85 @@ public final class ProfileDatabase extends AbstractDatabase {
    */
   @Autowired
   private ProfileAttributeRepository profileAttributeRepository;
+  /**
+   * Repository to modify sessions.
+   */
+  @Autowired
+  private SessionRepository sessionRepository;
+  /**
+   * Instance to communicate to experience.
+   */
+  @Autowired
+  private ExperienceRepository experienceRepository;
 
 
-  public @NotNull IProfile createProfile(@Nullable final String uniqueId,
-                                         @Nullable final ProfileType profileType) throws ElementException {
+  public @NotNull IProfile updateProfile(@Nullable final String uniqueId,
+                                         @Nullable final String name,
+                                         @Nullable final ProfileType profileType) {
     //Null checks
     Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(name);
     Objects.requireNonNull(profileType);
 
-    /*
-     * Check if uniqueId is already existing
-     */
-    if (this.profileRepository.existsByUniqueId(uniqueId)) {
-      throw new ElementAlreadyPresentException(null, "Profile with uniqueId="+uniqueId+", already present.");
+    //Check if profile with name and other uniqueId present
+    @Nullable final ProfileEntity namedProfileEntity =
+        this.profileRepository.findByNameIgnoreCase(name).orElse(null);
+
+    //Update if namedProfileEntity is present. And id is odd.
+    if (namedProfileEntity != null && !namedProfileEntity.uniqueId().equals(uniqueId)) {
+      //Set pseudo name.
+      namedProfileEntity.name("~"+namedProfileEntity.name()+"~"+namedProfileEntity.uniqueId());
+      //Update pseudo profile
+      this.profileRepository.save(namedProfileEntity);
     }
 
-    return ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, profileType)));
+    //Get present profile, if null create new.
+    @Nullable final ProfileEntity profileEntity =
+        this.profileRepository.findByUniqueId(uniqueId).orElse(null);
+
+    if (profileEntity != null) {
+      //Update name
+      profileEntity.name(name);
+      //Update in db.
+      return ImmutableProfile.of(this.profileRepository.save(profileEntity));
+    }
+
+    //Else create new one.
+    return ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, name, profileType)));
   }
 
-  public @NotNull IProfile getProfile(@Nullable String uniqueId) throws ElementException {
+  public @NotNull IProfile getProfile(@Nullable final String uniqueId) throws ElementNotPresentException {
     //Null checks
     Objects.requireNonNull(uniqueId);
 
     return ImmutableProfile.of(this.profileRepository.profileElseThrow(uniqueId));
   }
 
-  public @NotNull IProfileAttribute setAttribute(@Nullable String uniqueId,
-                                                 @Nullable String key,
-                                                 @Nullable String value) throws ElementException {
+  public @NotNull IProfile getProfileFromName(@Nullable final String name) throws ElementNotPresentException {
+    //Null checks
+    Objects.requireNonNull(name);
+
+    return this.profileRepository
+        //Get profile with name
+        .findByNameIgnoreCase(name)
+        //If present map to plain
+        .map(ImmutableProfile::of)
+        //Else error
+        .orElseThrow(() -> new ElementNotPresentException("No profile for name="+name+" present."));
+  }
+
+  /**
+   * If value is null -> delete.
+   */
+  public @NotNull IProfileAttribute setAttribute(@Nullable final String uniqueId,
+                                                 @Nullable final String key,
+                                                 @Nullable final String value) throws ElementNotPresentException {
     //Null checks
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(key);
 
-    final ProfileEntity profileEntity = this.profileRepository
-        .profileElseThrow(uniqueId, "No profile with uniqueId="+uniqueId+" found to set attribute.");
+    //Get profile.
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
 
     /*
      * Get attribute else null.
@@ -79,7 +132,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         .findByProfileAndKey(profileEntity, key)
         .orElse(null);
 
-
+//Check if nothing to update.
     if (profileAttributeEntity == null && value == null) {
       //Nothing to do here.
       throw new ElementNotPresentException(null, "Attribute "+key+" not present for "+uniqueId+".");
@@ -108,35 +161,29 @@ public final class ProfileDatabase extends AbstractDatabase {
         .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
   }
 
-  public @NotNull IProfileAttribute removeAttribute(@Nullable String uniqueId,
-                                                    @Nullable String key) throws ElementException {
+  public @NotNull IProfileAttribute removeAttribute(@Nullable final String uniqueId,
+                                                    @Nullable final String key) throws ElementNotPresentException {
     return this.setAttribute(uniqueId, key, null);
   }
 
-  public @NotNull List<IProfileAttribute> getAttributes(@Nullable String uniqueId) throws ElementNotPresentException {
+  public @NotNull List<IProfileAttribute> getAttributeList(@Nullable final String uniqueId) throws ElementNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
     /*
      * Search in database.
      */
-    return this.profileRepository.findByUniqueId(uniqueId)
-        /*
-         * Map profile to attributes.
-         */
-        .map(profileEntity -> this.profileAttributeRepository.findByProfile(profileEntity))
-        /*
-         * Map attribute entities to list of IProfileAttribute.
-         */
-        .map(entities -> entities.stream().map(ImmutableProfileAttribute::of).toList())
-        /*
-         * Else throw error.
-         */
-        .orElseThrow(() -> new ElementNotPresentException(null, "Not attributes found for uniqueId="+uniqueId));
+    return
+        this.profileAttributeRepository
+            //Throw error if profile is not present.
+            .findByProfile(this.profileRepository.profileElseThrow(uniqueId))
+            .stream()
+            //Map attributes to plain objects.
+            .map(ImmutableProfileAttribute::of).toList();
   }
 
-  public @NotNull IProfileAttribute getAttribute(@Nullable String uniqueId,
-                                                 @Nullable String key) throws ElementNotPresentException {
+  public @NotNull IProfileAttribute getAttribute(@Nullable final String uniqueId,
+                                                 @Nullable final String key) throws ElementNotPresentException {
 
     //Null check
     Objects.requireNonNull(uniqueId);
@@ -145,47 +192,176 @@ public final class ProfileDatabase extends AbstractDatabase {
     /*
      * Search in database.
      */
-    return this.profileRepository
-        .findByUniqueId(uniqueId)
-        .flatMap(profileEntity -> this.profileAttributeRepository.findByProfileAndKey(profileEntity, key))
+    return this.profileAttributeRepository
+        //Get attribute throw error if profile is not present.
+        .findByProfileAndKey(this.profileRepository.profileElseThrow(uniqueId), key)
+        //Map attribute to plain.
         .map(ImmutableProfileAttribute::of)
-        .orElseThrow(() -> new ElementNotPresentException(null, "Not attribute="+key+" found for uniqueId="+uniqueId));
+        //Else throw error.
+        .orElseThrow(() -> new ElementNotPresentException("Not attribute="+key+" found for uniqueId="+uniqueId));
   }
 
-  /**
-   * Get name of uniqueId.
-   *
-   * @param uniqueId to get name from.
-   * @return name wrapped in {@link IProfileRecord}.
-   * @throws ElementNotPresentException if uniqueId has no matching name.
-   */
-  public @NotNull IProfileRecord nameFromUniqueId(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull List<ISession> getSessionList(@Nullable final String uniqueId) throws ElementNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
-    //Return record.
-    return new ImmutableProfileRecord(uniqueId, this.getAttribute(uniqueId, "mojang.name").value());
+    //Get profile
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    return this.sessionRepository
+        //Find all sessions entities.
+        .findByProfile(profile)
+        //Stream elements.
+        .stream()
+        //Map element to ISession.
+        .map(ImmutableSession::of)
+        .toList();
   }
 
-  /**
-   * Get uniqueId of name.
-   *
-   * @param name to get uniqueId from.
-   * @return name and uniqueId.
-   * @throws ElementNotPresentException if not present uniqueId was found for name.
-   */
-  public @NotNull IProfileRecord uniqueIdFromName(@Nullable final String name) throws ElementNotPresentException {
+  public @NotNull ISession getSession(@Nullable final String uniqueId,
+                                      @Nullable final Long sessionId) throws ElementNotPresentException {
     //Null check
-    Objects.requireNonNull(name);
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(sessionId);
 
-    final ProfileAttributeEntity attribute = this
-        .profileAttributeRepository
-        //Get content in field.
-        .findByKeyAndValueIgnoreCase("mojang.name", name)
+    return this.sessionRepository
+        //Find element by id.
+        .findById(sessionId)
+        //Check if session was performed by uniqueId.
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equals(uniqueId))
+        //Map session to ISession.
+        .map(ImmutableSession::of)
+        //Else error, no session or profile does not match.
+        .orElseThrow(() ->
+            new ElementNotPresentException(null, "No session="+sessionId+" found for uniqueId="+uniqueId+"."));
+  }
+
+  public @NotNull ISession createSession(@Nullable final String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Profile to create
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Create and store new session.
+    return ImmutableSession.of(this.sessionRepository.save(new SessionEntity(profile, new Date(), null)));
+  }
+
+  public @NotNull ISession completeSession(@Nullable final String uniqueId,
+                                           @Nullable final Long sessionId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(sessionId);
+
+    //Get session of id.
+    final SessionEntity session = this.sessionRepository
+        .findById(sessionId)
+        //Check if unique id equal to given uniqueId.
+        .filter(sessionEntity -> sessionEntity.profile().uniqueId().equals(uniqueId))
+        //Check if session is not closed.
+        .filter(sessionEntity -> !sessionEntity.closed())
+        .orElseThrow(() ->
+            new ElementNotPresentException(null, "No session="+sessionId+" found to close."));
+
+    //Update end date.
+    session.endDate(new Date());
+
+    //Return modified session.
+    return ImmutableSession.of(this.sessionRepository.save(session));
+  }
+
+
+  public @NotNull IPlaytime getPlaytime(@Nullable String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Get profile
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Calculate time
+    return ImmutablePlaytime.with(this.sessionRepository
+        //Get time
+        .calculatePlaytime(profile.id())
         //Else error.
-        .orElseThrow(() -> new ElementNotPresentException(null, "No profile present for name="+name));
+        .orElseThrow(() -> new
+            ElementNotPresentException("Error while calculating play time of uniqueId="+uniqueId+".")));
+  }
 
-    //Return record.
-    return new ImmutableProfileRecord(attribute.profile().uniqueId(), attribute.value());
+  public @NotNull IExperience addExperience(@Nullable final String uniqueId,
+                                            @Nullable final String experienceName,
+                                            long value) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(experienceName);
+
+    //Profile
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Get Experience entity.
+    @Nullable ExperienceEntity experience = this.experienceRepository
+        //Get entity by profile key and name
+        .findByProfileAndName(profileEntity, experienceName)
+        //Else return null.
+        .orElse(null);
+
+    //Update if present.
+    if (experience != null) {
+      experience.experience(experience.experience()+value);
+    } else {
+      //Create new if absent.
+      experience = new ExperienceEntity(profileEntity, experienceName, value);
+    }
+
+    //Return updated value.
+    return ImmutableExperience.of(this.experienceRepository.save(experience));
+  }
+
+  public @NotNull IExperience getExperience(@Nullable final String uniqueId,
+                                            @Nullable final String experienceName) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(experienceName);
+
+    //Profile
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+
+    return this.experienceRepository
+        .findByProfileAndName(profileEntity, experienceName)
+        //Map to plain
+        .map(ImmutableExperience::of)
+        .orElseThrow(() ->
+            new ElementNotPresentException("No experience with name="+experienceName+" present for uniqueId"+uniqueId+"."));
+  }
+
+  public @NotNull List<IExperience> getExperienceList(@Nullable String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Profile.
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+
+    return this.experienceRepository
+        //List of all experience.
+        .findByProfile(profileEntity)
+        .stream()
+        //Map to plain.
+        .map(ImmutableExperience::of)
+        .toList();
+  }
+
+  public @NotNull IExperience getTotalExperience(@Nullable String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Get profile.
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+
+    return this.experienceRepository
+        //Get total amount
+        .getTotal(profileEntity.id())
+        //Create immutable instance.
+        .map(total -> ImmutableExperience.of("Total", total, LevelFunction.function()))
+        .orElseThrow(
+            () -> new ElementNotPresentException("Error while calculating total experience of uniqueId="+uniqueId+"."));
   }
 }

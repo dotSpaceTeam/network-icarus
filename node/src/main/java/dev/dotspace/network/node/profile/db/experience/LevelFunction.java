@@ -9,10 +9,10 @@ import lombok.experimental.Accessors;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class Function implements ExperienceFunction {
+public final class LevelFunction implements ExperienceFunction {
   @Getter
   @Accessors(fluent = true)
-  private final static Function function = new Function();
+  private final static LevelFunction function = new LevelFunction();
 
   @Override
   public long levelFromExperience(long experience) {

@@ -8,4 +8,8 @@ public class ElementNotPresentException extends ElementException {
                                     @Nullable String message) {
     super(element, message);
   }
+
+  public ElementNotPresentException(@Nullable String message) {
+    super(null, message);
+  }
 }

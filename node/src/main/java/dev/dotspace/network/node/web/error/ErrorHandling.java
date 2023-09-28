@@ -1,6 +1,8 @@
 package dev.dotspace.network.node.web.error;
 
 import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.web.ImmutableResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
 
 @ControllerAdvice
 public final class ErrorHandling {
@@ -29,14 +30,37 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableErrorResponse.class)
+              schema=@Schema(implementation= ImmutableResponse.class)
           )
       }
   )
-  private ImmutableErrorResponse authenticationHandler(AuthenticationException exception) {
-    return new ImmutableErrorResponse(
+  private ImmutableResponse authenticationHandler(AuthenticationException exception) {
+    return new ImmutableResponse(
         "Not allowed! ("+exception.getMessage()+")",
         HttpStatus.UNAUTHORIZED.value());
+  }
+
+  /**
+   * Handle null pointer errors.
+   */
+  @ResponseBody
+  @ExceptionHandler(ElementNotPresentException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  //Swagger
+  @ApiResponse(
+      responseCode="404",
+      description="No matching entity found.",
+      content={
+          @Content(
+              mediaType=MediaType.APPLICATION_JSON_VALUE,
+              schema=@Schema(implementation=ImmutableResponse.class)
+          )
+      }
+  )
+  private @NotNull ImmutableResponse elementNotPresentException(@NotNull final ElementNotPresentException exception) {
+    return new ImmutableResponse(
+        "Requested element is not present. ("+exception.getMessage()+")",
+        HttpStatus.NOT_FOUND.value());
   }
 
   /**
@@ -52,12 +76,12 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableErrorResponse.class)
+              schema=@Schema(implementation=ImmutableResponse.class)
           )
       }
   )
-  private @NotNull ImmutableErrorResponse elementException(@NotNull final ElementException exception) {
-    return new ImmutableErrorResponse(
+  private @NotNull ImmutableResponse elementException(@NotNull final ElementException exception) {
+    return new ImmutableResponse(
         "Something went wrong. ("+exception.getMessage()+")",
         HttpStatus.CONFLICT.value());
   }

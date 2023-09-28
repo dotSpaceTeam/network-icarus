@@ -26,19 +26,19 @@ public final class PositionElement implements IPosition {
 
   @Column(name = "x", nullable = false)
   @Setter
-  private long x;
+  private double x;
   @Column(name = "y", nullable = false)
   @Setter
-  private long y;
+  private double y;
 
   @Column(name = "z", nullable = false)
   @Setter
-  private long z;
+  private double z;
 
   public PositionElement(final String key,
-                         final long x,
-                         final long y,
-                         final long z) {
+                         final double x,
+                         final double y,
+                         final double z) {
     this.key = key;
     this.x = x;
     this.y = y;

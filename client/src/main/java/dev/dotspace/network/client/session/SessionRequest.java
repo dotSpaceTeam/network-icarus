@@ -2,6 +2,10 @@ package dev.dotspace.network.client.session;
 
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.web.AbstractRequest;
+import dev.dotspace.network.library.profile.session.IPlaytime;
+import dev.dotspace.network.library.profile.session.ISession;
+import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
+import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.library.session.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -10,6 +10,15 @@ import java.util.UUID;
 @Schema(implementation=ImmutableProfile.class)
 public interface IProfile extends IUniqueId {
   /**
+   * Name of profile.
+   *
+   * @return the current name of profile.
+   */
+  //Swagger
+  @Schema(example="Dani_R", description="Name of profile name.")
+  @NotNull String name();
+
+  /**
    * Type of profile.
    *
    * @return type of profile.

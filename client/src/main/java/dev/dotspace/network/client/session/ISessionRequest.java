@@ -1,12 +1,10 @@
 package dev.dotspace.network.client.session;
 
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.library.session.IPlaytime;
-import dev.dotspace.network.library.session.ISession;
+import dev.dotspace.network.library.profile.session.IPlaytime;
+import dev.dotspace.network.library.profile.session.ISession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 
 /**

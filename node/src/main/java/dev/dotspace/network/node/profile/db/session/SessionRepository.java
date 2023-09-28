@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.session.db;
+package dev.dotspace.network.node.profile.db.session;
 
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import org.jetbrains.annotations.NotNull;

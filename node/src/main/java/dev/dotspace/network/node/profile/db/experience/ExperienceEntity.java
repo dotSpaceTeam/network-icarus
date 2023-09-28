@@ -57,6 +57,6 @@ public final class ExperienceEntity implements IExperience {
 
   @Override
   public long level() {
-    return Function.function().levelFromExperience(this.experience);
+    return LevelFunction.function().levelFromExperience(this.experience);
   }
 }

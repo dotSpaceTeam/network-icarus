@@ -13,6 +13,7 @@ import java.util.Objects;
     description="Base profile. Pair of id and type of profile."
 )
 public record ImmutableProfile(@NotNull String uniqueId,
+                               @NotNull String name,
                                @NotNull ProfileType profileType
 ) implements IProfile {
   /**
@@ -25,6 +26,6 @@ public record ImmutableProfile(@NotNull String uniqueId,
     //Null check
     Objects.requireNonNull(profile);
 
-    return new ImmutableProfile(profile.uniqueId(), profile.profileType());
+    return new ImmutableProfile(profile.uniqueId(), profile.name(), profile.profileType());
   }
 }

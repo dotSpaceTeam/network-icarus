@@ -6,7 +6,7 @@ import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.exception.LibraryException;
 import dev.dotspace.network.library.profile.ProfileType;
-import dev.dotspace.network.library.session.ISession;
+import dev.dotspace.network.library.profile.session.ISession;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

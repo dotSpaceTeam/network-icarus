@@ -1,6 +1,6 @@
-package dev.dotspace.network.node.session.db;
+package dev.dotspace.network.node.profile.db.session;
 
-import dev.dotspace.network.library.session.ISession;
+import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.node.profile.db.ProfileEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

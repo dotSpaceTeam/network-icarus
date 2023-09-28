@@ -1,6 +1,5 @@
 package dev.dotspace.network.node.web;
 
-import dev.dotspace.network.library.session.ImmutablePlaytime;
 import dev.dotspace.network.library.state.ImmutableBooleanState;
 import dev.dotspace.network.node.Node;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/api/v1")
 //Swagger
 @Tag(name="Ping", description="Ping node instance.")
 public final class PingController {

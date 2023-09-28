@@ -22,6 +22,14 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Long> {
   @NotNull Optional<ProfileEntity> findByUniqueId(@Nullable final String uniqueId);
 
   /**
+   * Get profile from name.
+   *
+   * @param name get profile from.
+   * @return profile as entity.
+   */
+  @NotNull Optional<ProfileEntity> findByNameIgnoreCase(@Nullable final String name);
+
+  /**
    * Check if uniqueId is present.
    *
    * @param uniqueId to check.
@@ -31,7 +39,7 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Long> {
 
 
   default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId,
-                                                  @NotNull final String message) throws ElementException {
+                                                  @NotNull final String message) throws ElementNotPresentException {
     return this
         //Get uniqueId
         .findByUniqueId(uniqueId)
@@ -39,11 +47,11 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Long> {
         .orElseThrow(() -> new ElementNotPresentException(null, message));
   }
 
-  default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId) throws ElementException {
+  default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId) throws ElementNotPresentException {
     return this
         //Get uniqueId
         .findByUniqueId(uniqueId)
         //Else throw error
-        .orElseThrow(() -> new ElementNotPresentException(null, "No profile for "+uniqueId+" present."));
+        .orElseThrow(() -> new ElementNotPresentException(null, "No profile with uniqueId="+uniqueId+" present."));
   }
 }

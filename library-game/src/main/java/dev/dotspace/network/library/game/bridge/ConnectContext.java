@@ -2,11 +2,8 @@ package dev.dotspace.network.library.game.bridge;
 
 import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.Client;
 import dev.dotspace.network.library.context.IContext;
-import dev.dotspace.network.library.exception.LibraryException;
 import dev.dotspace.network.library.profile.ProfileType;
-import dev.dotspace.network.library.session.ISession;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;

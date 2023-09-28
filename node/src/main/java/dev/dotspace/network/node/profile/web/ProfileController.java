@@ -2,15 +2,18 @@ package dev.dotspace.network.node.profile.web;
 
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableProfile;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.experience.IExperience;
 import dev.dotspace.network.library.profile.experience.ImmutableExperience;
+import dev.dotspace.network.library.profile.session.IPlaytime;
+import dev.dotspace.network.library.profile.session.ISession;
+import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
+import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileDatabase;
-import dev.dotspace.network.node.profile.db.experience.ExperienceDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -41,20 +44,16 @@ import java.util.Objects;
 
 @RestController
 @Log4j2
-@RequestMapping(value="/v1/profile")
+@RequestMapping(value="/api/v1/profile")
 //Swagger
-@Tag(name="Profile", description="Manipulate and get player profiles.")
+@Tag(name="Profile Endpoint", description="Manipulate and get player profiles.")
 public final class ProfileController extends AbstractRestController {
   /**
    * Profile database.
    */
   @Autowired
   private ProfileDatabase profileDatabase;
-  /**
-   * Experience Database.
-   */
-  @Autowired
-  private ExperienceDatabase experienceDatabase;
+
   /**
    * Get an profile from unique id.
    */
@@ -67,7 +66,7 @@ public final class ProfileController extends AbstractRestController {
       responses={
           @ApiResponse(
               responseCode="200",
-              description="Profile if present.",
+              description="Present Profile otherwise 404.",
               content={
                   @Content(
                       mediaType=MediaType.APPLICATION_JSON_VALUE,
@@ -75,14 +74,20 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId) throws ElementException {
+  public @NotNull ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId,
+                                                      @RequestParam(required=false, defaultValue="false") final boolean nameSearch) throws ElementNotPresentException {
+    //If true search profile with name
+    if (nameSearch) {
+      ResponseEntity.ok(this.profileDatabase.getProfileFromName(uniqueId));
+    }
+
     return ResponseEntity.ok(this.profileDatabase.getProfile(uniqueId));
   }
 
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping
+  @PostMapping("/")
   @ResponseBody
   //Swagger
   @Operation(
@@ -99,57 +104,281 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<IProfile> createProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) throws ElementException {
-    return ResponseEntity.ok(this.profileDatabase.createProfile(immutableProfile.uniqueId(), immutableProfile.profileType()));
+  public @NotNull ResponseEntity<IProfile> updateProfile(@RequestBody @NotNull final ImmutableProfile immutableProfile) {
+    return ResponseEntity.ok(this.profileDatabase
+        .updateProfile(immutableProfile.uniqueId(), immutableProfile.name(), immutableProfile.profileType()));
+  }
+
+
+  /**
+   * Insert an new profile from unique id.
+   */
+  @GetMapping
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get all profiles, use this function with caution.",
+      description="Get all stored profiles, high data density",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Profiles as list.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfile.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<List<IProfile>> getProfileList() {
+    return ResponseEntity.ok(Collections.emptyList());
+  }
+
+  /*
+   * =================== Attributes
+   */
+
+  /**
+   * Get attributes of uniqueId
+   */
+  @GetMapping("/{uniqueId}/attribute")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get all present profile attributes.",
+      description="Method returns a list of all present attributes associated to profile.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="List of all attributes.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfileAttribute.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<List<IProfileAttribute>> getAttributes(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getAttributeList(uniqueId));
   }
 
   /**
    * Get attributes of uniqueId
    */
-  @GetMapping("/{uniqueId}/attributes")
+  @PostMapping("/{uniqueId}/attribute/")
   @ResponseBody
-  public ResponseEntity<List<IProfileAttribute>> getProfileAttributes(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
-    return ResponseEntity.ok(this.profileDatabase.getAttributes(uniqueId));
-  }
-
-  /**
-   * Get attributes of uniqueId
-   */
-  @GetMapping("/{uniqueId}/attributes/{attribute}")
-  @ResponseBody
-  public ResponseEntity<IProfileAttribute> getProfileAttribute(@PathVariable @NotNull final String uniqueId,
-                                                               @PathVariable @NotNull final String attribute) throws ElementNotPresentException {
-    return ResponseEntity.ok(this.profileDatabase.getAttribute(uniqueId, attribute));
-  }
-
-
-  /**
-   * Get attributes of uniqueId
-   */
-  @PostMapping("/{uniqueId}/attributes")
-  @ResponseBody
-  public ResponseEntity<IProfileAttribute> postProfileAttribute(@PathVariable @NotNull final String uniqueId,
-                                                                @RequestBody @NotNull final ImmutableProfileAttribute immutableProfileAttribute) throws ElementException {
+  //Swagger
+  @Operation(
+      summary="Set new value as profile attribute.",
+      description="Update or define new attribute.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Updated or create attribute.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfileAttribute.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IProfileAttribute> setAttribute(@PathVariable @NotNull final String uniqueId,
+                                                                 @RequestBody @NotNull final ImmutableProfileAttribute immutableProfileAttribute) throws ElementNotPresentException {
     return ResponseEntity
         .ok(this.profileDatabase.setAttribute(uniqueId, immutableProfileAttribute.key(), immutableProfileAttribute.value()));
   }
 
+
   /**
    * Get attributes of uniqueId
    */
-  @DeleteMapping("/{uniqueId}/attributes")
+  @DeleteMapping("/{uniqueId}/attribute/")
   @ResponseBody
-  public ResponseEntity<IProfileAttribute> deleteProfileAttribute(@PathVariable @NotNull final String uniqueId,
-                                                                  @RequestBody @NotNull final ImmutableKey immutableKey) throws ElementException {
-    return ResponseEntity.ok(this.profileDatabase.setAttribute(uniqueId, immutableKey.key(), null));
+  //Swagger
+  @Operation(
+      summary="Delete a profile attribute.",
+      description="Delete present profile attribute.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Deleted profile attribute.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfileAttribute.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IProfileAttribute> deleteAttribute(@PathVariable @NotNull final String uniqueId,
+                                                                    @RequestBody @NotNull final ImmutableKey immutableKey) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.removeAttribute(uniqueId, immutableKey.key()));
   }
 
-  //===== Experience
+  /**
+   * Get attributes of uniqueId
+   */
+  @GetMapping("/{uniqueId}/attribute/{attribute}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get a specific profile attribute.",
+      description="Get a specific profile attribute from attribute name.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Present attribute with name.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableProfileAttribute.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IProfileAttribute> getAttribute(@PathVariable @NotNull final String uniqueId,
+                                                                 @PathVariable @NotNull final String attribute) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getAttribute(uniqueId, attribute));
+  }
+
+  /*
+   * =================== Session
+   */
+
+  /**
+   * Get all sessions for uniqueId,
+   */
+  @GetMapping("/{uniqueId}/session")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get all stored sessions of profile, use this function with caution.",
+      description="Request every data for session stored, high data density.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Returns a list of every session.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableSession.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<List<ISession>> getSessionList(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getSessionList(uniqueId));
+  }
+
+  /**
+   * Get a session from uniqueId.
+   */
+  @GetMapping("/{uniqueId}/session/{sessionId}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get a specific stored session of client.",
+      description="Request data for session stored.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return session with matching sessionId.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableSession.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<ISession> getSession(@PathVariable @NotNull final String uniqueId,
+                                                      @PathVariable @NotNull final Long sessionId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getSession(uniqueId, sessionId));
+  }
+
+
+  /**
+   * Create a session for uniqueId,
+   */
+  @PostMapping("/{uniqueId}/session/")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Create a new session for client.",
+      description="Create a new session with no end timestamp.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return session created.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableSession.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<ISession> createSession(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.createSession(uniqueId));
+  }
+
+  /**
+   * Create a session for uniqueId,
+   */
+  @PutMapping("/{uniqueId}/session/{sessionId}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Close a session for client with sessionId.",
+      description="Set current timestamp as end for session.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return session closed.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableSession.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<ISession> closeSession(@PathVariable @NotNull final String uniqueId,
+                                                        @PathVariable @NotNull final Long sessionId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.completeSession(uniqueId, sessionId));
+  }
+
+  /*
+   * =================== Playtime
+   */
+
+  /**
+   * Get playtime of uniqueId
+   */
+  @GetMapping("/{uniqueId}/playtime")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get total time a client played on server in milliseconds.",
+      description="Returns the calculated time of player been connected to network.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Final playtime is calculated from all session durations. Session need to be closed to "+
+                  "count to playtime.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutablePlaytime.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IPlaytime> getPlaytime(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getPlaytime(uniqueId));
+  }
+
+  /*
+   * =================== Experience
+   */
 
   /**
    * Add Experience of uniqueId
    */
-  @PostMapping("/{uniqueId}/experience")
+  @PostMapping("/{uniqueId}/experience/")
   @ResponseBody
   //Swagger
   @Operation(
@@ -166,9 +395,9 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<List<IExperience>> addExperience(@PathVariable @NotNull final String uniqueId,
-                                                         //Swagger
-                                                         @Schema(type="Experience map.", implementation=Map.class)
+  public @NotNull ResponseEntity<List<IExperience>> addExperience(@PathVariable @NotNull final String uniqueId,
+                                                                  //Swagger
+                                                                  @Schema(type="Experience map.", implementation=Map.class)
                                                          @RequestBody @NotNull final Map<String, Long> experienceMap) {
     return ResponseEntity.ok(experienceMap
         .entrySet()
@@ -181,7 +410,7 @@ public final class ProfileController extends AbstractRestController {
           //Add Experience.
           try {
             //Add experience.
-            return ImmutableExperience.of(this.experienceDatabase.addExperience(uniqueId, name, experience));
+            return ImmutableExperience.of(this.profileDatabase.addExperience(uniqueId, name, experience));
           } catch (final ElementException exception) {
             log.warn("Error while adding experience to "+uniqueId+".");
             return null;
@@ -194,19 +423,51 @@ public final class ProfileController extends AbstractRestController {
   }
 
   /**
-   * Get attributes of uniqueId
+   * Get total experience of uniqueId
    */
   @GetMapping("/{uniqueId}/experience")
   @ResponseBody
-  public ResponseEntity<List<IExperience>> getExperience(@PathVariable @NotNull final String uniqueId,
-                                                         @RequestParam(required=false) final String name) throws ElementException {
-    System.out.println("content");
-    //If name is present use only one.
-    if (name != null) {
-      return ResponseEntity.ok(Collections.singletonList(this.experienceDatabase.getExperience(uniqueId, name)));
-    }
+  //Swagger
+  @Operation(
+      summary="Get total experience to profile.",
+      description="Total amount of experience a profile has.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Experience as total calculated.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableExperience.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getTotalExperience(uniqueId));
+  }
 
-    //Return default list.
-    return ResponseEntity.ok(this.experienceDatabase.getExperienceList(uniqueId));
+  /**
+   * Get specific experience of uniqueId
+   */
+  @GetMapping("/{uniqueId}/experience/{experience}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get a specific stored experience of client.",
+      description="Request amount of experience stored under name.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return experience with matching name.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableExperience.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId,
+                                                            @PathVariable @NotNull final String experience) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getExperience(uniqueId, experience));
   }
 }
