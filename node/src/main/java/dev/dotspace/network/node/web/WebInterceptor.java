@@ -6,6 +6,9 @@ import com.google.common.cache.RemovalCause;
 import dev.dotspace.network.library.connection.IRestRequest;
 import dev.dotspace.network.library.connection.ImmutableRestRequest;
 import dev.dotspace.network.library.field.RequestField;
+import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.ImmutableParticipant;
+import dev.dotspace.network.library.system.ParticipantType;
 import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
 import dev.dotspace.network.node.web.event.ClientAddEvent;
 import dev.dotspace.network.node.web.event.ClientRemoveEvent;
@@ -24,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Optional;
+
 
 /**
  * Class to hook in front and between operation.
@@ -90,7 +94,7 @@ public final class WebInterceptor implements HandlerInterceptor {
                          @NotNull final HttpServletResponse response,
                          @NotNull final Object handler,
                          @Nullable final ModelAndView modelAndView) throws Exception {
-  //Nothing.
+    //Nothing.
   }
 
   @Override
@@ -102,7 +106,10 @@ public final class WebInterceptor implements HandlerInterceptor {
     final IRestRequest restRequest = new ImmutableRestRequest(
         request.getRequestURI(),
         //Client header else empty name.
-        Optional.ofNullable(request.getHeader(RequestField.CLIENT_ID)).orElse(""),
+        Optional.ofNullable(request.getHeader(RequestField.CLIENT_ID))
+            //Map id to client
+            .map(s -> (IParticipant) new ImmutableParticipant(ParticipantType.NODE, s))
+            .orElse(ImmutableParticipant.empty()),
         //Get method
         request.getMethod(),
         //Get address

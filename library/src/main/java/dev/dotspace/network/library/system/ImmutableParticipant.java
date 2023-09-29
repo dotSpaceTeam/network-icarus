@@ -12,6 +12,14 @@ import java.util.UUID;
 public record ImmutableParticipant(@NotNull ParticipantType type,
                                    @NotNull String identifier
 ) implements IParticipant {
+
+  private static final @NotNull IParticipant EMPTY = new ImmutableParticipant(ParticipantType.CLIENT, "~");
+
+  //static
+  public static @NotNull IParticipant empty() {
+    return EMPTY;
+  }
+
   /**
    * Convert {@link IParticipant} to {@link ImmutableParticipant}.
    *

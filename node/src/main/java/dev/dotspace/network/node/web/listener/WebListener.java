@@ -90,7 +90,8 @@ public final class WebListener {
       //Log request.
       this.restRequestDatabase.createRequestInfo(
           restRequest.path(),
-          restRequest.client(),
+          //Get client identifier
+          restRequest.client().identifier(),
           restRequest.method(),
           restRequest.address(),
           restRequest.note(),

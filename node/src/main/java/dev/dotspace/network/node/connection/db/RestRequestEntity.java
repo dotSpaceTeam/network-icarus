@@ -1,18 +1,27 @@
 package dev.dotspace.network.node.connection.db;
 
 import dev.dotspace.network.library.connection.IRestRequest;
+import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.ImmutableParticipant;
+import dev.dotspace.network.library.system.ParticipantType;
+import dev.dotspace.network.node.system.db.ParticipantEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
+import java.util.Optional;
 
 
 @Entity
@@ -38,9 +47,9 @@ public final class RestRequestEntity implements IRestRequest {
   /**
    * See {@link IRestRequest#client()}.
    */
-  @Column(name="Client", nullable=false)
-  @Getter
-  private String client;
+  @ManyToOne
+  @JoinColumn(name="Client")
+  private ParticipantEntity client;
 
   /**
    * See {@link IRestRequest#method()}.
@@ -57,7 +66,7 @@ public final class RestRequestEntity implements IRestRequest {
   private String address;
 
   /**
-   * See {@link IRestRequest#requestId()}.
+   * See {@link IRestRequest#note()}.
    */
   @Column(name="Note")
   @Getter
@@ -85,7 +94,7 @@ public final class RestRequestEntity implements IRestRequest {
   private int status;
 
   public RestRequestEntity(@NotNull final String path,
-                           @NotNull final String client,
+                           @Nullable final ParticipantEntity client,
                            @NotNull final String method,
                            @NotNull final String address,
                            @NotNull final String note,
@@ -100,5 +109,14 @@ public final class RestRequestEntity implements IRestRequest {
     this.timestamp = timestamp;
     this.processTime = processTime;
     this.status = status;
+  }
+
+  @Override
+  public @NotNull IParticipant client() {
+    return Optional.ofNullable(this.client)
+        //Get if present -> map plain
+        .map(ImmutableParticipant::of)
+        //Else create empty client.
+        .orElse(ImmutableParticipant.empty());
   }
 }

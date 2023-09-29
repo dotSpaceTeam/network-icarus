@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.connection;
 
+import dev.dotspace.network.library.system.IParticipant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +9,7 @@ import java.util.Objects;
 
 
 public record ImmutableRestRequest(@NotNull String path,
-                                   @NotNull String client,
+                                   @NotNull IParticipant client,
                                    @NotNull String method,
                                    @NotNull String address,
                                    @NotNull String note,

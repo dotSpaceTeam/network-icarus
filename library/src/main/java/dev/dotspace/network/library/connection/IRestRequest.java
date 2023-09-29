@@ -1,7 +1,10 @@
 package dev.dotspace.network.library.connection;
 
+import dev.dotspace.network.library.system.IParticipant;
 import dev.dotspace.network.library.timestamp.ITimestamp;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 
 public interface IRestRequest extends IAddressName, ITimestamp {
@@ -17,7 +20,7 @@ public interface IRestRequest extends IAddressName, ITimestamp {
    *
    * @return client id send this request.
    */
-  @NotNull String client();
+  @NotNull IParticipant client();
 
   /**
    * Method of this request. [GET, PUT, POST, ...]
@@ -25,11 +28,12 @@ public interface IRestRequest extends IAddressName, ITimestamp {
    * @return name of method.
    */
   @NotNull String method();  /*
-  *
+   *
    * Note for request.
    *
    * @return note if specified, else empty.
    */
+
   @NotNull String note();
 
   /**

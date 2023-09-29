@@ -1,8 +1,9 @@
 package dev.dotspace.network.node.connection.db;
 
 import dev.dotspace.network.library.connection.IRestRequest;
-import dev.dotspace.network.library.connection.ImmutableRestRequest;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.system.db.ParticipantEntity;
+import dev.dotspace.network.node.system.db.ParticipantRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Component
@@ -19,6 +21,11 @@ public final class RestRequestDatabase extends AbstractDatabase {
    */
   @Autowired
   private RestRequestRepository requestRepository;
+  /**
+   * Manipulate {@link dev.dotspace.network.library.system.IParticipant}
+   */
+  @Autowired
+  private ParticipantRepository participantRepository;
 
   public @NotNull IRestRequest createRequestInfo(@Nullable final String path,
                                                  @Nullable final String client,
@@ -30,13 +37,20 @@ public final class RestRequestDatabase extends AbstractDatabase {
                                                  final int status) {
     //Null check
     Objects.requireNonNull(path);
-    Objects.requireNonNull(client);
     Objects.requireNonNull(method);
     Objects.requireNonNull(address);
     Objects.requireNonNull(note);
     Objects.requireNonNull(timestamp);
 
+    //Get participant.
+    final ParticipantEntity participantEntity = Optional
+        .ofNullable(client)
+        //Get client.
+        .flatMap(s -> this.participantRepository.findByIdentifier(s))
+        //Or else null.
+        .orElse(null);
+
     return this.requestRepository.save(
-        new RestRequestEntity(path, client, method, address, note, timestamp, processTime, status));
+        new RestRequestEntity(path, participantEntity, method, address, note, timestamp, processTime, status));
   }
 }

@@ -31,7 +31,7 @@ public final class ParticipantDatabase extends AbstractDatabase {
     Objects.requireNonNull(type);
 
     //Check if already present.
-    if (this.participantRepository.existsByIdentifier(identifier)) {
+    if (this.participantRepository.findByIdentifier(identifier).isPresent()) {
       throw new ElementAlreadyPresentException(null, "Session id="+identifier+" already present.");
     }
 
