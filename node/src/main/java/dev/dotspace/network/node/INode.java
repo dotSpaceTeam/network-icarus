@@ -1,6 +1,7 @@
 package dev.dotspace.network.node;
 
 
+import dev.dotspace.network.library.system.ISystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +9,7 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 
-public interface INode {
+public interface INode extends ISystem {
   /**
    * Get spring bean of class.
    *
@@ -30,11 +31,4 @@ public interface INode {
    * @return instance to chain.
    */
   @NotNull INode executeEvent(@Nullable final Object object);
-
-  /**
-   * Get id of node runtime.
-   *
-   * @return id of node.
-   */
-  @NotNull String nodeId();
 }

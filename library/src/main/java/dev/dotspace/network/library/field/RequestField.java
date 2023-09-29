@@ -6,5 +6,5 @@ public final class RequestField {
   /**
    * Identification of client
    */
-  public final static @NotNull String CLIENT_ID = "Client-Id";
+  public final static @NotNull String CLIENT_ID = "client-id";
 }

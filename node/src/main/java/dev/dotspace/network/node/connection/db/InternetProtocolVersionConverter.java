@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.connection;
+package dev.dotspace.network.node.connection.db;
 
 import dev.dotspace.network.library.connection.InternetProtocolVersion;
 import jakarta.persistence.AttributeConverter;

@@ -3,15 +3,16 @@ package dev.dotspace.network.client;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.exception.ClientNotActiveException;
 import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.client.web.IRestClient;
 import dev.dotspace.network.library.Library;
-import dev.dotspace.network.library.runtime.IRuntime;
-import dev.dotspace.network.library.runtime.ImmutableRuntime;
-import dev.dotspace.network.library.runtime.RuntimeType;
+import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.ImmutableParticipant;
+import dev.dotspace.network.library.system.ParticipantType;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
@@ -25,10 +26,8 @@ import java.util.Optional;
 @Log4j2
 @Accessors(fluent=true)
 public final class Client implements IClient {
-  /**
-   * Runtime info.
-   */
-  private final @NotNull IRuntime runtime;
+  @Getter
+  private final @NotNull IParticipant participant;
   /**
    * Manager to hold provider for client.
    */
@@ -44,13 +43,14 @@ public final class Client implements IClient {
    * Only local .
    */
   private Client(@NotNull final String endPoint) {
-    this.runtime = ImmutableRuntime.randomOfType(RuntimeType.CLIENT);
+    //Define runtime.
+    this.participant = ImmutableParticipant.randomOfType(ParticipantType.CLIENT);
+
     //Create injector.
     this.injector = Guice.createInjector(
-        new ClientModule(this.runtime.runtimeId(), endPoint), Library.module());
+        new ClientModule(this.participant().identifier(), endPoint), Library.module());
 
     this.thread = Thread.currentThread();
-    log.info("Client instance running under id={}.", this.runtime.runtimeId());
   }
 
   /**
@@ -105,8 +105,10 @@ public final class Client implements IClient {
    */
   public static @NotNull IClient client() {
     return Optional
+        //Get client
         .ofNullable(client)
-        .orElseThrow(() -> new RuntimeException());
+        //Else error
+        .orElseThrow(ClientNotActiveException::new);
   }
 
   /**
@@ -138,4 +140,5 @@ public final class Client implements IClient {
   public static boolean disconnected() {
     return client != null && client.injector.getInstance(IRestClient.class).state() == ClientState.FAILED;
   }
+
 }

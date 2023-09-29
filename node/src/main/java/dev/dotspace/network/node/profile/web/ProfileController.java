@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.profile.web;
 
+import dev.dotspace.network.library.connection.IAddressName;
 import dev.dotspace.network.library.connection.ImmutableAddressName;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
@@ -380,6 +381,30 @@ public final class ProfileController extends AbstractRestController {
     return ResponseEntity.ok(this.profileDatabase.completeSession(uniqueId, sessionId));
   }
 
+  /**
+   * Get playtime of uniqueId
+   */
+  @GetMapping("/{uniqueId}/ip")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get last stored ip address of player.",
+      description="Get last ip address of latest player session.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return present address or 404 if empty.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableAddressName.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IAddressName> getAddress(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getLatestAddress(uniqueId));
+  }
+
   /*
    * =================== Playtime
    */
@@ -429,35 +454,16 @@ public final class ProfileController extends AbstractRestController {
               content={
                   @Content(
                       mediaType=MediaType.APPLICATION_JSON_VALUE,
-                      schema=@Schema(implementation=List.class)
+                      schema=@Schema(implementation=ImmutableExperience.class)
                   )
               })
       })
-  public @NotNull ResponseEntity<List<IExperience>> addExperience(@PathVariable @NotNull final String uniqueId,
-                                                                  //Swagger
-                                                                  @Schema(type="Experience map.", implementation=Map.class)
-                                                                  @RequestBody @NotNull final Map<String, Long> experienceMap) {
-    return ResponseEntity.ok(experienceMap
-        .entrySet()
-        .stream()
-        .map(stringLongEntry -> {
-          final String name = stringLongEntry.getKey();
-          final long experience = stringLongEntry.getValue();
+  public @NotNull ResponseEntity<IExperience> addExperience(@PathVariable @NotNull final String uniqueId,
+                                                            @RequestBody @NotNull final ImmutableExperience experience) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(experience);
 
-          log.debug("Updating experience={}(add {}) for={}.", name, experience, uniqueId);
-          //Add Experience.
-          try {
-            //Add experience.
-            return ImmutableExperience.of(this.profileDatabase.addExperience(uniqueId, name, experience));
-          } catch (final ElementException exception) {
-            log.warn("Error while adding experience to "+uniqueId+".");
-            return null;
-          }
-        })
-        //Filter not present instances.
-        .filter(Objects::nonNull)
-        //Stream to list.
-        .toList());
+    return ResponseEntity.ok(this.profileDatabase.addExperience(uniqueId, experience.name(), experience.experience()));
   }
 
   /**

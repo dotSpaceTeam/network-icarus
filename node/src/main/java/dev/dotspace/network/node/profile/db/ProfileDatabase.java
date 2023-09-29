@@ -1,5 +1,7 @@
 package dev.dotspace.network.node.profile.db;
 
+import dev.dotspace.network.library.connection.IAddressName;
+import dev.dotspace.network.library.connection.ImmutableAddressName;
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableProfile;
@@ -11,6 +13,8 @@ import dev.dotspace.network.library.profile.session.IPlaytime;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
 import dev.dotspace.network.library.profile.session.ImmutableSession;
+import dev.dotspace.network.library.timestamp.ITimestamp;
+import dev.dotspace.network.library.timestamp.ImmutableTimestamp;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeEntity;
@@ -314,6 +318,54 @@ public final class ProfileDatabase extends AbstractDatabase {
     return ImmutableSession.of(this.sessionRepository.save(session));
   }
 
+  public @NotNull ITimestamp getFirstConnect(@Nullable final String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Get profile
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Get Address
+    return this.sessionRepository
+        //Get address stamp
+        .firstSession(profile.id())
+        //Map to plain object
+        .map(ImmutableTimestamp::new)
+        .orElseThrow(() -> new ElementNotPresentException("No stored first connect for uniqueId="+uniqueId+"."));
+  }
+
+  public @NotNull ITimestamp getLastConnect(@Nullable final String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Get profile
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Get Address
+    return this.sessionRepository
+        //Get address stamp
+        .lastSession(profile.id())
+        //Map to plain object
+        .map(ImmutableTimestamp::new)
+        .orElseThrow(() -> new ElementNotPresentException("No stored last connect for uniqueId="+uniqueId+"."));
+  }
+
+
+  public @NotNull IAddressName getLatestAddress(@Nullable final String uniqueId) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+
+    //Get profile
+    final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
+
+    //Get Address
+    return this.sessionRepository
+        //Get address stamp
+        .latestAddress(profile.id())
+        //Map to plain object
+        .map(ImmutableAddressName::new)
+        .orElseThrow(() -> new ElementNotPresentException("No stored ip address for uniqueId="+uniqueId+"."));
+  }
 
   public @NotNull IPlaytime getPlaytime(@Nullable String uniqueId) throws ElementNotPresentException {
     //Null check

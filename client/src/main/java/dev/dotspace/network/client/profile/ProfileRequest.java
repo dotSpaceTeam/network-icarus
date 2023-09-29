@@ -7,6 +7,8 @@ import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
+import dev.dotspace.network.library.profile.experience.IExperience;
+import dev.dotspace.network.library.profile.experience.ImmutableExperience;
 import dev.dotspace.network.library.profile.session.IPlaytime;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
@@ -187,7 +189,56 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
 
       //Send request
       return this.client()
-          .put("/api/v1/profile/"+uniqueId+"/session/"+sessionId, ImmutableSession.class, null);
+          .put("/api/v1/profile/"+uniqueId+"/session/"+sessionId, ImmutableSession.class);
+    });
+  }
+
+  @Override
+  public @NotNull Response<IExperience> getTotalExperience(@Nullable String uniqueId) {
+    return this.responseService().response(() -> {
+      //Null check
+      Objects.requireNonNull(uniqueId);
+
+      //Send request
+      return this.client()
+          .get("/api/v1/profile/"+uniqueId+"/experience", ImmutableExperience.class);
+    });
+  }
+
+  @Override
+  public @NotNull Response<IExperience> getExperience(@Nullable String uniqueId,
+                                                      @Nullable String name) {
+    return this.responseService().response(() -> {
+      //Null check
+      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(name);
+
+      //Send request
+      return this.client()
+          .get("/api/v1/profile/"+uniqueId+"/experience/"+name, ImmutableExperience.class);
+    });
+  }
+
+  @Override
+  public @NotNull Response<IExperience> addExperience(@Nullable String uniqueId,
+                                                      @Nullable String name,
+                                                      long experience) {
+    return this.responseService().response(() -> {
+      //Null check
+      Objects.requireNonNull(uniqueId);
+      Objects.requireNonNull(name);
+
+      //Check if experience is positive
+      if (experience<=0) {
+        //Throw error.
+        throw new IllegalArgumentException("Error while adding experience. Value must be positive.");
+      }
+
+      //Send request
+      return this.client()
+          .post("/api/v1/profile/"+uniqueId+"/experience/",
+              ImmutableExperience.class,
+              new ImmutableExperience(name, experience, -1));
     });
   }
 }

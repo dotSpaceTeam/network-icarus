@@ -88,7 +88,7 @@ public interface IProfileRequest {
    */
   @NotNull Response<ISession> completeSession(@Nullable final String uniqueId,
                                               @Nullable final Long sessionId);
-  
+
   /**
    * Get total experience of player.
    *
@@ -96,4 +96,26 @@ public interface IProfileRequest {
    * @return completed {@link IExperience}.
    */
   @NotNull Response<IExperience> getTotalExperience(@Nullable final String uniqueId);
+
+  /**
+   * Get specific experience of player.
+   *
+   * @param uniqueId profile to get experience from.
+   * @param name     of experience to get.
+   * @return completed {@link IExperience}.
+   */
+  @NotNull Response<IExperience> getExperience(@Nullable final String uniqueId,
+                                               @Nullable final String name);
+
+  /**
+   * Add specific experience to player.
+   *
+   * @param uniqueId   profile to add experience to.
+   * @param name       of experience to add points.
+   * @param experience to add
+   * @return completed {@link IExperience}.
+   */
+  @NotNull Response<IExperience> addExperience(@Nullable final String uniqueId,
+                                               @Nullable final String name,
+                                               final long experience);
 }

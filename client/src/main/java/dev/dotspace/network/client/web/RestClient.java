@@ -148,35 +148,72 @@ public final class RestClient implements IRestClient {
    */
   @Override
   public <RESPONSE> @NotNull RESPONSE get(@Nullable String apiEndpoint,
-                                          @Nullable Class<RESPONSE> typeClass) {
-    return this.response(apiEndpoint, HttpMethod.GET, typeClass, null);
+                                          @Nullable Class<RESPONSE> responseClass) {
+    return this.response(apiEndpoint, HttpMethod.GET, responseClass, null);
+  }
+
+  /**
+   * See {@link IRestClient#get(String, Class, Object)}.
+   */
+  @Override
+  public <RESPONSE, TYPE> @NotNull RESPONSE get(@Nullable String apiEndpoint,
+                                                @Nullable Class<RESPONSE> responseClass,
+                                                @Nullable TYPE body) {
+    return this.response(apiEndpoint, HttpMethod.GET, responseClass, body);
+  }
+
+  /**
+   * See {@link IRestClient#put(String, Class)}.
+   */
+  @Override
+  public <RESPONSE> @NotNull RESPONSE put(@Nullable String apiEndpoint,
+                                          @Nullable Class<RESPONSE> responseClass) {
+    return this.response(apiEndpoint, HttpMethod.PUT, responseClass, null);
   }
 
   /**
    * See {@link IRestClient#put(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE put(@Nullable String apiEndpoint,
-                                                @Nullable Class<RESPONSE> typeClass,
+                                                @Nullable Class<RESPONSE> responseClass,
                                                 @Nullable TYPE type) {
-    return this.response(apiEndpoint, HttpMethod.PUT, typeClass, type);
+    return this.response(apiEndpoint, HttpMethod.PUT, responseClass, type);
+  }
+
+  /**
+   * See {@link IRestClient#put(String, Class)}s
+   */
+  @Override
+  public <RESPONSE> @NotNull RESPONSE post(@Nullable String apiEndpoint,
+                                           @Nullable Class<RESPONSE> responseClass) {
+    return this.response(apiEndpoint, HttpMethod.POST, responseClass, null);
   }
 
   /**
    * See {@link IRestClient#post(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE post(@Nullable String apiEndpoint,
-                                                 @Nullable Class<RESPONSE> typeClass,
+                                                 @Nullable Class<RESPONSE> responseClass,
                                                  @Nullable TYPE type) {
-    return this.response(apiEndpoint, HttpMethod.POST, typeClass, type);
+    return this.response(apiEndpoint, HttpMethod.POST, responseClass, type);
+  }
+
+  /**
+   * See {@link IRestClient#delete(String, Class)}.
+   */
+  @Override
+  public <RESPONSE> @NotNull RESPONSE delete(@Nullable String apiEndpoint,
+                                             @Nullable Class<RESPONSE> responseClass) {
+    return this.response(apiEndpoint, HttpMethod.DELETE, responseClass, null);
   }
 
   /**
    * See {@link IRestClient#delete(String, Class, Object)}.
    */
   public <RESPONSE, TYPE> @NotNull RESPONSE delete(@Nullable String apiEndpoint,
-                                                   @Nullable Class<RESPONSE> typeClass,
+                                                   @Nullable Class<RESPONSE> responseClass,
                                                    @Nullable TYPE type) {
-    return this.response(apiEndpoint, HttpMethod.POST, typeClass, type);
+    return this.response(apiEndpoint, HttpMethod.DELETE, responseClass, type);
   }
 
   private <RESPONSE, TYPE> RESPONSE response(@Nullable final String apiEndpoint,
@@ -260,7 +297,7 @@ public final class RestClient implements IRestClient {
     try {
       state = this
           //Ping any node.
-          .baseRequestSpec("/v1/ping", HttpMethod.GET)
+          .baseRequestSpec("/api/v1/ping", HttpMethod.GET)
           //Handle response
           .exchangeToMono(clientResponse -> {
             //Check if response was success.

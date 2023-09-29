@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.runtime;
+package dev.dotspace.network.library.system;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 @Getter
 @AllArgsConstructor()
 @Accessors(fluent = true)
-public enum RuntimeType {
+public enum ParticipantType {
   /**
    * If runner is a client.
    */
@@ -29,14 +29,14 @@ public enum RuntimeType {
   //static
 
   /**
-   * Get {@link RuntimeType} from id. ({@link RuntimeType#id})
+   * Get {@link ParticipantType} from id. ({@link ParticipantType#id})
    *
    * @param id to get type from.
-   * @return present {@link RuntimeType} owner of the id.
+   * @return present {@link ParticipantType} owner of the id.
    * @throws IndexOutOfBoundsException if id is not a valid type.
    */
-  public static @NotNull RuntimeType fromId(final int id) throws IndexOutOfBoundsException {
-    for (final RuntimeType value : RuntimeType.values()) { //Loop trough every type.
+  public static @NotNull ParticipantType fromId(final int id) throws IndexOutOfBoundsException {
+    for (final ParticipantType value : ParticipantType.values()) { //Loop trough every type.
       if (value.id != id) { //Goto next enum value if no match.
         continue;
       }

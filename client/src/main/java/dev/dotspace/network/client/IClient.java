@@ -6,11 +6,12 @@ import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.library.common.StateHandler;
+import dev.dotspace.network.library.system.ISystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public interface IClient extends StateHandler<ClientState> {
+public interface IClient extends ISystem, StateHandler<ClientState> {
 
   /**
    * See {@link StateHandler#handle(Object, ThrowableRunnable)}

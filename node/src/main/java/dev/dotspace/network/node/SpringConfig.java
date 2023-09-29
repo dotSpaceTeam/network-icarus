@@ -2,16 +2,25 @@ package dev.dotspace.network.node;
 
 import dev.dotspace.common.response.ResponseService;
 import dev.dotspace.network.library.Library;
+import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.ImmutableParticipant;
+import dev.dotspace.network.library.system.ParticipantType;
+import dev.dotspace.network.node.web.WebInterceptor;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,6 +33,9 @@ import java.util.concurrent.Executors;
 @Configuration
 @Log4j2
 public class SpringConfig {
+
+  @Autowired
+  private WebInterceptor webInterceptor;
 
   /**
    * Basic web server config.
@@ -49,6 +61,14 @@ public class SpringConfig {
             .allowedOrigins("*"); //Allow all origins
         log.info("Allowed all origins for cors.");
       }
+
+      /**
+       * There to chain into request.
+       */
+      @Override
+      public void addInterceptors(@NotNull final InterceptorRegistry registry) {
+        registry.addInterceptor(SpringConfig.this.webInterceptor);
+      }
     };
   }
 
@@ -72,6 +92,14 @@ public class SpringConfig {
   }
 
   /**
+   * Configure {@link IParticipant}
+   */
+  @Bean
+  public IParticipant participant() {
+    return ImmutableParticipant.randomOfType(ParticipantType.NODE);
+  }
+
+  /**
    * Configure thread service.
    */
   @Bean
@@ -88,5 +116,6 @@ public class SpringConfig {
   public ResponseService responseService() {
     return Library.responseService();
   }
+
 
 }

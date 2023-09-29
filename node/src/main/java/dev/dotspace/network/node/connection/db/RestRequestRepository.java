@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.runtime.db;
+package dev.dotspace.network.node.connection.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
