@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.listener;
+package dev.dotspace.network.node.web.listener;
 
 import dev.dotspace.network.library.connection.IRestRequest;
 import dev.dotspace.network.library.system.ParticipantType;
