@@ -156,7 +156,7 @@ public final class MessageController extends AbstractRestController {
    * Convert {@link String} with lang tag to {@link Locale}.
    *
    * @param lang to convert.
-   * @return present locale otherwise using {@link Locale#getDefault()}.
+   * @return present locale otherwise using.
    */
   private @NotNull Locale localeFromTag(@Nullable final String lang) {
     return Optional
