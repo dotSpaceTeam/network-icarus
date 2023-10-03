@@ -15,6 +15,6 @@ public class Driver {
    * @param args for jvm.
    */
   public static void main(String[] args) {
-    new Node(SpringApplication.run(Driver.class, args));
+    SpringApplication.run(Driver.class, args);
   }
 }

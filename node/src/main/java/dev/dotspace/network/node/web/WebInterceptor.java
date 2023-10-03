@@ -9,7 +9,6 @@ import dev.dotspace.network.library.field.RequestField;
 import dev.dotspace.network.library.system.IParticipant;
 import dev.dotspace.network.library.system.ImmutableParticipant;
 import dev.dotspace.network.library.system.ParticipantType;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
 import dev.dotspace.network.node.web.event.ClientAddEvent;
 import dev.dotspace.network.node.web.event.ClientRemoveEvent;
 import dev.dotspace.network.node.web.event.RequestResponseEvent;
@@ -73,7 +72,7 @@ public final class WebInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(@NotNull final HttpServletRequest request,
                            @NotNull final HttpServletResponse response,
-                           @NotNull final Object handler) throws Exception {
+                           @NotNull final Object handler) {
     //Get client id
     @Nullable final String clientId = request.getHeader(RequestField.CLIENT_ID);
 
@@ -93,7 +92,7 @@ public final class WebInterceptor implements HandlerInterceptor {
   public void postHandle(@NotNull final HttpServletRequest request,
                          @NotNull final HttpServletResponse response,
                          @NotNull final Object handler,
-                         @Nullable final ModelAndView modelAndView) throws Exception {
+                         @Nullable final ModelAndView modelAndView) {
     //Nothing.
   }
 
@@ -101,14 +100,14 @@ public final class WebInterceptor implements HandlerInterceptor {
   public void afterCompletion(@NotNull final HttpServletRequest request,
                               @NotNull final HttpServletResponse response,
                               @NotNull final Object handler,
-                              @Nullable final Exception exception) throws Exception {
+                              @Nullable final Exception exception) {
     //Build request
     final IRestRequest restRequest = new ImmutableRestRequest(
         request.getRequestURI(),
         //Client header else empty name.
         Optional.ofNullable(request.getHeader(RequestField.CLIENT_ID))
             //Map id to client
-            .map(s -> (IParticipant) new ImmutableParticipant(ParticipantType.NODE, s))
+            .map(s -> (IParticipant) new ImmutableParticipant(ParticipantType.CLIENT, s))
             .orElse(ImmutableParticipant.empty()),
         //Get method
         request.getMethod(),
@@ -124,8 +123,7 @@ public final class WebInterceptor implements HandlerInterceptor {
     this.applicationEventPublisher.publishEvent(new RequestResponseEvent(this, restRequest));
   }
 
-  private void handleClientRegister(@Nullable final String clientId)
-      throws ElementAlreadyPresentException {
+  private void handleClientRegister(@Nullable final String clientId) {
     //Client absent -> return
     if (clientId == null) {
       return;

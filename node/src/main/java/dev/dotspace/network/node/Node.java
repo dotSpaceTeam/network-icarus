@@ -2,33 +2,42 @@ package dev.dotspace.network.node;
 
 import dev.dotspace.network.library.system.IParticipant;
 import dev.dotspace.network.library.system.ISystem;
-import dev.dotspace.network.library.system.ParticipantType;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
 import java.util.Optional;
 
 
+@Component
 @Log4j2
 @Accessors(fluent=true)
 public final class Node implements INode {
   /**
    * Spring context.
    */
-  private final @NotNull ConfigurableApplicationContext applicationContext;
+  @Autowired
+  private ConfigurableApplicationContext applicationContext;
 
-  public Node(@Nullable final ConfigurableApplicationContext applicationContext) {
-    //Null check
-    Objects.requireNonNull(applicationContext);
-
-    //Insert local runtime in database.
-    this.applicationContext = applicationContext;
+  public Node() {
     instance = this;
+  }
+
+  @PostConstruct
+  private void init() {
+    //--
+  }
+
+  @PreDestroy
+  private void shutdown() {
+    //--
   }
 
   /**

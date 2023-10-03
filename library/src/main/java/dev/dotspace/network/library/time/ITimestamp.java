@@ -1,4 +1,4 @@
-package dev.dotspace.network.library.timestamp;
+package dev.dotspace.network.library.time;
 
 import dev.dotspace.network.library.profile.ImmutableProfile;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,10 +1,8 @@
 package dev.dotspace.network.library.connection;
 
 import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.library.timestamp.ITimestamp;
+import dev.dotspace.network.library.time.ITimestamp;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 
 public interface IRestRequest extends IAddressName, ITimestamp {

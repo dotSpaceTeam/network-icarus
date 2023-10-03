@@ -9,23 +9,18 @@ import dev.dotspace.network.node.web.WebInterceptor;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
-import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -33,7 +28,9 @@ import java.util.concurrent.Executors;
 @Configuration
 @Log4j2
 public class SpringConfig {
-
+  /**
+   * {@link WebInterceptor} to hook into rest-controller processing.
+   */
   @Autowired
   private WebInterceptor webInterceptor;
 
@@ -117,5 +114,11 @@ public class SpringConfig {
     return Library.responseService();
   }
 
-
+  /**
+   * Define default locale.
+   */
+  @Bean
+  public @NotNull Locale defaultLocale() {
+    return Locale.US;
+  }
 }

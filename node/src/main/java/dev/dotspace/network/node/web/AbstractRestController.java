@@ -1,23 +1,22 @@
 package dev.dotspace.network.node.web;
 
-import dev.dotspace.common.response.ResponseService;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.log4j.Log4j2;
 
-
+/**
+ * Logger
+ */
+@Log4j2
 @Getter
 @Accessors(fluent=true)
 public abstract class AbstractRestController {
   /**
-   * Async service for rest service.
+   * Initialize controller.
    */
-  @Autowired
-  private ResponseService responseService;
-
   @PostConstruct
   public void init() {
-    System.out.printf("Test");
+    log.info("Initialized rest-controller name={}.", this.getClass().getSimpleName());
   }
 }

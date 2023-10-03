@@ -15,6 +15,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 
 
 @Component
@@ -73,15 +74,15 @@ public final class WebListener {
     //Id
     final IRestRequest restRequest = event.request();
 
-    //If true, request will not be logged.
-    final boolean pseudoRequest = this.pseudoRequest(restRequest.path());
+    //If true, request will be logged.
+    final boolean logRequest = this.logRequest(restRequest.path());
 
     //Log
-    log.info("[{}]'{}' took {} ms. (status={}, pseudo={})",
-        restRequest.method(), restRequest.path(), restRequest.processTime(), restRequest.status(), pseudoRequest);
+    log.info("[{}]'{}' took {} ms. (status={}, log={})",
+        restRequest.method(), restRequest.path(), restRequest.processTime(), restRequest.status(), logRequest);
 
     //No further operation with pseudo.
-    if (pseudoRequest) {
+    if (!logRequest) {
       return;
     }
 
@@ -102,14 +103,15 @@ public final class WebListener {
   }
 
   /**
+   * Pattern for request
+   */
+  private final static Pattern LOG_PATTERN = Pattern.compile("/api/v[0-9]/(?!ping).*");
+
+  /**
    * If url is a pseudo url -> will not be logged.
    */
-  private boolean pseudoRequest(@NotNull final String url) {
-    return url.endsWith("ping") ||
-        //Fallback if something fails.
-        url.endsWith("/error") ||
-        //Block files
-        url.contains(".html") ||
-        url.contains(".ico");
+  private boolean logRequest(@NotNull final String url) {
+    //Check if url is loggable.
+    return LOG_PATTERN.matcher(url).find();
   }
 }
