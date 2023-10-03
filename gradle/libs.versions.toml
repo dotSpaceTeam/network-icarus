@@ -1,7 +1,7 @@
 [libraries]
 annotations = "org.jetbrains:annotations:24.0.1"
 common = "dev.dotspace:common:1.0.8.3"
-log4j = "org.apache.logging.log4j:log4j-core:2.16.0"
+log4j = "org.apache.logging.log4j:log4j-core:2.20.0"
 guice = "com.google.inject:guice:7.0.0"
 guava = "com.google.guava:guava:32.1.1-jre"
 jackson-databind = "com.fasterxml.jackson.core:jackson-databind:2.15.2"
@@ -16,9 +16,6 @@ spring-boot-starter-data-jpa = "org.springframework.boot:spring-boot-starter-dat
 spring-boot-starter-security = "org.springframework.boot:spring-boot-starter-security:3.1.0"
 
 spring-doc = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0"
-
-springfox = "io.springfox:springfox-swagger2:3.0.0"
-springfox-starter = "io.springfox:springfox-boot-starter:3.0.0"
 
 junit-jupiter-api = "org.junit.jupiter:junit-jupiter-api:5.8.1"
 junit-jupiter-engine = "org.junit.jupiter:junit-jupiter-engine:5.8.1"

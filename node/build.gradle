@@ -1,5 +1,5 @@
 plugins {
-  id 'java'
+  id 'java-library'
 }
 dependencies {
   implementation project(":library")
@@ -10,9 +10,25 @@ dependencies {
   implementation libs.spring.boot.starter.data.jpa
   implementation libs.spring.boot.starter.security
 
+  implementation libs.log4j
+
   implementation libs.spring.doc
 
   implementation libs.postgresql
 
   implementation libs.reflections
+}
+
+
+jar {
+  dependsOn(':library:build')
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+  manifest {
+    attributes('Main-Class': 'dev.dotspace.network.node.Driver')
+  }
 }
