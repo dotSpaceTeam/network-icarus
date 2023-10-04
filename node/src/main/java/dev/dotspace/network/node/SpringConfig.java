@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -33,6 +34,9 @@ public class SpringConfig {
    */
   @Autowired
   private WebInterceptor webInterceptor;
+
+  @Autowired
+  private Environment environment;
 
   /**
    * Basic web server config.
@@ -121,4 +125,53 @@ public class SpringConfig {
   public @NotNull Locale defaultLocale() {
     return Locale.US;
   }
+
+  /*
+  @Bean(name="dataSource")
+  public DataSource dataSource() {
+    log.info("Registering HikariDataSource bean.");
+    HikariDataSource ds = new HikariDataSource();
+
+    ds.setDataSourceClassName(this.environment.getProperty("spring.datasource.driver-class-name"));
+    //ds.setMinimumIdle(environment.getRequiredProperty("hikari.minimumIdle", Integer.class));
+
+
+    ds.setJdbcUrl(this.environment.getProperty("spring.datasource.url"));
+    ds.setUsername(this.environment.getRequiredProperty("spring.datasource.username"));
+    ds.setPassword(this.environment.getRequiredProperty("spring.datasource.password"));
+
+    return ds;
+  }
+
+
+
+  // EntityManagerFactory
+  @Bean(name="entityManagerFactory")
+  public EntityManagerFactory entityManagerFactory() {
+    log.info("Registering EntityManagerFactory bean.");
+    JpaVendorAdapter hibernateJpavendorAdapter = new HibernateJpaVendorAdapter();
+    JpaDialect hibernateJpaDialect = new HibernateJpaDialect();
+
+    LocalContainerEntityManagerFactoryBean emfBean =
+        new LocalContainerEntityManagerFactoryBean();
+    emfBean.setJpaVendorAdapter(hibernateJpavendorAdapter);
+    emfBean.setJpaDialect(hibernateJpaDialect);
+  //  emfBean.setPersistenceUnitName(PERSISTENCE_UNIT);
+    emfBean.setDataSource(dataSource());
+    emfBean.afterPropertiesSet();
+    return emfBean.getObject();
+  }
+
+
+  // TransactionManager
+  @Bean(name="transactionManager")
+  public PlatformTransactionManager transactionManager() {
+    log.info("Registering JpaTransactionManager bean.");
+
+    JpaTransactionManager txManager = new JpaTransactionManager();
+    EntityManagerFactory emf = entityManagerFactory();
+    txManager.setEntityManagerFactory(emf);
+    txManager.setDataSource(dataSource());
+    return txManager;
+  }*/
 }

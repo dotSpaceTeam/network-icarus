@@ -20,7 +20,7 @@ public final class RestRequestDatabase extends AbstractDatabase {
    * Manipulate {@link IRestRequest}.
    */
   @Autowired
-  private RestRequestRepository requestRepository;
+  private RestRequestRepository restRequestRepository;
   /**
    * Manipulate {@link dev.dotspace.network.library.system.IParticipant}
    */
@@ -50,7 +50,7 @@ public final class RestRequestDatabase extends AbstractDatabase {
         //Or else null.
         .orElse(null);
 
-    return this.requestRepository.save(
+    return this.restRequestRepository.save(
         new RestRequestEntity(path, participantEntity, method, address, note, timestamp, processTime, status));
   }
 }

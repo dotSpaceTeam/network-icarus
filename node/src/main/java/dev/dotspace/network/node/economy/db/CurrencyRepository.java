@@ -2,7 +2,6 @@ package dev.dotspace.network.node.economy.db;
 
 import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
-import dev.dotspace.network.node.profile.db.ProfileEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;

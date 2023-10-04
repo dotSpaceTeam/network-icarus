@@ -1,31 +1,50 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
-  id 'java-library'
+  id 'java'
 }
+
+apply plugin: libs.plugins.dependencymanagement.get().pluginId
+apply plugin: libs.plugins.boot.get().pluginId
+
 dependencies {
   implementation project(":library")
+
+  implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
   implementation libs.spring.boot.starter.parent
   implementation libs.spring.boot.starter.web
   implementation libs.spring.boot.autoconfigure
   implementation libs.spring.boot.starter.data.jpa
   implementation libs.spring.boot.starter.security
-
-  implementation libs.log4j
+  implementation libs.spring.boot.starter.validation
 
   implementation libs.spring.doc
+
+  implementation libs.hikari
+
+  implementation libs.log4j
 
   implementation libs.postgresql
 
   implementation libs.reflections
 }
 
+dependencyManagement {
+  imports {
+    mavenBom(SpringBootPlugin.BOM_COORDINATES)
+  }
+}
 
 jar {
+  enabled = true
   dependsOn(':library:build')
+
   from {
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
   }
-  exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+
+  //exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
   duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 
   manifest {
