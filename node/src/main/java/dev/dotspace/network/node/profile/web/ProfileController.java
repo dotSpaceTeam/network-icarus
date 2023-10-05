@@ -2,6 +2,10 @@ package dev.dotspace.network.node.profile.web;
 
 import dev.dotspace.network.library.connection.IAddressName;
 import dev.dotspace.network.library.connection.ImmutableAddressName;
+import dev.dotspace.network.library.economy.IBalance;
+import dev.dotspace.network.library.economy.ITransaction;
+import dev.dotspace.network.library.economy.ImmutableBalance;
+import dev.dotspace.network.library.economy.ImmutableTransaction;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.ImmutableProfile;
@@ -13,7 +17,6 @@ import dev.dotspace.network.library.profile.session.IPlaytime;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
 import dev.dotspace.network.library.profile.session.ImmutableSession;
-import dev.dotspace.network.node.exception.ElementException;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
@@ -27,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +44,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -513,5 +513,64 @@ public final class ProfileController extends AbstractRestController {
   public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId,
                                                             @PathVariable @NotNull final String experience) throws ElementNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getExperience(uniqueId, experience));
+  }
+
+
+  /*
+   * =================== Economy
+   */
+
+  /**
+   * Add transaction
+   */
+  @PostMapping("/{uniqueId}/economy")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Create new transaction for player.",
+      description="Create a new transaction for player, define type. (Withdraw or Deposit)",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return created transaction.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableTransaction.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<ITransaction> createEconomyTransaction(@PathVariable @NotNull final String uniqueId,
+                                                                        @RequestBody @NotNull final ImmutableTransaction immutableTransaction,
+                                                                        @RequestParam(required=false, defaultValue="false") final boolean negativeBalance) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.createTransaction(uniqueId,
+        immutableTransaction.currency(),
+        immutableTransaction.amount(),
+        immutableTransaction.transactionType()));
+  }
+
+  /**
+   * Get balance for currency
+   */
+  @GetMapping("/{uniqueId}/economy/{currency}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Create new transaction for player.",
+      description="Create a new transaction for player, define type. (Withdraw or Deposit)",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return created transaction.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableBalance.class)
+                  )
+              })
+      })
+  public @NotNull ResponseEntity<IBalance> createEconomyTransaction(@PathVariable @NotNull final String uniqueId,
+                                                                    @PathVariable @NotNull final String currency) throws ElementNotPresentException {
+    return ResponseEntity.ok(this.profileDatabase.getBalance(uniqueId, currency));
   }
 }

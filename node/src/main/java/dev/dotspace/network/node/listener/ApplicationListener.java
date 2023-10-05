@@ -7,6 +7,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Log4j2
 public final class ApplicationListener {
+  /**
+   * Properties of build
+   */
+  @Autowired
+  private BuildProperties buildProperties;
   /**
    * Database to store participant
    */
@@ -31,7 +37,7 @@ public final class ApplicationListener {
     //Log begin.
     log.info("Registering node as participant...");
 
-    System.out.println("""
+    System.out.printf("""
                                                                                             \s
                                                                  dddddddd                   \s
             NNNNNNNN        NNNNNNNN                             d::::::d                   \s
@@ -51,8 +57,9 @@ public final class ApplicationListener {
             N::::::N        N::::::N oo:::::::::::oo   d:::::::::ddd::::d  ee:::::::::::::e \s
             NNNNNNNN         NNNNNNN   ooooooooooo      ddddddddd   ddddd    eeeeeeeeeeeeee \s
                                                                                             \s
+            Version: %s                                                                     \s
                                                                                             \s
-        """);
+        """, this.buildProperties.getVersion());
 
     try {
       this.participantDatabase.createParticipant(this.participant.identifier(), this.participant.type());

@@ -7,6 +7,9 @@ plugins {
 apply plugin: libs.plugins.dependencymanagement.get().pluginId
 apply plugin: libs.plugins.boot.get().pluginId
 
+//Version of parent to use in display.
+version parent.version
+
 dependencies {
   implementation project(":library")
 
@@ -34,6 +37,10 @@ dependencyManagement {
   imports {
     mavenBom(SpringBootPlugin.BOM_COORDINATES)
   }
+}
+
+springBoot {
+  buildInfo()
 }
 
 jar {

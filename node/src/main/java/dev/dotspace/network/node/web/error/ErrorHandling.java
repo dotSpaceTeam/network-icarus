@@ -7,13 +7,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -38,7 +36,7 @@ public final class ErrorHandling {
       }
   )
   private ImmutableResponse authenticationHandler(@NotNull final AuthenticationException exception) {
-    return new ImmutableResponse("Not allowed! ("+exception.getMessage()+")", HttpStatus.UNAUTHORIZED.value());
+    return new ImmutableResponse("Access denied!", exception.getMessage(), HttpStatus.UNAUTHORIZED.value());
   }
 
   /**
@@ -59,9 +57,7 @@ public final class ErrorHandling {
       }
   )
   private @NotNull ImmutableResponse elementNotPresentException(@NotNull final ElementNotPresentException exception) {
-    return new ImmutableResponse(
-        "Requested element is not present. ("+exception.getMessage()+")",
-        HttpStatus.NOT_FOUND.value());
+    return new ImmutableResponse("Element is not present.", exception.getMessage(), HttpStatus.NOT_FOUND.value());
   }
 
   /**
@@ -82,8 +78,6 @@ public final class ErrorHandling {
       }
   )
   private @NotNull ImmutableResponse elementException(@NotNull final ElementException exception) {
-    return new ImmutableResponse(
-        "Something went wrong. ("+exception.getMessage()+")",
-        HttpStatus.CONFLICT.value());
+    return new ImmutableResponse("Something went wrong.", exception.getMessage(), HttpStatus.CONFLICT.value());
   }
 }

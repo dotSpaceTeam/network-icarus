@@ -10,7 +10,6 @@ public interface IProhibitReason {
    * @return defines the reason affiliation.
    */
   @NotNull ProhibitType type();
-
   /**
    * How the reason should be named for commands.
    *

@@ -2,11 +2,17 @@ package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.connection.IAddressName;
 import dev.dotspace.network.library.connection.ImmutableAddressName;
+import dev.dotspace.network.library.economy.IBalance;
+import dev.dotspace.network.library.economy.ITransaction;
+import dev.dotspace.network.library.economy.ImmutableBalance;
+import dev.dotspace.network.library.economy.ImmutableCurrency;
+import dev.dotspace.network.library.economy.ImmutableTransaction;
+import dev.dotspace.network.library.economy.TransactionType;
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.ImmutableProfile;
-import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.ProfileType;
+import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
+import dev.dotspace.network.library.profile.attribute.ImmutableProfileAttribute;
 import dev.dotspace.network.library.profile.experience.IExperience;
 import dev.dotspace.network.library.profile.experience.ImmutableExperience;
 import dev.dotspace.network.library.profile.session.IPlaytime;
@@ -16,6 +22,10 @@ import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.library.time.ITimestamp;
 import dev.dotspace.network.library.time.ImmutableTimestamp;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.economy.db.CurrencyEntity;
+import dev.dotspace.network.node.economy.db.CurrencyRepository;
+import dev.dotspace.network.node.economy.db.TransactionEntity;
+import dev.dotspace.network.node.economy.db.TransactionRepository;
 import dev.dotspace.network.node.exception.ElementNotPresentException;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeEntity;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeRepository;
@@ -34,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 
@@ -61,6 +72,20 @@ public final class ProfileDatabase extends AbstractDatabase {
    */
   @Autowired
   private ExperienceRepository experienceRepository;
+  /**
+   * Instance to communicate tp profiles.
+   */
+  @Autowired
+  private CurrencyRepository currencyRepository;
+
+  /**
+   * Repository to manipulates transaction.
+   */
+  @Autowired
+  private TransactionRepository transactionRepository;
+
+  public ProfileDatabase() {
+  }
 
 
   public @NotNull IProfile updateProfile(@Nullable final String uniqueId,
@@ -456,5 +481,59 @@ public final class ProfileDatabase extends AbstractDatabase {
         .map(total -> ImmutableExperience.of("Total", total, LevelFunction.function()))
         .orElseThrow(
             () -> new ElementNotPresentException("Error while calculating total experience of uniqueId="+uniqueId+"."));
+  }
+
+  //-- Economy
+
+  /**
+   * Create new transaction.
+   */
+  public @NotNull ITransaction createTransaction(@Nullable final String uniqueId,
+                                                 @Nullable String name,
+                                                 final int amount,
+                                                 @Nullable final TransactionType transactionType) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(transactionType);
+
+    //lower
+    name = name.toLowerCase(Locale.ROOT);
+
+    //Get profile of transaction
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+    //Get currency
+    final CurrencyEntity currencyEntity = this.currencyRepository.nameElseThrow(name);
+
+    //Convert amount to positive if deposited, negative if withdrawn.
+    final int transactionAmount = Math.abs(amount)*(transactionType == TransactionType.WITHDRAW ? -1 : 1);
+    log.debug("Converted transaction amount from={} to={}.", amount, transactionAmount);
+
+    return ImmutableTransaction.of(this.transactionRepository.save(
+        new TransactionEntity(profileEntity, currencyEntity, transactionAmount, transactionType)));
+  }
+
+  public @NotNull IBalance getBalance(@Nullable final String uniqueId,
+                                      @Nullable String name) throws ElementNotPresentException {
+    //Null check
+    Objects.requireNonNull(uniqueId);
+    Objects.requireNonNull(name);
+
+    //lower
+    name = name.toLowerCase(Locale.ROOT);
+
+    //Get profile of transaction
+    final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+    //Get currency
+    final CurrencyEntity currencyEntity = this.currencyRepository.nameElseThrow(name);
+
+    final long balance = this.transactionRepository
+        //Db calculate
+        .calculateBalance(currencyEntity.id(), profileEntity.id())
+        //Throw error -> no value
+        .orElseThrow(() -> new ElementNotPresentException("Error while calculation balance."));
+
+    //Return balance.
+    return new ImmutableBalance(ImmutableCurrency.of(currencyEntity), balance);
   }
 }
