@@ -17,7 +17,8 @@ import dev.dotspace.network.library.profile.session.IPlaytime;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.profile.session.ImmutablePlaytime;
 import dev.dotspace.network.library.profile.session.ImmutableSession;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
+import dev.dotspace.network.node.database.exception.IllegalEntityException;
 import dev.dotspace.network.node.profile.db.ProfileDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,7 +82,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IProfile> getProfile(@PathVariable @NotNull final String uniqueId,
-                                                      @RequestParam(required=false, defaultValue="false") final boolean nameSearch) throws ElementNotPresentException {
+                                                      @RequestParam(required=false, defaultValue="false") final boolean nameSearch) throws EntityNotPresentException {
     //If true search profile with name
     if (nameSearch) {
       return ResponseEntity.ok(this.profileDatabase.getProfileFromName(uniqueId));
@@ -93,7 +94,7 @@ public final class ProfileController extends AbstractRestController {
   /**
    * Insert an new profile from unique id.
    */
-  @PostMapping("/")
+  @PostMapping
   @ResponseBody
   //Swagger
   @Operation(
@@ -196,7 +197,7 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<List<IProfileAttribute>> getAttributes(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<List<IProfileAttribute>> getAttributes(@PathVariable @NotNull final String uniqueId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getAttributeList(uniqueId));
   }
 
@@ -221,7 +222,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IProfileAttribute> setAttribute(@PathVariable @NotNull final String uniqueId,
-                                                                 @RequestBody @NotNull final ImmutableProfileAttribute immutableProfileAttribute) throws ElementNotPresentException {
+                                                                 @RequestBody @NotNull final ImmutableProfileAttribute immutableProfileAttribute) throws EntityNotPresentException {
     return ResponseEntity
         .ok(this.profileDatabase.setAttribute(uniqueId, immutableProfileAttribute.key(), immutableProfileAttribute.value()));
   }
@@ -248,7 +249,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IProfileAttribute> deleteAttribute(@PathVariable @NotNull final String uniqueId,
-                                                                    @RequestBody @NotNull final ImmutableKey immutableKey) throws ElementNotPresentException {
+                                                                    @RequestBody @NotNull final ImmutableKey immutableKey) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.removeAttribute(uniqueId, immutableKey.key()));
   }
 
@@ -273,7 +274,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IProfileAttribute> getAttribute(@PathVariable @NotNull final String uniqueId,
-                                                                 @PathVariable @NotNull final String attribute) throws ElementNotPresentException {
+                                                                 @PathVariable @NotNull final String attribute) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getAttribute(uniqueId, attribute));
   }
 
@@ -301,7 +302,7 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<List<ISession>> getSessionList(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<List<ISession>> getSessionList(@PathVariable @NotNull final String uniqueId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getSessionList(uniqueId));
   }
 
@@ -326,7 +327,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<ISession> getSession(@PathVariable @NotNull final String uniqueId,
-                                                      @PathVariable @NotNull final Long sessionId) throws ElementNotPresentException {
+                                                      @PathVariable @NotNull final Long sessionId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getSession(uniqueId, sessionId));
   }
 
@@ -352,7 +353,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<ISession> createSession(@PathVariable @NotNull final String uniqueId,
-                                                         @RequestBody @NotNull final ImmutableAddressName addressName) throws ElementNotPresentException {
+                                                         @RequestBody @NotNull final ImmutableAddressName addressName) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.createSession(uniqueId, addressName.address()));
   }
 
@@ -377,7 +378,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<ISession> closeSession(@PathVariable @NotNull final String uniqueId,
-                                                        @PathVariable @NotNull final Long sessionId) throws ElementNotPresentException {
+                                                        @PathVariable @NotNull final Long sessionId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.completeSession(uniqueId, sessionId));
   }
 
@@ -401,7 +402,7 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<IAddressName> getAddress(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<IAddressName> getAddress(@PathVariable @NotNull final String uniqueId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getLatestAddress(uniqueId));
   }
 
@@ -430,7 +431,7 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<IPlaytime> getPlaytime(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<IPlaytime> getPlaytime(@PathVariable @NotNull final String uniqueId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getPlaytime(uniqueId));
   }
 
@@ -459,7 +460,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IExperience> addExperience(@PathVariable @NotNull final String uniqueId,
-                                                            @RequestBody @NotNull final ImmutableExperience experience) throws ElementNotPresentException {
+                                                            @RequestBody @NotNull final ImmutableExperience experience) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(experience);
 
@@ -486,7 +487,7 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getTotalExperience(uniqueId));
   }
 
@@ -511,7 +512,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IExperience> getExperience(@PathVariable @NotNull final String uniqueId,
-                                                            @PathVariable @NotNull final String experience) throws ElementNotPresentException {
+                                                            @PathVariable @NotNull final String experience) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getExperience(uniqueId, experience));
   }
 
@@ -542,7 +543,24 @@ public final class ProfileController extends AbstractRestController {
       })
   public @NotNull ResponseEntity<ITransaction> createEconomyTransaction(@PathVariable @NotNull final String uniqueId,
                                                                         @RequestBody @NotNull final ImmutableTransaction immutableTransaction,
-                                                                        @RequestParam(required=false, defaultValue="false") final boolean negativeBalance) throws ElementNotPresentException {
+                                                                        @RequestParam(required=false, defaultValue=
+                                                                            "false") final boolean negativeBalance) throws EntityNotPresentException, IllegalEntityException {
+    //Check if player has enough coins.
+    if (!negativeBalance) {
+      final long balance = this.profileDatabase
+          //Get current balance
+          .getBalance(uniqueId, immutableTransaction.currency())
+          //Get balance value
+          .balance();
+
+      //Throw error if transaction will be negative.
+      if (balance-immutableTransaction.amount()<0) {
+        //Error
+        throw new IllegalEntityException("There is not enough available in the account.");
+      }
+    }
+
+    //Response
     return ResponseEntity.ok(this.profileDatabase.createTransaction(uniqueId,
         immutableTransaction.currency(),
         immutableTransaction.amount(),
@@ -570,7 +588,7 @@ public final class ProfileController extends AbstractRestController {
               })
       })
   public @NotNull ResponseEntity<IBalance> createEconomyTransaction(@PathVariable @NotNull final String uniqueId,
-                                                                    @PathVariable @NotNull final String currency) throws ElementNotPresentException {
+                                                                    @PathVariable @NotNull final String currency) throws EntityNotPresentException {
     return ResponseEntity.ok(this.profileDatabase.getBalance(uniqueId, currency));
   }
 }

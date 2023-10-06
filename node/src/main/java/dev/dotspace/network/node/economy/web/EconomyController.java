@@ -3,7 +3,7 @@ package dev.dotspace.network.node.economy.web;
 import dev.dotspace.network.library.economy.ICurrency;
 import dev.dotspace.network.library.economy.ImmutableCurrency;
 import dev.dotspace.network.node.economy.db.EconomyDatabase;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -106,7 +106,7 @@ public final class EconomyController {
                   )
               })
       })
-  public @NotNull ResponseEntity<ICurrency> getCurrency(@PathVariable @NotNull final String name) throws ElementNotPresentException {
+  public @NotNull ResponseEntity<ICurrency> getCurrency(@PathVariable @NotNull final String name) throws EntityNotPresentException {
     return ResponseEntity.ok(this.economyDatabase.getCurrency(name));
   }
 }

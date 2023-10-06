@@ -1,9 +1,9 @@
-package dev.dotspace.network.node.web.listener;
+package dev.dotspace.network.node.listener;
 
 import dev.dotspace.network.library.connection.IRestRequest;
 import dev.dotspace.network.library.system.ParticipantType;
 import dev.dotspace.network.node.connection.db.RestRequestDatabase;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
+import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
 import dev.dotspace.network.node.system.db.ParticipantDatabase;
 import dev.dotspace.network.node.web.event.ClientAddEvent;
 import dev.dotspace.network.node.web.event.ClientRemoveEvent;
@@ -52,7 +52,7 @@ public final class WebListener {
 
         //log creation
         log.info("Registered client={} as new connection.", clientId);
-      } catch (final ElementAlreadyPresentException exception) {
+      } catch (final EntityAlreadyPresentException exception) {
         log.warn("Error while registering client="+clientId+".", exception);
       }
     } else {

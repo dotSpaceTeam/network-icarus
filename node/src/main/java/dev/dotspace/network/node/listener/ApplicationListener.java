@@ -1,7 +1,7 @@
 package dev.dotspace.network.node.listener;
 
 import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
+import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
 import dev.dotspace.network.node.system.db.ParticipantDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +65,7 @@ public final class ApplicationListener {
       this.participantDatabase.createParticipant(this.participant.identifier(), this.participant.type());
       //log success.
       log.info("Registered node={}[{}].", this.participant.identifier(), this.participant.type());
-    } catch (final ElementAlreadyPresentException exception) {
+    } catch (final EntityAlreadyPresentException exception) {
       //log error.
       log.warn("Error while registering node.", exception);
     }

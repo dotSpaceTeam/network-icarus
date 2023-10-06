@@ -4,7 +4,7 @@ import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
-import dev.dotspace.network.node.exception.ElementException;
+import dev.dotspace.network.node.database.exception.EntityException;
 import dev.dotspace.network.node.message.MessageService;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
@@ -74,7 +74,7 @@ public final class MessageController extends AbstractRestController {
               })
       })
   public ResponseEntity<IMessage> postMessage(@RequestBody @NotNull final ImmutableMessage message,
-                                              @RequestParam(required=false) final String lang) throws ElementException {
+                                              @RequestParam(required=false) final String lang) throws EntityException {
     //Get message or default
     final Locale locale = this.localeFromTag(lang);
     //Response to client.
@@ -102,7 +102,7 @@ public final class MessageController extends AbstractRestController {
               })
       })
   public ResponseEntity<IPersistentMessage> putKey(@RequestBody @NotNull final ImmutablePersistentMessage message,
-                                                   @RequestParam(required=false, defaultValue="false") final boolean createOnly) throws ElementException {
+                                                   @RequestParam(required=false, defaultValue="false") final boolean createOnly) throws EntityException {
     //Get create only.
     if (createOnly) {
       //Insert message.
@@ -138,7 +138,7 @@ public final class MessageController extends AbstractRestController {
   public ResponseEntity<IPersistentMessage> getKey(@PathVariable @NotNull final String key,
                                                    @PathVariable @NotNull final String lang,
                                                    @RequestParam(required=false, defaultValue="false") final boolean findAny)
-      throws ElementException {
+      throws EntityException {
     //Get message or default
     Locale locale = this.localeFromTag(lang);
     //Get stored message.

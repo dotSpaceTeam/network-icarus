@@ -1,7 +1,8 @@
 package dev.dotspace.network.node.web.error;
 
-import dev.dotspace.network.node.exception.ElementException;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
+import dev.dotspace.network.node.database.exception.IllegalEntityException;
 import dev.dotspace.network.node.web.ImmutableResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,7 @@ public final class ErrorHandling {
    * Handle null pointer errors.
    */
   @ResponseBody
-  @ExceptionHandler(ElementNotPresentException.class)
+  @ExceptionHandler(EntityNotPresentException.class)
   @ResponseStatus(HttpStatus.NOT_FOUND)
   //Swagger
   @ApiResponse(
@@ -56,15 +57,36 @@ public final class ErrorHandling {
           )
       }
   )
-  private @NotNull ImmutableResponse elementNotPresentException(@NotNull final ElementNotPresentException exception) {
-    return new ImmutableResponse("Element is not present.", exception.getMessage(), HttpStatus.NOT_FOUND.value());
+  private @NotNull ImmutableResponse elementNotPresentException(@NotNull final EntityNotPresentException exception) {
+    return new ImmutableResponse("Entity is not present.", exception.getMessage(), HttpStatus.NOT_FOUND.value());
   }
 
   /**
    * Handle null pointer errors.
    */
   @ResponseBody
-  @ExceptionHandler(ElementException.class)
+  @ExceptionHandler(IllegalEntityException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  //Swagger
+  @ApiResponse(
+      responseCode="409",
+      description="Error with entity you deployed.",
+      content={
+          @Content(
+              mediaType=MediaType.APPLICATION_JSON_VALUE,
+              schema=@Schema(implementation=ImmutableResponse.class)
+          )
+      }
+  )
+  private @NotNull ImmutableResponse elementIllegalException(@NotNull final IllegalEntityException exception) {
+    return new ImmutableResponse("Error with given entity.", exception.getMessage(), HttpStatus.CONFLICT.value());
+  }
+
+  /**
+   * Handle null pointer errors.
+   */
+  @ResponseBody
+  @ExceptionHandler(EntityException.class)
   @ResponseStatus(HttpStatus.CONFLICT)
   //Swagger
   @ApiResponse(
@@ -77,7 +99,7 @@ public final class ErrorHandling {
           )
       }
   )
-  private @NotNull ImmutableResponse elementException(@NotNull final ElementException exception) {
+  private @NotNull ImmutableResponse elementException(@NotNull final EntityException exception) {
     return new ImmutableResponse("Something went wrong.", exception.getMessage(), HttpStatus.CONFLICT.value());
   }
 }

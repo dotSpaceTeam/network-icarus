@@ -5,7 +5,7 @@ import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +40,7 @@ public final class PositionDatabase extends AbstractDatabase {
     return ImmutablePosition.of(this.updatePosition(key, x, y, z));
   }
 
-  public @NotNull IPosition getPosition(@Nullable String key) throws ElementNotPresentException {
+  public @NotNull IPosition getPosition(@Nullable String key) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(key);
 
@@ -63,7 +63,7 @@ public final class PositionDatabase extends AbstractDatabase {
 
   public @NotNull IViewPosition setViewPosition(@Nullable final String key,
                                                 final double yaw,
-                                                final double pitch) throws ElementNotPresentException {
+                                                final double pitch) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(key);
 
@@ -71,7 +71,7 @@ public final class PositionDatabase extends AbstractDatabase {
     return ImmutableViewPosition.of(this.updateViewPosition(this.position(key), yaw, pitch));
   }
 
-  public @NotNull IViewPosition getViewPosition(@Nullable final String key) throws ElementNotPresentException {
+  public @NotNull IViewPosition getViewPosition(@Nullable final String key) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(key);
 
@@ -84,15 +84,15 @@ public final class PositionDatabase extends AbstractDatabase {
         //Map to plain object.
         .map(ImmutableViewPosition::of)
         //Error
-        .orElseThrow(() -> new ElementNotPresentException("No view position key="+key+" present."));
+        .orElseThrow(() -> new EntityNotPresentException("No view position key="+key+" present."));
   }
 
-  private @NotNull PositionElement position(@NotNull final String key) throws ElementNotPresentException {
+  private @NotNull PositionElement position(@NotNull final String key) throws EntityNotPresentException {
     return this.positionRepository
         //Get position of key
         .findByKey(key)
         //Else error.
-        .orElseThrow(() -> new ElementNotPresentException(null, "No position key="+key+" present."));
+        .orElseThrow(() -> new EntityNotPresentException(null, "No position key="+key+" present."));
   }
 
   private @NotNull PositionElement updatePosition(@NotNull final String key,

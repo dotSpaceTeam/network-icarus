@@ -3,16 +3,18 @@ package dev.dotspace.network.node.profile.db;
 
 import dev.dotspace.network.library.profile.IProfile;
 import dev.dotspace.network.library.profile.ProfileType;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Date;
-import java.util.Objects;
 
 
 @Entity

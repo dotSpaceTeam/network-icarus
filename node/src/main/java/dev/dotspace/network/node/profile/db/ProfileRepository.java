@@ -1,7 +1,6 @@
 package dev.dotspace.network.node.profile.db;
 
-import dev.dotspace.network.node.exception.ElementException;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,19 +38,19 @@ public interface ProfileRepository extends JpaRepository<ProfileEntity, Long> {
 
 
   default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId,
-                                                  @NotNull final String message) throws ElementNotPresentException {
+                                                  @NotNull final String message) throws EntityNotPresentException {
     return this
         //Get uniqueId
         .findByUniqueId(uniqueId)
         //Else throw error with message
-        .orElseThrow(() -> new ElementNotPresentException(null, message));
+        .orElseThrow(() -> new EntityNotPresentException(null, message));
   }
 
-  default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId) throws ElementNotPresentException {
+  default @NotNull ProfileEntity profileElseThrow(@Nullable final String uniqueId) throws EntityNotPresentException {
     return this
         //Get uniqueId
         .findByUniqueId(uniqueId)
         //Else throw error
-        .orElseThrow(() -> new ElementNotPresentException(null, "No profile with uniqueId="+uniqueId+" present."));
+        .orElseThrow(() -> new EntityNotPresentException(null, "No profile with uniqueId="+uniqueId+" present."));
   }
 }

@@ -11,4 +11,5 @@ include 'plugin-velocity'
 include 'file-server'
 include 'plugin-minstom'
 include 'rabbitmq'
+include 'node-benchmark'
 

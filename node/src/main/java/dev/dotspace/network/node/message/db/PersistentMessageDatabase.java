@@ -3,9 +3,9 @@ package dev.dotspace.network.node.message.db;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
-import dev.dotspace.network.node.exception.ElementException;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
+import dev.dotspace.network.node.database.exception.EntityException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,13 +33,13 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
 
   public @NotNull IPersistentMessage insertMessage(@Nullable Locale locale,
                                                    @Nullable String key,
-                                                   @Nullable String message) throws ElementException {
+                                                   @Nullable String message) throws EntityException {
     return this.handleUpdate(locale, key, message, false);
   }
 
   public @NotNull IPersistentMessage updateMessage(@Nullable Locale locale,
                                                    @Nullable String key,
-                                                   @Nullable String message) throws ElementException {
+                                                   @Nullable String message) throws EntityException {
     return this.handleUpdate(locale, key, message, true);
   }
 
@@ -55,7 +55,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
   private @NotNull IPersistentMessage handleUpdate(@Nullable final Locale locale,
                                                    @Nullable final String key,
                                                    @Nullable final String message,
-                                                   final boolean allowUpdate) throws ElementException {
+                                                   final boolean allowUpdate) throws EntityException {
     //Null check
     Objects.requireNonNull(locale);
     Objects.requireNonNull(key);
@@ -77,7 +77,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
     //No update
     if (!allowUpdate) {
       //Throw  error
-      throw new ElementAlreadyPresentException(messageEntity, "Message key="+key+" already present.");
+      throw new EntityAlreadyPresentException(messageEntity, "Message key="+key+" already present.");
     }
 
     //Update message.
@@ -91,13 +91,13 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
   }
 
   public @NotNull IPersistentMessage message(@Nullable Locale locale,
-                                             @Nullable String key) throws ElementNotPresentException {
+                                             @Nullable String key) throws EntityNotPresentException {
     return this.message(locale, key, false);
   }
 
   public @NotNull IPersistentMessage message(@Nullable final Locale locale,
                                              @Nullable final String key,
-                                             final boolean findAny) throws ElementNotPresentException {
+                                             final boolean findAny) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(locale);
     Objects.requireNonNull(key);
@@ -105,7 +105,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
     final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
         .findByKey(key)
         .orElseThrow(() ->
-            new ElementNotPresentException("No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
+            new EntityNotPresentException("No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
 
     final String localeTag = locale.toLanguageTag();
 
@@ -125,7 +125,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
               .findAny();
         })
         .map(ImmutablePersistentMessage::of)
-        .orElseThrow(() -> new ElementNotPresentException("Key is not present in locale="+localeTag+"."));
+        .orElseThrow(() -> new EntityNotPresentException("Key is not present in locale="+localeTag+"."));
   }
 
   /**

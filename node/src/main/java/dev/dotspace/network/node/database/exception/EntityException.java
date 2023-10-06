@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.exception;
+package dev.dotspace.network.node.database.exception;
 
 import dev.dotspace.network.library.exception.LibraryException;
 import lombok.Getter;
@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 
 
 @Accessors(fluent=true)
-public class ElementException extends LibraryException {
+public class EntityException extends LibraryException {
   @Getter
   private final @Nullable Object element;
 
-  public ElementException(@Nullable final Object element,
-                          @Nullable final String message) {
+  public EntityException(@Nullable final Object element,
+                         @Nullable final String message) {
     super(message);
     this.element = element;
   }

@@ -22,11 +22,12 @@ import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.library.time.ITimestamp;
 import dev.dotspace.network.library.time.ImmutableTimestamp;
 import dev.dotspace.network.node.database.AbstractDatabase;
+import dev.dotspace.network.node.database.manipulate.DatabaseManipulation;
 import dev.dotspace.network.node.economy.db.CurrencyEntity;
 import dev.dotspace.network.node.economy.db.CurrencyRepository;
 import dev.dotspace.network.node.economy.db.TransactionEntity;
 import dev.dotspace.network.node.economy.db.TransactionRepository;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeEntity;
 import dev.dotspace.network.node.profile.db.attribute.ProfileAttributeRepository;
 import dev.dotspace.network.node.profile.db.experience.ExperienceEntity;
@@ -84,10 +85,9 @@ public final class ProfileDatabase extends AbstractDatabase {
   @Autowired
   private TransactionRepository transactionRepository;
 
-  public ProfileDatabase() {
-  }
-
-
+  /**
+   * Update or create prof.e
+   */
   public @NotNull IProfile updateProfile(@Nullable final String uniqueId,
                                          @Nullable final String name,
                                          @Nullable final ProfileType profileType) {
@@ -106,6 +106,9 @@ public final class ProfileDatabase extends AbstractDatabase {
       namedProfileEntity.name("~"+namedProfileEntity.name()+"~"+namedProfileEntity.uniqueId());
       //Update pseudo profile
       this.profileRepository.save(namedProfileEntity);
+
+      //Fire event -> updated old profile.
+      this.publishEvent(namedProfileEntity, ImmutableProfile.class, DatabaseManipulation.UPDATE);
     }
 
     //Get present profile, if null create new.
@@ -116,14 +119,27 @@ public final class ProfileDatabase extends AbstractDatabase {
       //Update name
       profileEntity.name(name);
       //Update in db.
-      return ImmutableProfile.of(this.profileRepository.save(profileEntity));
+      final IProfile updateProfile = ImmutableProfile.of(this.profileRepository.save(profileEntity));
+
+      //Fire event -> updated name of profile.
+      this.publishEvent(updateProfile, ImmutableProfile.class, DatabaseManipulation.UPDATE);
+
+      //end
+      return updateProfile;
     }
 
     //Else create new one.
-    return ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, name, profileType)));
+    final IProfile newProfile = ImmutableProfile.of(this.profileRepository.save(new ProfileEntity(uniqueId, name,
+        profileType)));
+
+    //Fire event -> Create profile.
+    this.publishEvent(newProfile, ImmutableProfile.class, DatabaseManipulation.CREATE);
+
+    //Return new profile.
+    return newProfile;
   }
 
-  public @NotNull IProfile getProfile(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull IProfile getProfile(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null checks
     Objects.requireNonNull(uniqueId);
 
@@ -166,7 +182,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         .toList();
   }
 
-  public @NotNull IProfile getProfileFromName(@Nullable final String name) throws ElementNotPresentException {
+  public @NotNull IProfile getProfileFromName(@Nullable final String name) throws EntityNotPresentException {
     //Null checks
     Objects.requireNonNull(name);
 
@@ -176,7 +192,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         //If present map to plain
         .map(ImmutableProfile::of)
         //Else error
-        .orElseThrow(() -> new ElementNotPresentException("No profile for name="+name+" present."));
+        .orElseThrow(() -> new EntityNotPresentException("No profile for name="+name+" present."));
   }
 
   /**
@@ -184,7 +200,7 @@ public final class ProfileDatabase extends AbstractDatabase {
    */
   public @NotNull IProfileAttribute setAttribute(@Nullable final String uniqueId,
                                                  @Nullable final String key,
-                                                 @Nullable final String value) throws ElementNotPresentException {
+                                                 @Nullable final String value) throws EntityNotPresentException {
     //Null checks
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(key);
@@ -199,18 +215,26 @@ public final class ProfileDatabase extends AbstractDatabase {
         .findByProfileAndKey(profileEntity, key)
         .orElse(null);
 
-//Check if nothing to update.
+    //Check if nothing to update.
     if (profileAttributeEntity == null && value == null) {
       //Nothing to do here.
-      throw new ElementNotPresentException(null, "Attribute "+key+" not present for "+uniqueId+".");
+      throw new EntityNotPresentException(null, "Attribute "+key+" not present for "+uniqueId+".");
     }
 
     /*
      * If attribute is already present and value to update is not null.
      */
+    IProfileAttribute updatedAttribute = null;
     if (profileAttributeEntity != null && value != null) {
       profileAttributeEntity.value(value);
-      return ImmutableProfileAttribute.of(this.profileAttributeRepository.save(profileAttributeEntity));
+      //Update db
+      updatedAttribute = ImmutableProfileAttribute.of(this.profileAttributeRepository.save(profileAttributeEntity));
+
+      //Fire event -> update profile attribute.
+      this.publishEvent(updatedAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.UPDATE);
+
+      //end
+      return updatedAttribute;
     }
 
     /*
@@ -218,22 +242,34 @@ public final class ProfileDatabase extends AbstractDatabase {
      */
     if (profileAttributeEntity != null) {
       this.profileAttributeRepository.deleteById(profileAttributeEntity.id());
-      return ImmutableProfileAttribute.of(profileAttributeEntity);
+      final IProfileAttribute deletedAttribute = ImmutableProfileAttribute.of(profileAttributeEntity);
+
+      //Fire event -> attribute das delete.
+      this.publishEvent(deletedAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.DELETE);
+
+      return deletedAttribute;
     }
 
     /*
      * Otherwise if attribute is not present, insert.
      */
-    return ImmutableProfileAttribute
+    final IProfileAttribute createdAttribute = ImmutableProfileAttribute
         .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
+
+    //Fire event -> created profile attribute.
+    this.publishEvent(createdAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.CREATE);
+
+    //End
+    return createdAttribute;
   }
 
   public @NotNull IProfileAttribute removeAttribute(@Nullable final String uniqueId,
-                                                    @Nullable final String key) throws ElementNotPresentException {
+                                                    @Nullable final String key) throws EntityNotPresentException {
+    //Call with null value
     return this.setAttribute(uniqueId, key, null);
   }
 
-  public @NotNull List<IProfileAttribute> getAttributeList(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull List<IProfileAttribute> getAttributeList(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -250,7 +286,7 @@ public final class ProfileDatabase extends AbstractDatabase {
   }
 
   public @NotNull IProfileAttribute getAttribute(@Nullable final String uniqueId,
-                                                 @Nullable final String key) throws ElementNotPresentException {
+                                                 @Nullable final String key) throws EntityNotPresentException {
 
     //Null check
     Objects.requireNonNull(uniqueId);
@@ -265,10 +301,10 @@ public final class ProfileDatabase extends AbstractDatabase {
         //Map attribute to plain.
         .map(ImmutableProfileAttribute::of)
         //Else throw error.
-        .orElseThrow(() -> new ElementNotPresentException("Not attribute="+key+" found for uniqueId="+uniqueId));
+        .orElseThrow(() -> new EntityNotPresentException("Not attribute="+key+" found for uniqueId="+uniqueId));
   }
 
-  public @NotNull List<ISession> getSessionList(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull List<ISession> getSessionList(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -286,7 +322,7 @@ public final class ProfileDatabase extends AbstractDatabase {
   }
 
   public @NotNull ISession getSession(@Nullable final String uniqueId,
-                                      @Nullable final Long sessionId) throws ElementNotPresentException {
+                                      @Nullable final Long sessionId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(sessionId);
@@ -300,11 +336,11 @@ public final class ProfileDatabase extends AbstractDatabase {
         .map(ImmutableSession::of)
         //Else error, no session or profile does not match.
         .orElseThrow(() ->
-            new ElementNotPresentException(null, "No session="+sessionId+" found for uniqueId="+uniqueId+"."));
+            new EntityNotPresentException(null, "No session="+sessionId+" found for uniqueId="+uniqueId+"."));
   }
 
   public @NotNull ISession createSession(@Nullable final String uniqueId,
-                                         @Nullable final String address) throws ElementNotPresentException {
+                                         @Nullable final String address) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(address);
@@ -313,12 +349,18 @@ public final class ProfileDatabase extends AbstractDatabase {
     final ProfileEntity profile = this.profileRepository.profileElseThrow(uniqueId);
 
     //Create and store new session.
-    return ImmutableSession.of(
+    final ISession createdSession = ImmutableSession.of(
         this.sessionRepository.save(new SessionEntity(profile, new Date(), null, address)));
+
+    //Fire event -> update profile attribute.
+    this.publishEvent(createdSession, ImmutableSession.class, DatabaseManipulation.CREATE);
+
+    //End
+    return createdSession;
   }
 
   public @NotNull ISession completeSession(@Nullable final String uniqueId,
-                                           @Nullable final Long sessionId) throws ElementNotPresentException {
+                                           @Nullable final Long sessionId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(sessionId);
@@ -331,16 +373,22 @@ public final class ProfileDatabase extends AbstractDatabase {
         //Check if session is not closed.
         .filter(sessionEntity -> !sessionEntity.closed())
         .orElseThrow(() ->
-            new ElementNotPresentException(null, "No session="+sessionId+" found to close."));
+            new EntityNotPresentException(null, "No session="+sessionId+" found to close."));
 
     //Update end date.
     session.endDate(new Date());
 
     //Return modified session.
-    return ImmutableSession.of(this.sessionRepository.save(session));
+    final ISession completedSession = ImmutableSession.of(this.sessionRepository.save(session));
+
+    //Fire event -> update profile attribute.
+    this.publishEvent(completedSession, ImmutableSession.class, DatabaseManipulation.UPDATE);
+
+    //End
+    return completedSession;
   }
 
-  public @NotNull ITimestamp getFirstConnect(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ITimestamp getFirstConnect(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -353,10 +401,10 @@ public final class ProfileDatabase extends AbstractDatabase {
         .firstSession(profile.id())
         //Map to plain object
         .map(ImmutableTimestamp::new)
-        .orElseThrow(() -> new ElementNotPresentException("No stored first connect for uniqueId="+uniqueId+"."));
+        .orElseThrow(() -> new EntityNotPresentException("No stored first connect for uniqueId="+uniqueId+"."));
   }
 
-  public @NotNull ITimestamp getLastConnect(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull ITimestamp getLastConnect(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -369,11 +417,11 @@ public final class ProfileDatabase extends AbstractDatabase {
         .lastSession(profile.id())
         //Map to plain object
         .map(ImmutableTimestamp::new)
-        .orElseThrow(() -> new ElementNotPresentException("No stored last connect for uniqueId="+uniqueId+"."));
+        .orElseThrow(() -> new EntityNotPresentException("No stored last connect for uniqueId="+uniqueId+"."));
   }
 
 
-  public @NotNull IAddressName getLatestAddress(@Nullable final String uniqueId) throws ElementNotPresentException {
+  public @NotNull IAddressName getLatestAddress(@Nullable final String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -386,10 +434,10 @@ public final class ProfileDatabase extends AbstractDatabase {
         .latestAddress(profile.id())
         //Map to plain object
         .map(ImmutableAddressName::new)
-        .orElseThrow(() -> new ElementNotPresentException("No stored ip address for uniqueId="+uniqueId+"."));
+        .orElseThrow(() -> new EntityNotPresentException("No stored ip address for uniqueId="+uniqueId+"."));
   }
 
-  public @NotNull IPlaytime getPlaytime(@Nullable String uniqueId) throws ElementNotPresentException {
+  public @NotNull IPlaytime getPlaytime(@Nullable String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -402,18 +450,19 @@ public final class ProfileDatabase extends AbstractDatabase {
         .calculatePlaytime(profile.id())
         //Else error.
         .orElseThrow(() -> new
-            ElementNotPresentException("Error while calculating play time of uniqueId="+uniqueId+".")));
+            EntityNotPresentException("Error while calculating play time of uniqueId="+uniqueId+".")));
   }
 
   public @NotNull IExperience addExperience(@Nullable final String uniqueId,
                                             @Nullable final String experienceName,
-                                            long value) throws ElementNotPresentException {
+                                            long value) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(experienceName);
 
     //Profile
     final ProfileEntity profileEntity = this.profileRepository.profileElseThrow(uniqueId);
+
 
     //Get Experience entity.
     @Nullable ExperienceEntity experience = this.experienceRepository
@@ -422,20 +471,31 @@ public final class ProfileDatabase extends AbstractDatabase {
         //Else return null.
         .orElse(null);
 
+    //Define process as create.
+    DatabaseManipulation manipulation = DatabaseManipulation.CREATE;
+
     //Update if present.
     if (experience != null) {
       experience.experience(experience.experience()+value);
+      //Define as updated
+      manipulation = DatabaseManipulation.UPDATE;
     } else {
       //Create new if absent.
       experience = new ExperienceEntity(profileEntity, experienceName, value);
     }
 
     //Return updated value.
-    return ImmutableExperience.of(this.experienceRepository.save(experience));
+    final IExperience updatedExperience = ImmutableExperience.of(this.experienceRepository.save(experience));
+
+    //Fire event -> update or create experience.
+    this.publishEvent(updatedExperience, ImmutableExperience.class, manipulation);
+
+    //End
+    return updatedExperience;
   }
 
   public @NotNull IExperience getExperience(@Nullable final String uniqueId,
-                                            @Nullable final String experienceName) throws ElementNotPresentException {
+                                            @Nullable final String experienceName) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(experienceName);
@@ -448,10 +508,10 @@ public final class ProfileDatabase extends AbstractDatabase {
         //Map to plain
         .map(ImmutableExperience::of)
         .orElseThrow(() ->
-            new ElementNotPresentException("No experience with name="+experienceName+" present for uniqueId"+uniqueId+"."));
+            new EntityNotPresentException("No experience with name="+experienceName+" present for uniqueId"+uniqueId+"."));
   }
 
-  public @NotNull List<IExperience> getExperienceList(@Nullable String uniqueId) throws ElementNotPresentException {
+  public @NotNull List<IExperience> getExperienceList(@Nullable String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -467,7 +527,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         .toList();
   }
 
-  public @NotNull IExperience getTotalExperience(@Nullable String uniqueId) throws ElementNotPresentException {
+  public @NotNull IExperience getTotalExperience(@Nullable String uniqueId) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
 
@@ -480,7 +540,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         //Create immutable instance.
         .map(total -> ImmutableExperience.of("Total", total, LevelFunction.function()))
         .orElseThrow(
-            () -> new ElementNotPresentException("Error while calculating total experience of uniqueId="+uniqueId+"."));
+            () -> new EntityNotPresentException("Error while calculating total experience of uniqueId="+uniqueId+"."));
   }
 
   //-- Economy
@@ -491,7 +551,7 @@ public final class ProfileDatabase extends AbstractDatabase {
   public @NotNull ITransaction createTransaction(@Nullable final String uniqueId,
                                                  @Nullable String name,
                                                  final int amount,
-                                                 @Nullable final TransactionType transactionType) throws ElementNotPresentException {
+                                                 @Nullable final TransactionType transactionType) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(name);
@@ -509,12 +569,18 @@ public final class ProfileDatabase extends AbstractDatabase {
     final int transactionAmount = Math.abs(amount)*(transactionType == TransactionType.WITHDRAW ? -1 : 1);
     log.debug("Converted transaction amount from={} to={}.", amount, transactionAmount);
 
-    return ImmutableTransaction.of(this.transactionRepository.save(
+    //Create transaction
+    final ITransaction transaction = ImmutableTransaction.of(this.transactionRepository.save(
         new TransactionEntity(profileEntity, currencyEntity, transactionAmount, transactionType)));
+
+    //Fire event -> created transaction.
+    this.publishEvent(transaction, ImmutableExperience.class, DatabaseManipulation.CREATE);
+
+    return transaction;
   }
 
   public @NotNull IBalance getBalance(@Nullable final String uniqueId,
-                                      @Nullable String name) throws ElementNotPresentException {
+                                      @Nullable String name) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(uniqueId);
     Objects.requireNonNull(name);
@@ -530,8 +596,8 @@ public final class ProfileDatabase extends AbstractDatabase {
     final long balance = this.transactionRepository
         //Db calculate
         .calculateBalance(currencyEntity.id(), profileEntity.id())
-        //Throw error -> no value
-        .orElseThrow(() -> new ElementNotPresentException("Error while calculation balance."));
+        //Else zero.
+        .orElse(0L);
 
     //Return balance.
     return new ImmutableBalance(ImmutableCurrency.of(currencyEntity), balance);

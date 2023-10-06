@@ -4,8 +4,8 @@ import dev.dotspace.network.library.system.IParticipant;
 import dev.dotspace.network.library.system.ImmutableParticipant;
 import dev.dotspace.network.library.system.ParticipantType;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.exception.ElementAlreadyPresentException;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,14 +25,14 @@ public final class ParticipantDatabase extends AbstractDatabase {
   private ParticipantRepository participantRepository;
 
   public @NotNull IParticipant createParticipant(@Nullable final String identifier,
-                                                 @Nullable final ParticipantType type) throws ElementAlreadyPresentException {
+                                                 @Nullable final ParticipantType type) throws EntityAlreadyPresentException {
     //Null check
     Objects.requireNonNull(identifier);
     Objects.requireNonNull(type);
 
     //Check if already present.
     if (this.participantRepository.findByIdentifier(identifier).isPresent()) {
-      throw new ElementAlreadyPresentException(null, "Session id="+identifier+" already present.");
+      throw new EntityAlreadyPresentException(null, "Session id="+identifier+" already present.");
     }
 
     final ParticipantEntity participantEntity = new ParticipantEntity(identifier, type);
@@ -49,7 +49,7 @@ public final class ParticipantDatabase extends AbstractDatabase {
     return this.participantRepository.existsByIdentifier(identifier);
   }
 
-  public @NotNull IParticipant getParticipant(@Nullable String identifier) throws ElementNotPresentException {
+  public @NotNull IParticipant getParticipant(@Nullable String identifier) throws EntityNotPresentException {
     //Null check
     Objects.requireNonNull(identifier);
 
@@ -59,6 +59,6 @@ public final class ParticipantDatabase extends AbstractDatabase {
         //Map to plain
         .map(ImmutableParticipant::of)
         //Else not present.
-        .orElseThrow(() -> new ElementNotPresentException("No participant found with id="+identifier+"."));
+        .orElseThrow(() -> new EntityNotPresentException("No participant found with id="+identifier+"."));
   }
 }

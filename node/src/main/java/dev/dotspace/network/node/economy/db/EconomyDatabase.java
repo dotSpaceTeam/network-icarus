@@ -3,7 +3,7 @@ package dev.dotspace.network.node.economy.db;
 import dev.dotspace.network.library.economy.ICurrency;
 import dev.dotspace.network.library.economy.ImmutableCurrency;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -71,7 +71,7 @@ public final class EconomyDatabase extends AbstractDatabase {
     return ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(name, symbol, display, displayPlural)));
   }
 
-  public @NotNull ICurrency getCurrency(@Nullable String name) throws ElementNotPresentException {
+  public @NotNull ICurrency getCurrency(@Nullable String name) throws EntityNotPresentException {
     //Null checks
     Objects.requireNonNull(name);
 

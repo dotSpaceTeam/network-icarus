@@ -4,9 +4,8 @@ import dev.dotspace.network.library.position.IPosition;
 import dev.dotspace.network.library.position.IViewPosition;
 import dev.dotspace.network.library.position.ImmutablePosition;
 import dev.dotspace.network.library.position.ImmutableViewPosition;
-import dev.dotspace.network.library.profile.session.ImmutableSession;
-import dev.dotspace.network.node.exception.ElementException;
-import dev.dotspace.network.node.exception.ElementNotPresentException;
+import dev.dotspace.network.node.database.exception.EntityException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.position.db.PositionDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Objects;
 
 
 @RestController
@@ -82,7 +79,7 @@ public final class PositionController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<IPosition> getPosition(@PathVariable @NotNull final String key) throws ElementNotPresentException {
+  public ResponseEntity<IPosition> getPosition(@PathVariable @NotNull final String key) throws EntityNotPresentException {
     return ResponseEntity.ok(this.positionDatabase.getPosition(key));
   }
 
@@ -107,7 +104,7 @@ public final class PositionController extends AbstractRestController {
               })
       })
   public ResponseEntity<IViewPosition> setViewPosition(@RequestBody @NotNull final ImmutableViewPosition immutableViewPosition,
-                                                       @RequestParam(required=false) final boolean updateView) throws ElementException {
+                                                       @RequestParam(required=false) final boolean updateView) throws EntityException {
     //Update view coordination.
     if (updateView) {
       return ResponseEntity.ok(this.positionDatabase
@@ -144,7 +141,7 @@ public final class PositionController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<IViewPosition> getViewPosition(@PathVariable @NotNull final String key) throws ElementException {
+  public ResponseEntity<IViewPosition> getViewPosition(@PathVariable @NotNull final String key) throws EntityException {
     return ResponseEntity.ok(this.positionDatabase.getViewPosition(key));
   }
 }

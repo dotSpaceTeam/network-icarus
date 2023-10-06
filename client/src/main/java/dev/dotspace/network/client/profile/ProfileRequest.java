@@ -34,7 +34,7 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
       Objects.requireNonNull(profileType);
 
       return this.client()
-          .put("/api/v1/profile/", ImmutableProfile.class, new ImmutableProfile(uniqueId, name, profileType));
+          .post("/api/v1/profile", ImmutableProfile.class, new ImmutableProfile(uniqueId, name, profileType));
     });
   }
 
