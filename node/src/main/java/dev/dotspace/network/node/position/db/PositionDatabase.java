@@ -14,10 +14,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
-
 @Component
 @Log4j2
 public final class PositionDatabase extends AbstractDatabase {
+
+  //Todo: implement -> this.publishEvent(createdMessage, ImmutablePersistentMessage .class, DataManipulation.CREATE);
+
   /**
    * Instance of {@link PositionRepository} with queries.
    */

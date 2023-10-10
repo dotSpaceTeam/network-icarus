@@ -16,12 +16,12 @@ public interface INodeBenchmark {
    * @param caseRunnable task to execute.
    */
   @NotNull INodeBenchmark addBenchmark(@Nullable final String caseName,
-                                       @Nullable final ThrowableRunnable caseRunnable);
+                                       @Nullable final ThrowableRunnable caseRunnable) throws IllegalAccessException;
 
   /**
    * Run benchmark.
    */
-  @NotNull INodeBenchmark run();
+  @NotNull INodeBenchmark run() throws IllegalAccessException;
 
   /**
    * Check if running.

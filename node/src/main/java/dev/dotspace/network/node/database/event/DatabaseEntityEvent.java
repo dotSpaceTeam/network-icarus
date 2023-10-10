@@ -1,6 +1,6 @@
 package dev.dotspace.network.node.database.event;
 
-import dev.dotspace.network.node.database.manipulate.DatabaseManipulation;
+import dev.dotspace.network.library.data.DataManipulation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public final class DatabaseEntityEvent<TYPE, SCHEMA> extends AbstractDatabaseEve
    * See {@link ApplicationEvent#ApplicationEvent(Object)}.
    */
   public DatabaseEntityEvent(@NotNull final Object source,
-                             @NotNull final DatabaseManipulation manipulation,
+                             @NotNull final DataManipulation manipulation,
                              @NotNull final TYPE type,
                              @NotNull final Class<SCHEMA> schemaClass) {
     super(source, manipulation);

@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.economy.db;
 
+import dev.dotspace.network.library.data.DataManipulation;
 import dev.dotspace.network.library.economy.ICurrency;
 import dev.dotspace.network.library.economy.ImmutableCurrency;
 import dev.dotspace.network.node.database.AbstractDatabase;
@@ -64,11 +65,24 @@ public final class EconomyDatabase extends AbstractDatabase {
           .displayPlural(displayPlural);
 
       //Update db.
-      return ImmutableCurrency.of(this.currencyRepository.save(currencyEntity));
+      final ICurrency updatedCurrency = ImmutableCurrency.of(this.currencyRepository.save(currencyEntity));
+
+      //Fire event -> Update currency.
+      this.publishEvent(updatedCurrency, ImmutableCurrency.class, DataManipulation.UPDATE);
+
+      //Return
+      return updatedCurrency;
     }
 
-    //Create new
-    return ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(name, symbol, display, displayPlural)));
+    //Create new currency
+    final ICurrency createCurrency =
+        ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(name, symbol, display, displayPlural)));
+
+    //Fire event -> Create currency.
+    this.publishEvent(createCurrency, ImmutableCurrency.class, DataManipulation.CREATE);
+
+    //Return
+    return createCurrency;
   }
 
   public @NotNull ICurrency getCurrency(@Nullable String name) throws EntityNotPresentException {

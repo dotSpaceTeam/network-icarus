@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Client for rabbit mq operation.
  */
-public interface IRabbitClient {
+public interface IRabbitConnection {
   @NotNull ConnectionFactory connectionFactory();
 
   @NotNull Connection connection() throws RabbitClientAbsentException;
@@ -30,14 +30,14 @@ public interface IRabbitClient {
   @NotNull IRabbitSubscriber newSubscriber(@Nullable final String exchange,
                                            @Nullable final String routingKey) throws RabbitClientAbsentException;
 
-  @NotNull IRabbitClient createQueueIfAbsent(@Nullable final String name,
-                                             final boolean durable,
-                                             final boolean exclusive,
-                                             final boolean autoDelete,
-                                             @Nullable final Map<String, Object> arguments) throws RabbitIOException,
+  @NotNull IRabbitConnection createQueueIfAbsent(@Nullable final String name,
+                                                 final boolean durable,
+                                                 final boolean exclusive,
+                                                 final boolean autoDelete,
+                                                 @Nullable final Map<String, Object> arguments) throws RabbitIOException,
       RabbitClientAbsentException;
 
-  @NotNull IRabbitClient createExchangeIfAbsent(@Nullable final String name,
-                                                @Nullable final String type) throws RabbitIOException,
+  @NotNull IRabbitConnection createExchangeIfAbsent(@Nullable final String name,
+                                                    @Nullable final String type) throws RabbitIOException,
       RabbitClientAbsentException;
 }

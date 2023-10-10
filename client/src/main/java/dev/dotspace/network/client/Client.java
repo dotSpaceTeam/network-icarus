@@ -34,12 +34,6 @@ public final class Client implements IClient {
   private final @NotNull Injector injector;
 
   /**
-   * Thread client is running on.
-   */
-  @Getter
-  private final @NotNull Thread thread;
-
-  /**
    * Only local .
    */
   private Client(@NotNull final String endPoint) {
@@ -49,8 +43,6 @@ public final class Client implements IClient {
     //Create injector.
     this.injector = Guice.createInjector(
         new ClientModule(this.participant().identifier(), endPoint), Library.module());
-
-    this.thread = Thread.currentThread();
   }
 
   /**
@@ -119,7 +111,7 @@ public final class Client implements IClient {
     Objects.requireNonNull(endPoint);
 
     //Already enabled.
-    if (Client.enabled()) {
+    if (Client.present()) {
       log.warn("Client already enabled.");
       return;
     }
@@ -127,11 +119,32 @@ public final class Client implements IClient {
     //Init client
     client = new Client(endPoint);
     log.info("Enabled client.");
-    log.info("Checking client status...");
   }
 
-  public static boolean enabled() {
+  public static void disconnect() {
+    //Ignore if client is not present.
+    if (client == null) {
+      return;
+    }
+
+    //Shutdown reset client.
+    client.injector.getInstance(IRestClient.class).shutdown();
+
+    //Set client to null.
+    client = null;
+
+    log.info("Disabled client.");
+  }
+
+  public static boolean present() {
     return client != null;
+  }
+
+  /**
+   * Check if client is connected.
+   */
+  public static boolean connected() {
+    return client != null && client.injector.getInstance(IRestClient.class).state() == ClientState.ESTABLISHED;
   }
 
   /**

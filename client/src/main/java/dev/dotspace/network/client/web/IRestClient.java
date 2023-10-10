@@ -2,7 +2,6 @@ package dev.dotspace.network.client.web;
 
 import dev.dotspace.network.library.common.StateHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 public interface IRestClient extends IRequest, StateHandler<ClientState> {
@@ -14,4 +13,8 @@ public interface IRestClient extends IRequest, StateHandler<ClientState> {
   @NotNull Long ping();
 
   @NotNull ClientState state();
+
+  @NotNull IRestClient shutdown();
+
+  boolean active();
 }

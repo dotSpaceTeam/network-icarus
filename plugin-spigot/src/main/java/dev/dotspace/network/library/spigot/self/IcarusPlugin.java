@@ -7,7 +7,6 @@ import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.inventory.InventoryProvider;
 import dev.dotspace.network.library.spigot.itemstack.IItemProvider;
-import dev.dotspace.network.library.spigot.itemstack.ItemEditor;
 import dev.dotspace.network.library.spigot.plugin.AbstractPlugin;
 import dev.dotspace.network.library.spigot.self.message.Message;
 import lombok.Getter;
@@ -18,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -55,7 +53,7 @@ public final class IcarusPlugin extends AbstractPlugin {
         //Handle client.
         .handle(PluginState.POST_ENABLE, () -> {
           //Return if client is not enabled.
-          if (!Client.enabled()) {
+          if (!Client.present()) {
             return;
           }
 

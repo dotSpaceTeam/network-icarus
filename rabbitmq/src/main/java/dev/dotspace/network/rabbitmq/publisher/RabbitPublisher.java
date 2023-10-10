@@ -2,7 +2,7 @@ package dev.dotspace.network.rabbitmq.publisher;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.rabbitmq.client.AMQP.BasicProperties;
-import dev.dotspace.network.rabbitmq.IRabbitClient;
+import dev.dotspace.network.rabbitmq.IRabbitConnection;
 import dev.dotspace.network.rabbitmq.RabbitField;
 import dev.dotspace.network.rabbitmq.exception.RabbitClientAbsentException;
 import dev.dotspace.network.rabbitmq.exception.RabbitIOException;
@@ -20,10 +20,12 @@ import java.util.Objects;
 
 @Log4j2
 public final class RabbitPublisher extends RabbitParticipant implements IRabbitPublisher {
-
+  /**
+   * Properties with pre-builder header.
+   */
   private final @NotNull BasicProperties publishProperties;
 
-  public RabbitPublisher(@Nullable final IRabbitClient rabbitClient,
+  public RabbitPublisher(@Nullable final IRabbitConnection rabbitClient,
                          @Nullable final Duration expirationDuration) {
     //Pass to parent.
     super(rabbitClient);
@@ -32,7 +34,7 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     final BasicProperties.Builder builder = new BasicProperties()
         .builder()
         //Content type.
-        .contentType("application/json");
+        .contentType(RabbitField.APPLICATION_JSON);
 
     //Apply expirationDuration if present.
     if (expirationDuration != null) {
@@ -44,6 +46,9 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     this.publishProperties = builder.build();
   }
 
+  /**
+   * See {@link IRabbitPublisher#publish(String, byte[])}.
+   */
   @Override
   public boolean publish(@Nullable String key,
                          byte @Nullable [] content) throws RabbitClientAbsentException, RabbitIOException {
@@ -55,6 +60,9 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     return this.publishMessage("" /*No exchange.*/, key, content, this.publishProperties);
   }
 
+  /**
+   * See {@link IRabbitPublisher#publish(String, Class, Object)}.
+   */
   @Override
   public <TYPE> boolean publish(@Nullable String key,
                                 @Nullable Class<TYPE> mapperClass,
@@ -67,6 +75,9 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     return this.publishObject("", key, mapperClass, type, this.publishProperties);
   }
 
+  /**
+   * See {@link IRabbitPublisher#publish(String, String, byte[])}.
+   */
   @Override
   public boolean publish(@Nullable String exchange,
                          @Nullable String key,
@@ -80,10 +91,13 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     return this.publishMessage(exchange, key, content, this.publishProperties);
   }
 
+  /**
+   * See {@link IRabbitPublisher#publish(String, String, Class, Object)}.
+   */
   @Override
   public <TYPE> boolean publish(@Nullable String exchange,
                                 @Nullable String key,
-                                @Nullable Class<TYPE> mapperClass,
+                                @Nullable Class<? extends TYPE> mapperClass,
                                 @Nullable TYPE type) throws RabbitIOException, RabbitClientAbsentException {
     //Null check
     Objects.requireNonNull(exchange);
@@ -94,6 +108,9 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     return this.publishObject(exchange, key, mapperClass, type, this.publishProperties);
   }
 
+  /**
+   * Implementation for publish a message.
+   */
   private boolean publishMessage(@NotNull final String exchange,
                                  @NotNull final String key,
                                  final byte @NotNull [] content,
@@ -113,9 +130,12 @@ public final class RabbitPublisher extends RabbitParticipant implements IRabbitP
     }
   }
 
+  /**
+   * Implementation for object publishing.
+   */
   private <TYPE> boolean publishObject(@NotNull final String exchange,
                                        @NotNull final String key,
-                                       @NotNull final Class<TYPE> mapperClass,
+                                       @NotNull final Class<? extends TYPE> mapperClass,
                                        @NotNull final TYPE type,
                                        @NotNull final BasicProperties properties) throws RabbitIOException, RabbitClientAbsentException {
     //Get content of file.

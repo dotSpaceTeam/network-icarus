@@ -42,11 +42,4 @@ public interface IClient extends ISystem, StateHandler<ClientState> {
    * @return inst ance of {@link IMessageRequest}.
    */
   @NotNull IMessageRequest messageRequest();
-
-  /**
-   * Get main thread of client.
-   *
-   * @return instance of {@link Thread}.
-   */
-  @NotNull Thread thread();
 }

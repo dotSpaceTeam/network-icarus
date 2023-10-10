@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -54,6 +53,9 @@ public final class RestClient implements IRestClient {
 
   private long longestResponseTime;
   @Getter
+  private boolean active;
+
+  @Getter
   private @NotNull ClientState state;
   /**
    * Store values of state runnable.
@@ -79,6 +81,8 @@ public final class RestClient implements IRestClient {
      * Create client instance.
      */
     final HttpClient httpClient = HttpClient.create()
+        //Cancel redirect
+        .followRedirect(false)
         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, Math.toIntExact(timeoutDuration.toMillis()))
         .responseTimeout(timeoutDuration);
 
@@ -98,8 +102,10 @@ public final class RestClient implements IRestClient {
         .clientConnector(new ReactorClientHttpConnector(httpClient))
         .build();
 
-    log.info("Successfully created client to '{}'.", service);
+    // Set active
+    this.active = true;
 
+    log.info("Successfully created client to '{}'.", service);
     log.info("Starting client monitoring...");
 
     final Thread thread = Thread.currentThread();
@@ -107,25 +113,25 @@ public final class RestClient implements IRestClient {
     //Start new thread.
     new Thread(() -> {
       //Run as long client runs.
-      while (!thread.isInterrupted()) {
-        //Ping if time is positive.
-        if (this.lastStateChange-System.currentTimeMillis()<=0) {
-          //Set new ping
-          this.ping();
-          this.totalPingCount++;
-        }
-
+      while (!thread.isInterrupted() && this.active) {
         try {
           //To keep performance height
           Thread.sleep(500L);
           //Ignore.
         } catch (final InterruptedException ignore) {
         }
+
+        //Ping if time is positive.
+        if (this.lastStateChange-System.currentTimeMillis()<=0) {
+          //Set new ping
+          this.ping();
+          this.totalPingCount++;
+        }
       }
-      System.out.println("off");
       //Kill thread if main is also shut down.
       log.info("Client monitoring stopped.");
-    }).start();
+    })
+        .start();
 
     log.info("Trying to initialize connection.");
     //First synchronized ping to validate client.
@@ -252,7 +258,7 @@ public final class RestClient implements IRestClient {
             if (this.longestResponseTime<responseTime) {
               //Set new time
               this.longestResponseTime = responseTime;
-              log.info("New longest response time defined. Time={}ms", this.longestResponseTime);
+              log.debug("New longest response time defined. Time={}ms", this.longestResponseTime);
             }
 
             return clientResponse.bodyToMono(typeClass);
@@ -329,6 +335,17 @@ public final class RestClient implements IRestClient {
   }
 
   @Override
+  public @NotNull IRestClient shutdown() {
+    //stop if active.
+    if (this.active) {
+      this.active = false;
+      log.info("Stopping client.");
+    }
+    return this;
+  }
+
+
+  @Override
   public @NotNull StateHandler<ClientState> handle(@Nullable ClientState clientState,
                                                    @Nullable ThrowableRunnable runnable) {
     //Null check
@@ -359,16 +376,8 @@ public final class RestClient implements IRestClient {
   }
 
   private final static class PingList extends LimitStack<Long> {
-
     public PingList() {
       super(PING_COLLECTION);
-    }
-
-    public long average() {
-      return (long) this.stream()
-          .mapToLong(value -> value)
-          .average()
-          .orElse(-1d);
     }
   }
 }

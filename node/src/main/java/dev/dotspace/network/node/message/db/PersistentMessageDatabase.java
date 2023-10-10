@@ -1,5 +1,6 @@
 package dev.dotspace.network.node.message.db;
 
+import dev.dotspace.network.library.data.DataManipulation;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
@@ -70,8 +71,15 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
 
     //If entity is null create new.
     if (messageEntity == null) {
-      return ImmutablePersistentMessage
+      //Created message
+      final IPersistentMessage createdMessage = ImmutablePersistentMessage
           .of(this.messageRepository.save(new PersistentMessageEntity(messageKey, localeTag, message)));
+
+      //Fire event -> Created message.
+      this.publishEvent(createdMessage, ImmutablePersistentMessage.class, DataManipulation.CREATE);
+
+      //Return
+      return createdMessage;
     }
 
     //No update
@@ -86,8 +94,14 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
     //Store message.
     this.messageRepository.save(messageEntity);
 
-    //Return message.
-    return ImmutablePersistentMessage.of(messageEntity);
+    //Create immutable.
+    final IPersistentMessage updatedMessage = ImmutablePersistentMessage.of(messageEntity);
+
+    //Fire event -> Updated message.
+    this.publishEvent(updatedMessage, ImmutablePersistentMessage.class, DataManipulation.UPDATE);
+
+    //Return
+    return updatedMessage;
   }
 
   public @NotNull IPersistentMessage message(@Nullable Locale locale,
@@ -103,10 +117,12 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
     Objects.requireNonNull(key);
 
     final PersistentMessageKeyEntity messageKey = this.messageKeyRepository
+        //Get message of key.
         .findByKey(key)
         .orElseThrow(() ->
             new EntityNotPresentException("No key="+key+" for locale="+locale.toLanguageTag()+" present, can't find message"));
 
+    //Get locale to of locale.
     final String localeTag = locale.toLanguageTag();
 
     return this.messageRepository
@@ -124,6 +140,7 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
               //Find first.
               .findAny();
         })
+        //Map to immutable.
         .map(ImmutablePersistentMessage::of)
         .orElseThrow(() -> new EntityNotPresentException("Key is not present in locale="+localeTag+"."));
   }

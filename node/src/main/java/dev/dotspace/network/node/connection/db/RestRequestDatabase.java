@@ -1,6 +1,8 @@
 package dev.dotspace.network.node.connection.db;
 
 import dev.dotspace.network.library.connection.IRestRequest;
+import dev.dotspace.network.library.connection.ImmutableRestRequest;
+import dev.dotspace.network.library.data.DataManipulation;
 import dev.dotspace.network.node.database.AbstractDatabase;
 import dev.dotspace.network.node.system.db.ParticipantEntity;
 import dev.dotspace.network.node.system.db.ParticipantRepository;
@@ -50,7 +52,14 @@ public final class RestRequestDatabase extends AbstractDatabase {
         //Or else null.
         .orElse(null);
 
-    return this.restRequestRepository.save(
-        new RestRequestEntity(path, participantEntity, method, address, note, timestamp, processTime, status));
+    //Create request.
+    final IRestRequest restRequest = ImmutableRestRequest.of(this.restRequestRepository.save(
+        new RestRequestEntity(path, participantEntity, method, address, note, timestamp, processTime, status)));
+
+    //Fire event -> Create request.
+    this.publishEvent(restRequest, ImmutableRestRequest.class, DataManipulation.CREATE);
+
+    //Return
+    return restRequest;
   }
 }

@@ -1,9 +1,9 @@
-package dev.dotspace.network.node.database.manipulate;
+package dev.dotspace.network.library.data;
 
 /**
  * Type of database access.
  */
-public enum DatabaseManipulation {
+public enum DataManipulation {
   /**
    * Data was updated.
    */

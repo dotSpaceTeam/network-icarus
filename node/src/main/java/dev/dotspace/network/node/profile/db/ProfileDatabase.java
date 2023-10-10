@@ -22,7 +22,7 @@ import dev.dotspace.network.library.profile.session.ImmutableSession;
 import dev.dotspace.network.library.time.ITimestamp;
 import dev.dotspace.network.library.time.ImmutableTimestamp;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.database.manipulate.DatabaseManipulation;
+import dev.dotspace.network.library.data.DataManipulation;
 import dev.dotspace.network.node.economy.db.CurrencyEntity;
 import dev.dotspace.network.node.economy.db.CurrencyRepository;
 import dev.dotspace.network.node.economy.db.TransactionEntity;
@@ -108,7 +108,7 @@ public final class ProfileDatabase extends AbstractDatabase {
       this.profileRepository.save(namedProfileEntity);
 
       //Fire event -> updated old profile.
-      this.publishEvent(namedProfileEntity, ImmutableProfile.class, DatabaseManipulation.UPDATE);
+      this.publishEvent(namedProfileEntity, ImmutableProfile.class, DataManipulation.UPDATE);
     }
 
     //Get present profile, if null create new.
@@ -122,7 +122,7 @@ public final class ProfileDatabase extends AbstractDatabase {
       final IProfile updateProfile = ImmutableProfile.of(this.profileRepository.save(profileEntity));
 
       //Fire event -> updated name of profile.
-      this.publishEvent(updateProfile, ImmutableProfile.class, DatabaseManipulation.UPDATE);
+      this.publishEvent(updateProfile, ImmutableProfile.class, DataManipulation.UPDATE);
 
       //end
       return updateProfile;
@@ -133,7 +133,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         profileType)));
 
     //Fire event -> Create profile.
-    this.publishEvent(newProfile, ImmutableProfile.class, DatabaseManipulation.CREATE);
+    this.publishEvent(newProfile, ImmutableProfile.class, DataManipulation.CREATE);
 
     //Return new profile.
     return newProfile;
@@ -231,7 +231,7 @@ public final class ProfileDatabase extends AbstractDatabase {
       updatedAttribute = ImmutableProfileAttribute.of(this.profileAttributeRepository.save(profileAttributeEntity));
 
       //Fire event -> update profile attribute.
-      this.publishEvent(updatedAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.UPDATE);
+      this.publishEvent(updatedAttribute, ImmutableProfileAttribute.class, DataManipulation.UPDATE);
 
       //end
       return updatedAttribute;
@@ -245,7 +245,7 @@ public final class ProfileDatabase extends AbstractDatabase {
       final IProfileAttribute deletedAttribute = ImmutableProfileAttribute.of(profileAttributeEntity);
 
       //Fire event -> attribute das delete.
-      this.publishEvent(deletedAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.DELETE);
+      this.publishEvent(deletedAttribute, ImmutableProfileAttribute.class, DataManipulation.DELETE);
 
       return deletedAttribute;
     }
@@ -257,7 +257,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         .of(this.profileAttributeRepository.save(new ProfileAttributeEntity(profileEntity, key, value)));
 
     //Fire event -> created profile attribute.
-    this.publishEvent(createdAttribute, ImmutableProfileAttribute.class, DatabaseManipulation.CREATE);
+    this.publishEvent(createdAttribute, ImmutableProfileAttribute.class, DataManipulation.CREATE);
 
     //End
     return createdAttribute;
@@ -353,7 +353,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         this.sessionRepository.save(new SessionEntity(profile, new Date(), null, address)));
 
     //Fire event -> update profile attribute.
-    this.publishEvent(createdSession, ImmutableSession.class, DatabaseManipulation.CREATE);
+    this.publishEvent(createdSession, ImmutableSession.class, DataManipulation.CREATE);
 
     //End
     return createdSession;
@@ -382,7 +382,7 @@ public final class ProfileDatabase extends AbstractDatabase {
     final ISession completedSession = ImmutableSession.of(this.sessionRepository.save(session));
 
     //Fire event -> update profile attribute.
-    this.publishEvent(completedSession, ImmutableSession.class, DatabaseManipulation.UPDATE);
+    this.publishEvent(completedSession, ImmutableSession.class, DataManipulation.UPDATE);
 
     //End
     return completedSession;
@@ -472,13 +472,13 @@ public final class ProfileDatabase extends AbstractDatabase {
         .orElse(null);
 
     //Define process as create.
-    DatabaseManipulation manipulation = DatabaseManipulation.CREATE;
+    DataManipulation manipulation = DataManipulation.CREATE;
 
     //Update if present.
     if (experience != null) {
       experience.experience(experience.experience()+value);
       //Define as updated
-      manipulation = DatabaseManipulation.UPDATE;
+      manipulation = DataManipulation.UPDATE;
     } else {
       //Create new if absent.
       experience = new ExperienceEntity(profileEntity, experienceName, value);
@@ -574,7 +574,7 @@ public final class ProfileDatabase extends AbstractDatabase {
         new TransactionEntity(profileEntity, currencyEntity, transactionAmount, transactionType)));
 
     //Fire event -> created transaction.
-    this.publishEvent(transaction, ImmutableExperience.class, DatabaseManipulation.CREATE);
+    this.publishEvent(transaction, ImmutableExperience.class, DataManipulation.CREATE);
 
     return transaction;
   }

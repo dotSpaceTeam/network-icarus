@@ -1,6 +1,6 @@
 package dev.dotspace.network.node.database.event;
 
-import dev.dotspace.network.node.database.manipulate.DatabaseManipulation;
+import dev.dotspace.network.library.data.DataManipulation;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -13,13 +13,13 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 @Accessors(fluent=true)
 public abstract class AbstractDatabaseEvent extends ApplicationEvent {
-  private final @NotNull DatabaseManipulation manipulation;
+  private final @NotNull DataManipulation manipulation;
 
   /**
    * See {@link ApplicationEvent#ApplicationEvent(Object)}.
    */
   public AbstractDatabaseEvent(@NotNull final Object source,
-                               @NotNull final DatabaseManipulation manipulation) {
+                               @NotNull final DataManipulation manipulation) {
     super(source);
     this.manipulation = manipulation;
   }

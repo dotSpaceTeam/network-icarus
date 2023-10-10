@@ -22,17 +22,17 @@ import java.util.Objects;
 
 @Log4j2
 @Accessors(fluent=true)
-public final class RabbitClient implements IRabbitClient {
+public final class RabbitConnection implements IRabbitConnection {
   @Getter
   private final @NotNull ConnectionFactory connectionFactory;
   private @Nullable Connection connection;
   private @Nullable Channel channel;
 
-  public RabbitClient(@Nullable final String user,
-                      @Nullable final String password,
-                      @Nullable final String virtualHost,
-                      @Nullable final String host,
-                      final int port) {
+  public RabbitConnection(@Nullable final String user,
+                          @Nullable final String password,
+                          @Nullable final String virtualHost,
+                          @Nullable final String host,
+                          final int port) {
     this.connectionFactory = new ConnectionFactory();
 
     //Define parameters of factory.
@@ -85,7 +85,7 @@ public final class RabbitClient implements IRabbitClient {
   }
 
   /**
-   * See {@link IRabbitClient#newPublisher()}
+   * See {@link IRabbitConnection#newPublisher()}
    */
   @Override
   public @NotNull IRabbitPublisher newPublisher() {
@@ -100,11 +100,11 @@ public final class RabbitClient implements IRabbitClient {
   }
 
   @Override
-  public @NotNull IRabbitClient createQueueIfAbsent(@Nullable String name,
-                                                    boolean durable,
-                                                    boolean exclusive,
-                                                    boolean autoDelete,
-                                                    @Nullable Map<String, Object> arguments) throws RabbitIOException, RabbitClientAbsentException {
+  public @NotNull IRabbitConnection createQueueIfAbsent(@Nullable String name,
+                                                        boolean durable,
+                                                        boolean exclusive,
+                                                        boolean autoDelete,
+                                                        @Nullable Map<String, Object> arguments) throws RabbitIOException, RabbitClientAbsentException {
     //Null check
     Objects.requireNonNull(name);
 
@@ -124,8 +124,8 @@ public final class RabbitClient implements IRabbitClient {
   }
 
   @Override
-  public @NotNull IRabbitClient createExchangeIfAbsent(@Nullable String name,
-                                                       @Nullable String type) throws RabbitIOException, RabbitClientAbsentException {
+  public @NotNull IRabbitConnection createExchangeIfAbsent(@Nullable String name,
+                                                           @Nullable String type) throws RabbitIOException, RabbitClientAbsentException {
     //Null check
     Objects.requireNonNull(name);
     Objects.requireNonNull(type);

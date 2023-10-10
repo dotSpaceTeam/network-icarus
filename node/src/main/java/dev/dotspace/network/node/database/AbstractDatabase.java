@@ -1,7 +1,7 @@
 package dev.dotspace.network.node.database;
 
 import dev.dotspace.network.node.database.event.DatabaseEntityEvent;
-import dev.dotspace.network.node.database.manipulate.DatabaseManipulation;
+import dev.dotspace.network.library.data.DataManipulation;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -34,7 +34,7 @@ public abstract class AbstractDatabase {
    */
   protected <TYPE, SCHEMA> void publishEvent(@NotNull final TYPE type,
                                              @NotNull final Class<SCHEMA> schemaClass,
-                                             @NotNull final DatabaseManipulation manipulation) {
+                                             @NotNull final DataManipulation manipulation) {
     //Publish event.
     this.applicationEventPublisher.publishEvent(new DatabaseEntityEvent<>(this, manipulation, type, schemaClass));
   }

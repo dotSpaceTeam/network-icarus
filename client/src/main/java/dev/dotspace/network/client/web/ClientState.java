@@ -1,9 +1,13 @@
 package dev.dotspace.network.client.web;
 
 public enum ClientState {
-
+  /**
+   * Client is active connected.
+   */
   ESTABLISHED,
 
-  FAILED
-
+  /**
+   * Error in client.
+   */
+  FAILED;
 }
