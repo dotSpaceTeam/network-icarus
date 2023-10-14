@@ -182,6 +182,13 @@ public final class RabbitClient implements IRabbitClient {
   //Check if client is enabled.
 
   /**
+   * Name of exchange.
+   */
+  public static @NotNull String fanoutExchange() {
+    return EXCHANGE_NAME;
+  }
+
+  /**
    * Get client instance.
    *
    * @return get singleton instance.
@@ -212,6 +219,7 @@ public final class RabbitClient implements IRabbitClient {
     try {
       buildClient(new RabbitClient(rabbitUri));
     } catch (final Exception exception) {
+      exception.printStackTrace();
     }
     log.info("Enabled client.");
   }
