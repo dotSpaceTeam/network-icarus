@@ -1,8 +1,8 @@
 package dev.dotspace.network.client.profile;
 
 import dev.dotspace.common.response.Response;
+import dev.dotspace.network.library.economy.ITransaction;
 import dev.dotspace.network.library.profile.IProfile;
-import dev.dotspace.network.library.profile.IProfileRecord;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
 import dev.dotspace.network.library.profile.experience.IExperience;
@@ -118,4 +118,28 @@ public interface IProfileRequest {
   @NotNull Response<IExperience> addExperience(@Nullable final String uniqueId,
                                                @Nullable final String name,
                                                final long experience);
+
+  /**
+   * Add economy to player.
+   *
+   * @param uniqueId to add money.
+   * @param currency name of currency.
+   * @param amount   to add.
+   * @return completed {@link ITransaction}.
+   */
+  @NotNull Response<ITransaction> deposit(@Nullable final String uniqueId,
+                                          @Nullable final String currency,
+                                          final int amount);
+
+  /**
+   * Remove economy to player.
+   *
+   * @param uniqueId to remove money.
+   * @param currency name of currency.
+   * @param amount   to remove.
+   * @return completed {@link ITransaction}.
+   */
+  @NotNull Response<ITransaction> withdraw(@Nullable final String uniqueId,
+                                           @Nullable final String currency,
+                                           final int amount);
 }

@@ -28,19 +28,6 @@ public interface IMessageRequest {
   @NotNull Response<IMessage> getMessage(@Nullable final Locale locale,
                                          @Nullable final String key);
 
-
-  /**
-   * Create or update message.
-   *
-   * @param locale
-   * @param key
-   * @param message
-   * @return
-   */
-  @NotNull Response<IPersistentMessage> updateMessage(@Nullable final Locale locale,
-                                                      @Nullable final String key,
-                                                      @Nullable final String message);
-
   /**
    * Just create no update.
    *
@@ -49,7 +36,8 @@ public interface IMessageRequest {
    * @param message
    * @return
    */
-  @NotNull Response<IPersistentMessage> createMessage(@Nullable final Locale locale,
+  @NotNull Response<IPersistentMessage> updateMessage(@Nullable final Locale locale,
                                                       @Nullable final String key,
-                                                      @Nullable final String message);
+                                                      @Nullable final String message,
+                                                      final boolean createOnly);
 }

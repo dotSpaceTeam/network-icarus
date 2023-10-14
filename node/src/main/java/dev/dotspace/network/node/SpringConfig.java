@@ -6,6 +6,8 @@ import dev.dotspace.network.library.system.IParticipant;
 import dev.dotspace.network.library.system.ImmutableParticipant;
 import dev.dotspace.network.library.system.ParticipantType;
 import dev.dotspace.network.node.web.WebInterceptor;
+import dev.dotspace.network.rabbitmq.IRabbitClient;
+import dev.dotspace.network.rabbitmq.RabbitClient;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -96,15 +98,33 @@ public class SpringConfig {
    * Configure {@link IParticipant}
    */
   @Bean
-  public IParticipant participant() {
+  public @NotNull IParticipant participant() {
     return ImmutableParticipant.randomOfType(ParticipantType.NODE);
+  }
+
+  /**
+   * Configure instance of {@link IRabbitClient}
+   */
+  @Bean
+  public @NotNull IRabbitClient rabbitClient() {
+    //Starting
+    log.info("Configuring Node-Rabbitmq...");
+
+    //Get uri
+    final String rabbitUri = this.environment.getProperty("rabbitmq.uri");
+
+    //Connect to rabbit.
+    RabbitClient.connect(rabbitUri);
+
+    //Return instance.
+    return RabbitClient.client();
   }
 
   /**
    * Configure thread service.
    */
   @Bean
-  public Executor threadService() {
+  public @NotNull Executor threadService() {
     final Executor executor = Executors.newCachedThreadPool();
     log.info("Initialized thread executor bean.");
     return executor;

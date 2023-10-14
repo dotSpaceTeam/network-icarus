@@ -14,7 +14,7 @@ public interface IRabbitSubscriber {
    * @param consumer to consume bytes.
    * @return class instance.
    */
-  @NotNull IRabbitSubscriber subscribe(@Nullable final ThrowableConsumer<byte[]> consumer);
+  @NotNull IRabbitSubscriber subscribe(@Nullable final ThrowableConsumer<IPayload<byte[]>> consumer);
 
   /**
    * Subscribe and read hole object.
@@ -27,6 +27,6 @@ public interface IRabbitSubscriber {
    * @return class instance.
    */
   @NotNull <TYPE> IRabbitSubscriber subscribe(@Nullable final Class<TYPE> typeClass,
-                                              @Nullable final ThrowableConsumer<TYPE> consumer);
+                                              @Nullable final ThrowableConsumer<IPayload<TYPE>> consumer);
 
 }

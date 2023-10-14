@@ -56,7 +56,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get a formatted message.
    */
-  @PostMapping("/")
+  @PostMapping
   @ResponseBody
   //Swagger
   @Operation(
@@ -84,7 +84,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get an profile from unique id.
    */
-  @PutMapping("/key/")
+  @PutMapping("/key")
   @ResponseBody
   //Swagger
   @Operation(

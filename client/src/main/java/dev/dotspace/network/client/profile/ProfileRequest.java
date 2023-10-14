@@ -3,6 +3,7 @@ package dev.dotspace.network.client.profile;
 import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.web.AbstractRequest;
 import dev.dotspace.network.library.connection.ImmutableAddressName;
+import dev.dotspace.network.library.economy.ITransaction;
 import dev.dotspace.network.library.key.ImmutableKey;
 import dev.dotspace.network.library.profile.*;
 import dev.dotspace.network.library.profile.attribute.IProfileAttribute;
@@ -104,7 +105,7 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
       Objects.requireNonNull(key);
       Objects.requireNonNull(value);
 
-      return this.client().post("/api/v1/profile/"+uniqueId+"/attribute/",
+      return this.client().post("/api/v1/profile/"+uniqueId+"/attribute",
           ImmutableProfileAttribute.class,
           new ImmutableProfileAttribute(key, value));
     });
@@ -118,7 +119,7 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
       Objects.requireNonNull(uniqueId);
       Objects.requireNonNull(key);
 
-      return this.client().delete("/api/v1/profile/"+uniqueId+"/attribute/",
+      return this.client().delete("/api/v1/profile/"+uniqueId+"/attribute",
           ImmutableProfileAttribute.class,
           new ImmutableKey(key));
     });
@@ -170,7 +171,7 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
 
       //Send request
       return this.client()
-          .post("/api/v1/profile/"+uniqueId+"/session/",
+          .post("/api/v1/profile/"+uniqueId+"/session",
               ImmutableSession.class,
               new ImmutableAddressName(address));
     });
@@ -236,9 +237,23 @@ public final class ProfileRequest extends AbstractRequest implements IProfileReq
 
       //Send request
       return this.client()
-          .post("/api/v1/profile/"+uniqueId+"/experience/",
+          .post("/api/v1/profile/"+uniqueId+"/experience",
               ImmutableExperience.class,
               new ImmutableExperience(name, experience, -1));
     });
+  }
+
+  @Override
+  public @NotNull Response<ITransaction> deposit(@Nullable String uniqueId,
+                                                 @Nullable String currency,
+                                                 int amount) {
+    return null;
+  }
+
+  @Override
+  public @NotNull Response<ITransaction> withdraw(@Nullable String uniqueId,
+                                                  @Nullable String currency,
+                                                  int amount) {
+    return null;
   }
 }

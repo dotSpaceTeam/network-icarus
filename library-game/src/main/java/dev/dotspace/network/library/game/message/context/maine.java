@@ -13,13 +13,13 @@ public class maine {
 
     Client.client()
         .messageRequest()
-        .updateMessage(Locale.GERMANY, "serv@prefix", "[Server]");
+        .updateMessage(Locale.GERMANY, "serv@prefix", "[Server]", true);
 
     Client.client()
         .messageRequest()
         .updateMessage(Locale.GERMANY,
             "serv@join",
-            "{{ KEY:serv@prefix }} Der Spieler {{ PLACEHOLDER:Name }} hat den Server betreten.");
+            "{{ KEY:serv@prefix }} Der Spieler {{ PLACEHOLDER:Name }} hat den Server betreten.", true);
 
 
     System.out.println(MessageContext

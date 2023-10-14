@@ -8,7 +8,7 @@ dependencies {
 
   implementation project(":library-game")
 
-  implementation libs.cloud.paper
+  implementation libs.cloud.velocity
 
   compileOnly libs.velocity
   annotationProcessor libs.velocity

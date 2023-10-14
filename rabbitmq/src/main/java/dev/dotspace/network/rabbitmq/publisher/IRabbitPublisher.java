@@ -1,8 +1,11 @@
 package dev.dotspace.network.rabbitmq.publisher;
 
+import dev.dotspace.network.library.data.KeyValuePair;
 import dev.dotspace.network.rabbitmq.exception.RabbitClientAbsentException;
 import dev.dotspace.network.rabbitmq.exception.RabbitIOException;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 
 /**
@@ -19,7 +22,8 @@ public interface IRabbitPublisher {
    * @throws RabbitIOException           while parsing the content.
    */
   boolean publish(@Nullable final String key,
-                  final byte @Nullable [] content) throws RabbitClientAbsentException, RabbitIOException;
+                  final byte @Nullable [] content,
+                  @Nullable final List<KeyValuePair> pairs) throws RabbitClientAbsentException, RabbitIOException;
 
   /**
    * Publish an object.
@@ -34,7 +38,8 @@ public interface IRabbitPublisher {
    */
   <TYPE> boolean publish(@Nullable final String key,
                          @Nullable final Class<TYPE> mapperClass,
-                         @Nullable final TYPE type) throws RabbitIOException, RabbitClientAbsentException;
+                         @Nullable final TYPE type,
+                         @Nullable final List<KeyValuePair> pairs) throws RabbitIOException, RabbitClientAbsentException;
 
   /**
    * Publish content for a key and exchange.
@@ -48,7 +53,8 @@ public interface IRabbitPublisher {
    */
   boolean publish(@Nullable final String exchange,
                   @Nullable final String key,
-                  final byte @Nullable [] content) throws RabbitClientAbsentException, RabbitIOException;
+                  final byte @Nullable [] content,
+                  @Nullable final List<KeyValuePair> pairs) throws RabbitClientAbsentException, RabbitIOException;
 
   /**
    * Publish an object for a key and exchange.
@@ -65,5 +71,6 @@ public interface IRabbitPublisher {
   <TYPE> boolean publish(@Nullable final String exchange,
                          @Nullable final String key,
                          @Nullable final Class<? extends TYPE> mapperClass,
-                         @Nullable final TYPE type) throws RabbitIOException, RabbitClientAbsentException;
+                         @Nullable final TYPE type,
+                         @Nullable final List<KeyValuePair> pairs) throws RabbitIOException, RabbitClientAbsentException;
 }

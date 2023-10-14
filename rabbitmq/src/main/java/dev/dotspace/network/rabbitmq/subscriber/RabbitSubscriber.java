@@ -4,7 +4,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 import com.rabbitmq.client.Delivery;
 import dev.dotspace.common.function.ThrowableConsumer;
-import dev.dotspace.network.rabbitmq.IRabbitConnection;
+import dev.dotspace.network.rabbitmq.IRabbitClient;
 import dev.dotspace.network.rabbitmq.RabbitField;
 import dev.dotspace.network.rabbitmq.exception.RabbitClientAbsentException;
 import dev.dotspace.network.rabbitmq.exception.RabbitIOException;
@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +45,7 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
    *
    * @param rabbitClient to use participant.
    */
-  public RabbitSubscriber(@Nullable final IRabbitConnection rabbitClient,
+  public RabbitSubscriber(@Nullable final IRabbitClient rabbitClient,
                           @Nullable final String exchange,
                           @Nullable final String routingKey) throws RabbitClientAbsentException {
     super(rabbitClient);
@@ -72,7 +73,8 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
         for (final ContentPayload contentPayload : this.contentPayloadList) {
           //Pass body.
           try {
-            contentPayload.consumer().accept(message.getBody());
+            //Accept headers.
+            contentPayload.consumer().accept(new ImmutablePayload<>(message.getBody(), message.getProperties().getHeaders()));
           } catch (final Throwable throwable) {
           }
         }
@@ -101,7 +103,7 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
           }
 
           try {
-            objectPayload.accept(object);
+            objectPayload.accept(object, message.getProperties().getHeaders());
           } catch (final Throwable throwable) {
           }
         }
@@ -115,7 +117,7 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
   }
 
   @Override
-  public @NotNull IRabbitSubscriber subscribe(@Nullable ThrowableConsumer<byte[]> consumer) {
+  public @NotNull IRabbitSubscriber subscribe(@Nullable ThrowableConsumer<IPayload<byte[]>> consumer) {
     //Null check
     Objects.requireNonNull(consumer);
 
@@ -127,7 +129,7 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
 
   @Override
   public @NotNull <TYPE> IRabbitSubscriber subscribe(@Nullable Class<TYPE> typeClass,
-                                                     @Nullable ThrowableConsumer<TYPE> consumer) {
+                                                     @Nullable ThrowableConsumer<IPayload<TYPE>> consumer) {
     //Null check
     Objects.requireNonNull(typeClass);
     Objects.requireNonNull(consumer);
@@ -186,20 +188,22 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
   }
 
   //static and classes
-  public record ContentPayload(@NotNull ThrowableConsumer<byte[]> consumer
+  public record ContentPayload(@NotNull ThrowableConsumer<IPayload<byte[]>> consumer
   ) {
   }
 
   public record ObjectPayload<TYPE>(@NotNull Class<TYPE> typeClass,
-                                    @NotNull ThrowableConsumer<TYPE> consumer
+                                    @NotNull ThrowableConsumer<IPayload<TYPE>> consumer
   ) {
 
     /**
      * Pass an object -> cast, also pass error
      */
     @SuppressWarnings("unchecked")
-    public void accept(@NotNull final Object object) throws Throwable {
-      this.consumer.accept((TYPE) object);
+    public void accept(@NotNull final Object object,
+                       @Nullable final Map<String, Object> headers) throws Throwable {
+      //Create and accept header.
+      this.consumer.accept(new ImmutablePayload<>((TYPE) object, headers != null ? headers : new HashMap<>()));
     }
 
   }

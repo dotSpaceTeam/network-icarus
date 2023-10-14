@@ -1,4 +1,4 @@
-package dev.dotspace.network.client.exception;
+package dev.dotspace.network.library.exception;
 
 import dev.dotspace.network.library.exception.LibraryRuntimeException;
 

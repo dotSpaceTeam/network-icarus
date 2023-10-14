@@ -34,7 +34,7 @@ public final class PositionController extends AbstractRestController {
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping("/")
+  @PutMapping
   @ResponseBody
   //Swagger
   @Operation(
@@ -86,7 +86,7 @@ public final class PositionController extends AbstractRestController {
   /**
    * Insert an new profile from unique id.
    */
-  @PutMapping("/view/")
+  @PutMapping("/view")
   @ResponseBody
   //Swagger
   @Operation(

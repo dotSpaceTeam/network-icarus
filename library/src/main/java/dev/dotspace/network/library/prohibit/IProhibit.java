@@ -5,13 +5,23 @@ import jakarta.validation.constraints.NotNull;
 
 
 public interface IProhibit {
+  /**
+   * Return reason for prohibit.
+   *
+   * @return present {@link IProhibitReason} responsible for this prohibit.
+   */
   @NotNull IProhibitReason reason();
 
+  /**
+   * Profile that is affected by this prohibit.
+   *
+   * @return profile instance.
+   */
   @NotNull IProfile punishedProfile();
 
   @NotNull IProfile executorProfile();
 
-  @NotNull String customMessage();
+  @NotNull String message();
 
   boolean active();
 }

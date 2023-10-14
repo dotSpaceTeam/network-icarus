@@ -3,7 +3,7 @@ package dev.dotspace.network.client;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
-import dev.dotspace.network.client.exception.ClientNotActiveException;
+import dev.dotspace.network.library.exception.ClientNotActiveException;
 import dev.dotspace.network.client.message.IMessageRequest;
 import dev.dotspace.network.client.position.IPositionRequest;
 import dev.dotspace.network.client.profile.IProfileRequest;
@@ -85,7 +85,6 @@ public final class Client implements IClient {
     return this.injector.getInstance(requestClass);
   }
 
-
   //static
   private static @Nullable Client client;
   //Check if client is enabled.
@@ -153,5 +152,4 @@ public final class Client implements IClient {
   public static boolean disconnected() {
     return client != null && client.injector.getInstance(IRestClient.class).state() == ClientState.FAILED;
   }
-
 }

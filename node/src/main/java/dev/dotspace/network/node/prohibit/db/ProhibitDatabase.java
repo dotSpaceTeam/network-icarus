@@ -10,9 +10,13 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Objects;
+
 
 /**
  * Database to manipulate prohibits.
@@ -78,5 +82,50 @@ public final class ProhibitDatabase extends AbstractDatabase {
 
     //Return created.
     return createdReason;
+  }
+
+  /**
+   * List reason
+   */
+  public @NotNull List<IProhibitReason> getReasonList() {
+    return this.prohibitReasonRepository
+        //Get all for sorted.
+        .findAll()
+        .stream()
+        //Create plain instance.
+        .map(ImmutableProhibitReason::of)
+        .toList();
+  }
+
+  /**
+   * List reason
+   */
+  public @NotNull List<IProhibitReason> getReasonList(@Nullable final Pageable pageable) {
+    //Null check
+    Objects.requireNonNull(pageable);
+
+    return this.prohibitReasonRepository
+        //Get all for pageable.
+        .findAll(pageable)
+        .stream()
+        //Create plain instance.
+        .map(ImmutableProhibitReason::of)
+        .toList();
+  }
+
+  /**
+   * List reason
+   */
+  public @NotNull List<IProhibitReason> getReasonList(@Nullable final Sort sort) {
+    //Null check
+    Objects.requireNonNull(sort);
+
+    return this.prohibitReasonRepository
+        //Get all for sorted.
+        .findAll(sort)
+        .stream()
+        //Create plain instance.
+        .map(ImmutableProhibitReason::of)
+        .toList();
   }
 }

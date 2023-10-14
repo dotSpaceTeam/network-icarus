@@ -314,24 +314,25 @@ public final class RestClient implements IRestClient {
             //Error code -> error in communication, wrong coding or server down.
             return Mono.just(ClientState.FAILED);
           })
-          //Block until server response.
+          //Block thread until server response.
           .block();
     } catch (final Exception exception) {
       //If connections fails (no server) an error will be thrown.
       state = ClientState.FAILED;
     }
 
-    final long end = (System.currentTimeMillis()-start);
+    //Calculate time request took.
+    final long duration = (System.currentTimeMillis()-start);
 
     if (state == ClientState.ESTABLISHED) {
-      log.info("API endpoint available Took {}ms.", end);
+      log.info("API endpoint available Took {}ms.", duration);
       this.lastState(ClientState.ESTABLISHED);
     } else {
-      log.warn("No response from API endpoint. Took {}ms.", end);
+      log.warn("No response from API endpoint. Took {}ms.", duration);
       this.lastState(ClientState.FAILED);
     }
 
-    return end;
+    return duration;
   }
 
   @Override
@@ -343,7 +344,6 @@ public final class RestClient implements IRestClient {
     }
     return this;
   }
-
 
   @Override
   public @NotNull StateHandler<ClientState> handle(@Nullable ClientState clientState,

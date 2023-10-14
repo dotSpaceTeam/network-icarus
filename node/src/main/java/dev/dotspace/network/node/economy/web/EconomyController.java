@@ -62,7 +62,7 @@ public final class EconomyController {
   /**
    * Post currency.
    */
-  @PostMapping("/currency/")
+  @PostMapping("/currency")
   @ResponseBody
   //Swagger
   @Operation(

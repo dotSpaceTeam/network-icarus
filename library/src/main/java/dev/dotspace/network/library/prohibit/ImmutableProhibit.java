@@ -10,7 +10,7 @@ import java.util.Objects;
 public record ImmutableProhibit(@NotNull IProhibitReason reason,
                                 @NotNull IProfile punishedProfile,
                                 @NotNull IProfile executorProfile,
-                                @NotNull String customMessage,
+                                @NotNull String message,
                                 boolean active
 ) implements IProhibit {
   /**
@@ -26,7 +26,7 @@ public record ImmutableProhibit(@NotNull IProhibitReason reason,
     return new ImmutableProhibit(prohibit.reason(),
         prohibit.punishedProfile(),
         prohibit.executorProfile(),
-        prohibit.customMessage(),
+        prohibit.message(),
         prohibit.active());
   }
 }

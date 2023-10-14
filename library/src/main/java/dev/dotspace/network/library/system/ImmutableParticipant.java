@@ -12,7 +12,9 @@ import java.util.UUID;
 public record ImmutableParticipant(@NotNull ParticipantType type,
                                    @NotNull String identifier
 ) implements IParticipant {
-
+  /**
+   * Empty client -> use if not present.
+   */
   private static final @NotNull IParticipant EMPTY = new ImmutableParticipant(ParticipantType.CLIENT, "~");
 
   //static

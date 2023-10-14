@@ -17,6 +17,16 @@ public record ImmutableProfile(@NotNull String uniqueId,
                                @NotNull ProfileType profileType
 ) implements IProfile {
   /**
+   * Empty profile -> use if not present.
+   */
+  private static final @NotNull IProfile SYSTEM = new ImmutableProfile("~SYSTEM~", "~SYSTEM~", ProfileType.JAVA);
+
+  //static
+  public static @NotNull IProfile system() {
+    return SYSTEM;
+  }
+
+  /**
    * Convert {@link IProfile} to {@link ImmutableProfile}.
    *
    * @param profile to convert.

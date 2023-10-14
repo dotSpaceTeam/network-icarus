@@ -1,7 +1,7 @@
 package dev.dotspace.network.rabbitmq.paritcipant;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.dotspace.network.rabbitmq.IRabbitConnection;
+import dev.dotspace.network.rabbitmq.IRabbitClient;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ public abstract class RabbitParticipant {
   /**
    * Channel for rabbitmq.
    */
-  private final @NotNull IRabbitConnection rabbitClient;
+  private final @NotNull IRabbitClient rabbitClient;
   /**
    * Mapper used to json to java object.
    */
@@ -27,7 +27,7 @@ public abstract class RabbitParticipant {
    *
    * @param rabbitClient to use participant.
    */
-  protected RabbitParticipant(@Nullable final IRabbitConnection rabbitClient) {
+  protected RabbitParticipant(@Nullable final IRabbitClient rabbitClient) {
     //Null check
     Objects.requireNonNull(rabbitClient);
 

@@ -11,15 +11,12 @@ import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
 import dev.dotspace.network.library.game.event.GameListener;
-import dev.dotspace.network.library.game.message.GameMessageComponent;
 import dev.dotspace.network.library.game.message.context.ContextType;
 import dev.dotspace.network.library.game.message.context.IMessageContext;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.plugin.config.PluginConfig;
 import dev.dotspace.network.library.jvm.IResourceInfo;
 import dev.dotspace.network.library.jvm.ImmutableResourceInfo;
-import dev.dotspace.network.library.message.IMessage;
-import dev.dotspace.network.library.message.IMessageComponent;
 import dev.dotspace.network.library.message.config.MessageConfig;
 import dev.dotspace.network.library.provider.Provider;
 import lombok.AccessLevel;
@@ -27,7 +24,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
@@ -278,7 +274,7 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
                   log.info("Requesting persistent message={} for locale={}", locale.toLanguageTag(), key);
 
                   //Send request
-                  Client.client().messageRequest().createMessage(locale, key, message);
+                  Client.client().messageRequest().updateMessage(locale, key, message, true);
                 });
               });
 

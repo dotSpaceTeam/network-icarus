@@ -25,7 +25,7 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
           //Null check
           Objects.requireNonNull(message);
 
-          return this.client().post("/v1/message/",
+          return this.client().post("/api/v1/message",
               ImmutableMessage.class,
               /*Create instance to send*/ImmutableMessage.of(message));
         });
@@ -44,18 +44,19 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
           Objects.requireNonNull(locale);
           Objects.requireNonNull(key);
 
-          return this.client().get("/v1/message/key/"+key+"?lang="+locale.toLanguageTag(),
+          return this.client().get("/api/v1/message/key/"+key+"?lang="+locale.toLanguageTag(),
               ImmutableMessage.class);
         });
   }
 
   /**
-   * See {@link IMessageRequest#updateMessage(Locale, String, String)}
+   * See {@link IMessageRequest#updateMessage(Locale, String, String, boolean)}
    */
   @Override
   public @NotNull Response<IPersistentMessage> updateMessage(@Nullable Locale locale,
                                                              @Nullable String key,
-                                                             @Nullable String message) {
+                                                             @Nullable String message,
+                                                             boolean createOnly) {
     return this
         .responseService()
         .response(() -> {
@@ -64,28 +65,7 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
           Objects.requireNonNull(key);
           Objects.requireNonNull(message);
 
-          return this.client().post("/v1/message/key",
-              ImmutablePersistentMessage.class,
-              new ImmutablePersistentMessage(key, locale, message));
-        });
-  }
-
-  /**
-   * See {@link IMessageRequest#createMessage(Locale, String, String)}
-   */
-  @Override
-  public @NotNull Response<IPersistentMessage> createMessage(@Nullable Locale locale,
-                                                             @Nullable String key,
-                                                             @Nullable String message) {
-    return this
-        .responseService()
-        .response(() -> {
-          //Null check
-          Objects.requireNonNull(locale);
-          Objects.requireNonNull(key);
-          Objects.requireNonNull(message);
-
-          return this.client().put("/v1/message/key",
+          return this.client().put("/api/v1/message/key?createOnly="+createOnly,
               ImmutablePersistentMessage.class,
               new ImmutablePersistentMessage(key, locale, message));
         });

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -26,15 +25,12 @@ import java.util.logging.Logger;
 @Getter
 @Accessors(fluent=true)
 public abstract class AbstractPlugin extends AbstractGamePlugin<Player, AbstractListener, AbstractCommand> {
-  private final @NotNull ProxyServer server;
-  private final @NotNull Logger logger;
-
   @Inject
-  public AbstractPlugin(@NotNull final ProxyServer server,
-                        @NotNull final Logger logger) {
-    this.server = server;
-    this.logger = logger;
+  private ProxyServer server;
+  @Inject
+  private Logger logger;
 
+  public AbstractPlugin() {
     this.module(new PluginModule(this));
     this.configure();
 

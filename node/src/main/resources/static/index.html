@@ -1,50 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Icarus Node</title>
+    <!-- Control color here -->
+    <style>
+      :root {
+        /* Colors */
+        --BACKGROUND-COLOR: #18181c;
+        --HEADER-FOOTER-COLOR: #101014;
+        --INFO-COLOR: #000294;
+        --TEXT-COLOR: #3b82f6;
+        --HEADLINE-COLOR: white;
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Icarus Node</title>
-  <!-- Control color here -->
-  <style>
-    :root {
-      /* Colors */
-      --BACKGROUND-COLOR: #18181C;
-      --HEADER-FOOTER-COLOR: #101014;
-      --INFO-COLOR: #000294;
-      --TEXT-COLOR: #3B82F6;
-      --HEADLINE-COLOR: white;
+        /* banner */
+        --BACKGROUND: url("../img/background.jpg");
+      }
+    </style>
 
-      /* banner */
-      --BACKGROUND: url("../img/background.png");
-    }
-  </style>
+    <link rel="stylesheet" type="text/css" href="css/base.css" />
+  </head>
 
-  <link rel="stylesheet" type="text/css" href="css/base.css">
-</head>
+  <body>
+    <div class="root">
+      <div class="text">
+        <h1>Icarus</h1>
+        <span>Version <span class="version">1.0.0</span></span>
+      </div>
 
-<body>
-  <div class="image"></div>
-  <div class="root">
-    <div class="text">
-      <h1>Icarus</h1>
-      <span>Version 1.0</span>
+      <div class="text">
+        <h2>Rest-API Documentation</h2>
+        <h3>Description and documentation of the api and data schema</h3>
+        <span><a href="/api">Swagger</a></span>
+      </div>
+
+      <div class="text">
+        <h2>Pattern Documentation</h2>
+        <!-- Massage pattern -->
+        <div class="code-doc">
+          <h3>Message placeholders to replace later or in node process.</h3>
+          <div>
+            Placeholder for message parameters that are to be exchanged later.
+          </div>
+          <ul class="code-list">
+            <li>
+              <div class="code-list-key">{{ KEY:&lt;key&gt; }}</div>
+              <div class="code-list-value">
+                Replace with a saved message.
+              </div>
+            </li>
+            <li>
+              <div class="code-list-key">{{ PLACEHOLDER:&lt;placeholder&gt; }}</div>
+              <div class="code-list-value">
+                Placeholder which will be replaced later on the client side.
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- List pattern -->
+        <div class="code-doc">
+          <h3>List pattern, handle undefined length. (Rest-Request)</h3>
+          <div>
+            To define requests for lists with an infinite amount, there are
+            patterns that can be sent as arguments to the rest server.
+          </div>
+          <ul class="code-list">
+            <li>
+              <div class="code-list-key">pagination::1::5&sort::asc::name</div>
+              <div class="code-list-value">
+                Will get first page with 5 elements orderd ascending by their
+                name.
+              </div>
+            </li>
+            <li>
+              <div class="code-list-key">pagination::1::5</div>
+              <div class="code-list-value">
+                Will get first page with 5 elements without order.
+              </div>
+            </li>
+            <li>
+              <div class="code-list-key">sort::desc::name</div>
+              <div class="code-list-value">Will order by name descending.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="text">
+        <h2>Current Git Repository</h2>
+        <h3>Current location of the project</h3>
+        <span
+          ><a href="https://git.pluginstube.dev/pluginstube/development/icarus"
+            >PluginStube GitLab</a
+          ></span
+        >
+      </div>
     </div>
-
-    <div class="text">
-      <h2>Rest-API Documentation</h2>
-      <h3>Description and documentation of the api and data schema</h3>
-      <span><a href="/api">Swagger</a></span>
-
-    </div>
-
-    <div class="text">
-      <h2>Current Git Repository</h2>
-      <h3>Current location of the project</h3>
-      <span><a href="https://git.pluginstube.dev/pluginstube/development/icarus">PluginStube GitLab</a></span>
-    </div>
-  </div>
-
-</body>
-
+  </body>
 </html>
