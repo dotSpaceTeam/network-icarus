@@ -74,8 +74,11 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
           //Pass body.
           try {
             //Accept headers.
-            contentPayload.consumer().accept(new ImmutablePayload<>(message.getBody(), message.getProperties().getHeaders()));
+            contentPayload.consumer()
+                .accept(new ImmutablePayload<>(message.getBody(), validateHeaders(message.getProperties().getHeaders())));
           } catch (final Throwable throwable) {
+            //Error while consumer
+            log.warn("Error while supplying payload message.", throwable);
           }
         }
 
@@ -103,8 +106,11 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
           }
 
           try {
+            //Accept object content.
             objectPayload.accept(object, message.getProperties().getHeaders());
           } catch (final Throwable throwable) {
+            //Error while consumer
+            log.warn("Error while supplying payload object.", throwable);
           }
         }
 
@@ -188,6 +194,14 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
   }
 
   //static and classes
+
+  /**
+   * Validate headers.
+   */
+  private static @NotNull Map<String, Object> validateHeaders(@Nullable final Map<String, Object> headers) {
+    return headers != null ? headers : new HashMap<>();
+  }
+
   public record ContentPayload(@NotNull ThrowableConsumer<IPayload<byte[]>> consumer
   ) {
   }
@@ -203,7 +217,7 @@ public final class RabbitSubscriber extends RabbitParticipant implements IRabbit
     public void accept(@NotNull final Object object,
                        @Nullable final Map<String, Object> headers) throws Throwable {
       //Create and accept header.
-      this.consumer.accept(new ImmutablePayload<>((TYPE) object, headers != null ? headers : new HashMap<>()));
+      this.consumer.accept(new ImmutablePayload<>((TYPE) object, validateHeaders(headers)));
     }
 
   }
