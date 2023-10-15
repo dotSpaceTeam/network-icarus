@@ -3,6 +3,7 @@ package dev.dotspace.network.node.message.db;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,4 +30,17 @@ public interface PersistentMessageRepository extends JpaRepository<PersistentMes
    * @return all information of key.
    */
   @NotNull List<PersistentMessageEntity> findByKey(@NotNull final PersistentMessageKeyEntity key);
+
+  /**
+   * Get playtime of all sessions for profile.
+   */
+  @Query(value="""
+      SELECT DISTINCT
+        locale
+      FROM
+        Persistent_Message
+      ;
+      """, nativeQuery=true)
+  @NotNull List<String> getLocales();
+
 }

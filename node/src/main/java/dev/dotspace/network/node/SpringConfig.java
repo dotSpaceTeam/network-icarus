@@ -52,8 +52,10 @@ public class SpringConfig {
       @Override
       public void addViewControllers(@NotNull final ViewControllerRegistry registry) {
         registry
+            //Define controller pattern
             .addViewController("/")
-            .setViewName("forward:/index.html"); //Redirect to default registry.
+            //Redirect to default registry.
+            .setViewName("forward:/index.html");
         log.info("Added view controller for '/'.");
       }
 

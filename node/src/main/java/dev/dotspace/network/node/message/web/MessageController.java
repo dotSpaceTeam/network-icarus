@@ -1,13 +1,16 @@
 package dev.dotspace.network.node.message.web;
 
+import dev.dotspace.network.library.data.ImmutableListObject;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.exception.EntityException;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.message.MessageService;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
 import dev.dotspace.network.node.web.AbstractRestController;
+import dev.dotspace.network.node.web.ImmutableResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -79,6 +82,65 @@ public final class MessageController extends AbstractRestController {
     final Locale locale = this.localeFromTag(lang);
     //Response to client.
     return ResponseEntity.ok(ImmutableMessage.of(this.messageService.complete(locale, message.message())));
+  }
+
+  /**
+   * Get list of locales.
+   */
+  @GetMapping("/locales")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get all present locale codes.",
+      description="Return a list of all codes.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return distinct language codes.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableListObject.class)
+                  )
+              })
+      })
+  public ResponseEntity<ImmutableListObject<String>> getLocaleList() {
+    return ResponseEntity.ok(this.messageDatabase.getLocaleList());
+  }
+
+  /**
+   * Get list of locales.
+   */
+  @PostMapping("/locales/validate/{locale}")
+  @ResponseBody
+  //Swagger
+  @Operation(
+      summary="Get all present locale codes.",
+      description="Return a list of all codes.",
+      responses={
+          @ApiResponse(
+              responseCode="200",
+              description="Return distinct language codes.",
+              content={
+                  @Content(
+                      mediaType=MediaType.APPLICATION_JSON_VALUE,
+                      schema=@Schema(implementation=ImmutableListObject.class)
+                  )
+              })
+      })
+  public ResponseEntity<ImmutableResponse> validateLocale(@PathVariable @NotNull final String locale) throws EntityNotPresentException {
+    //Get locale instance.
+    final Locale instance = Locale.forLanguageTag(locale);
+
+    //Check if present -> if not official, not present (empty.)
+    if (instance.getDisplayName() == null || instance.getDisplayName().isEmpty()) {
+      //Error
+      throw new EntityNotPresentException("No locale tag="+locale+" present.");
+    }
+
+    //Otherwise.
+    return ResponseEntity
+        .ok(new ImmutableResponse("Locale="+locale+" present.", "Requested="+locale, 200));
   }
 
   /**

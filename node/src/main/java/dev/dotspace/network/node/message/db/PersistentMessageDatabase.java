@@ -1,6 +1,7 @@
 package dev.dotspace.network.node.message.db;
 
 import dev.dotspace.network.library.data.DataManipulation;
+import dev.dotspace.network.library.data.ImmutableListObject;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
 import dev.dotspace.network.library.message.content.ImmutablePersistentMessage;
 import dev.dotspace.network.node.database.AbstractDatabase;
@@ -143,6 +144,10 @@ public final class PersistentMessageDatabase extends AbstractDatabase {
         //Map to immutable.
         .map(ImmutablePersistentMessage::of)
         .orElseThrow(() -> new EntityNotPresentException("Key is not present in locale="+localeTag+"."));
+  }
+
+  public @NotNull ImmutableListObject<String> getLocaleList() {
+    return new ImmutableListObject<>(this.messageRepository.getLocales());
   }
 
   /**
