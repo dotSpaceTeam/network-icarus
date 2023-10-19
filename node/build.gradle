@@ -41,6 +41,7 @@ dependencyManagement {
 }
 
 springBoot {
+  mainClass = 'dev.dotspace.network.node.Driver'
   buildInfo()
 }
 

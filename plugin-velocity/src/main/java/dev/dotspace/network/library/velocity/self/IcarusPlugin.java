@@ -13,6 +13,7 @@ import dev.dotspace.network.library.velocity.plugin.AbstractPlugin;
 public final class IcarusPlugin extends AbstractPlugin {
   @Override
   public void configure() {
-
+    //Add plugin module.
+    this.module(new SelfModule());
   }
 }
