@@ -2,7 +2,7 @@ package dev.dotspace.network.library.game.bridge;
 
 import com.google.inject.Singleton;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.exception.LibraryException;
 import dev.dotspace.network.library.profile.ProfileType;
@@ -34,7 +34,7 @@ public final class ClientMask implements IClientMask {
                                             @Nullable String signature) {
     return Library.responseService().response(() -> {
       //Create client if present.
-      Client.client()
+      RestClient.client()
           .profileRequest()
           .updateProfile(uniqueId, name, profileType)
           .getOptional()
@@ -43,7 +43,7 @@ public final class ClientMask implements IClientMask {
       log.info("Updated client={}.", uniqueId);
 
 
-      Client.client()
+      RestClient.client()
           .profileRequest()
           .setAttribute(uniqueId, "skin", texture)
           .getOptional()
@@ -52,7 +52,7 @@ public final class ClientMask implements IClientMask {
 
       log.info("Update client={} -> texture={}.", uniqueId, texture);
 
-      final ISession session = Client.client()
+      final ISession session = RestClient.client()
           .profileRequest()
           .createSession(uniqueId, address)
           .getOptional()
@@ -74,7 +74,7 @@ public final class ClientMask implements IClientMask {
       @Nullable final ISession session = this.localSessions.remove(uniqueId);
       //Check if session is present.
       if (session != null) {
-        if (Client
+        if (RestClient
             .client()
             .profileRequest()
             .completeSession(uniqueId, session.sessionId())

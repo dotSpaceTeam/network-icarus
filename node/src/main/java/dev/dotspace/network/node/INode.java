@@ -1,7 +1,7 @@
 package dev.dotspace.network.node;
 
 
-import dev.dotspace.network.library.system.ISystem;
+import dev.dotspace.network.library.system.participant.ISystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

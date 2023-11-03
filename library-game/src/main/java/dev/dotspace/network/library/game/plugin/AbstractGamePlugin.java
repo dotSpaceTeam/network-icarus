@@ -6,7 +6,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import dev.dotspace.common.function.ThrowableRunnable;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;
@@ -262,9 +262,10 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
   }
 
   private void configureClient(@NotNull final String node) {
-    //Connect.
-    Client.connect(node);
     log.info("Enabling client.");
+    //Connect.
+    RestClient.connect(node);
+    log.info("Client connected pulling node information...");
 
   }
 
@@ -287,7 +288,7 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
                 log.info("Requesting persistent message={} for locale={}", locale.toLanguageTag(), key);
 
                 //Send request
-                Client.client().messageRequest().updateMessage(locale, key, message, true);
+                RestClient.client().messageRequest().updateMessage(locale, key, message, true);
               });
             });
 

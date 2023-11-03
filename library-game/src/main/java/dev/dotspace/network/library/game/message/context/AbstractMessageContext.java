@@ -7,7 +7,7 @@ import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.function.ThrowableFunction;
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.message.ComponentUtils;
 import dev.dotspace.network.library.message.IMessage;
@@ -246,14 +246,14 @@ public abstract class AbstractMessageContext implements IMessageContext {
     }
 
     //Return content if client is not connected.
-    if (Client.disconnected()) {
+    if (RestClient.disconnected()) {
       log.warn("Can't prepare message={}, client is offline!", this.content);
       return this.content;
     }
 
     //Todo implement locale.
     if (this.contextType == ContextType.ONLINE) {
-      return Client.client()
+      return RestClient.client()
           .messageRequest()
           //Send message to format
           .formatString(this.content)
@@ -273,7 +273,7 @@ public abstract class AbstractMessageContext implements IMessageContext {
       }
     }
 
-    return Client.client()
+    return RestClient.client()
         .messageRequest()
         //Get message from key.
         .getMessage(this.locale, this.content)

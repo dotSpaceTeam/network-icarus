@@ -1,8 +1,8 @@
 package dev.dotspace.network.node.listener;
 
-import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.participant.IParticipant;
 import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
-import dev.dotspace.network.node.system.db.ParticipantDatabase;
+import dev.dotspace.network.node.system.participant.db.ParticipantDatabase;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,13 @@
 package dev.dotspace.network.node;
 
+import dev.dotspace.common.SpaceObjects;
 import dev.dotspace.common.response.ResponseService;
 import dev.dotspace.network.library.Library;
-import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.library.system.ImmutableParticipant;
-import dev.dotspace.network.library.system.ParticipantType;
+import dev.dotspace.network.library.system.environment.ISystemEnvironment;
+import dev.dotspace.network.library.system.environment.ImmutableSystemEnvironment;
+import dev.dotspace.network.library.system.participant.IParticipant;
+import dev.dotspace.network.library.system.participant.ImmutableParticipant;
+import dev.dotspace.network.library.system.participant.ParticipantType;
 import dev.dotspace.network.node.web.WebInterceptor;
 import dev.dotspace.network.rabbitmq.IRabbitClient;
 import dev.dotspace.network.rabbitmq.RabbitClient;
@@ -15,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -36,7 +40,15 @@ public class SpringConfig {
    */
   @Autowired
   private WebInterceptor webInterceptor;
+  /**
+   * Properties of build
+   */
+  @Autowired
+  private BuildProperties buildProperties;
 
+  /**
+   * Values of application.properties
+   */
   @Autowired
   private Environment environment;
 
@@ -148,52 +160,15 @@ public class SpringConfig {
     return Locale.US;
   }
 
-  /*
-  @Bean(name="dataSource")
-  public DataSource dataSource() {
-    log.info("Registering HikariDataSource bean.");
-    HikariDataSource ds = new HikariDataSource();
-
-    ds.setDataSourceClassName(this.environment.getProperty("spring.datasource.driver-class-name"));
-    //ds.setMinimumIdle(environment.getRequiredProperty("hikari.minimumIdle", Integer.class));
-
-
-    ds.setJdbcUrl(this.environment.getProperty("spring.datasource.url"));
-    ds.setUsername(this.environment.getRequiredProperty("spring.datasource.username"));
-    ds.setPassword(this.environment.getRequiredProperty("spring.datasource.password"));
-
-    return ds;
+  /**
+   * Create system environment to pass to clients.
+   */
+  @Bean
+  public @NotNull ISystemEnvironment systemEnvironment() {
+    return new ImmutableSystemEnvironment(
+        //Pass build of node.
+        this.buildProperties.getVersion(),
+        //Pass rabbit mq uri.
+        SpaceObjects.ifAbsentUse(this.environment.getProperty("rabbitmq.uri"), () -> ""));
   }
-
-
-
-  // EntityManagerFactory
-  @Bean(name="entityManagerFactory")
-  public EntityManagerFactory entityManagerFactory() {
-    log.info("Registering EntityManagerFactory bean.");
-    JpaVendorAdapter hibernateJpavendorAdapter = new HibernateJpaVendorAdapter();
-    JpaDialect hibernateJpaDialect = new HibernateJpaDialect();
-
-    LocalContainerEntityManagerFactoryBean emfBean =
-        new LocalContainerEntityManagerFactoryBean();
-    emfBean.setJpaVendorAdapter(hibernateJpavendorAdapter);
-    emfBean.setJpaDialect(hibernateJpaDialect);
-  //  emfBean.setPersistenceUnitName(PERSISTENCE_UNIT);
-    emfBean.setDataSource(dataSource());
-    emfBean.afterPropertiesSet();
-    return emfBean.getObject();
-  }
-
-
-  // TransactionManager
-  @Bean(name="transactionManager")
-  public PlatformTransactionManager transactionManager() {
-    log.info("Registering JpaTransactionManager bean.");
-
-    JpaTransactionManager txManager = new JpaTransactionManager();
-    EntityManagerFactory emf = entityManagerFactory();
-    txManager.setEntityManagerFactory(emf);
-    txManager.setDataSource(dataSource());
-    return txManager;
-  }*/
 }

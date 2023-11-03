@@ -1,7 +1,7 @@
 package dev.dotspace.network.node;
 
-import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.library.system.ISystem;
+import dev.dotspace.network.library.system.participant.IParticipant;
+import dev.dotspace.network.library.system.participant.ISystem;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Getter;

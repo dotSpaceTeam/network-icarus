@@ -3,9 +3,10 @@ package dev.dotspace.network.node.connection.db;
 import dev.dotspace.network.library.connection.IRestRequest;
 import dev.dotspace.network.library.connection.ImmutableRestRequest;
 import dev.dotspace.network.library.data.DataManipulation;
+import dev.dotspace.network.library.system.participant.IParticipant;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.system.db.ParticipantEntity;
-import dev.dotspace.network.node.system.db.ParticipantRepository;
+import dev.dotspace.network.node.system.participant.db.ParticipantEntity;
+import dev.dotspace.network.node.system.participant.db.ParticipantRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public final class RestRequestDatabase extends AbstractDatabase {
   @Autowired
   private RestRequestRepository restRequestRepository;
   /**
-   * Manipulate {@link dev.dotspace.network.library.system.IParticipant}
+   * Manipulate {@link IParticipant}
    */
   @Autowired
   private ParticipantRepository participantRepository;

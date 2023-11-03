@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.connection;
 
-import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.participant.IParticipant;
 import dev.dotspace.network.library.time.ITimestamp;
 import org.jetbrains.annotations.NotNull;
 

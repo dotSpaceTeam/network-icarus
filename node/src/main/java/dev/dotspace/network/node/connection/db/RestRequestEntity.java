@@ -1,9 +1,9 @@
 package dev.dotspace.network.node.connection.db;
 
 import dev.dotspace.network.library.connection.IRestRequest;
-import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.library.system.ImmutableParticipant;
-import dev.dotspace.network.node.system.db.ParticipantEntity;
+import dev.dotspace.network.library.system.participant.IParticipant;
+import dev.dotspace.network.library.system.participant.ImmutableParticipant;
+import dev.dotspace.network.node.system.participant.db.ParticipantEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

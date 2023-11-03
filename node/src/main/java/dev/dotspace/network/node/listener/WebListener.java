@@ -1,10 +1,10 @@
 package dev.dotspace.network.node.listener;
 
 import dev.dotspace.network.library.connection.IRestRequest;
-import dev.dotspace.network.library.system.ParticipantType;
+import dev.dotspace.network.library.system.participant.ParticipantType;
 import dev.dotspace.network.node.connection.db.RestRequestDatabase;
 import dev.dotspace.network.node.database.exception.EntityAlreadyPresentException;
-import dev.dotspace.network.node.system.db.ParticipantDatabase;
+import dev.dotspace.network.node.system.participant.db.ParticipantDatabase;
 import dev.dotspace.network.node.web.event.ClientAddEvent;
 import dev.dotspace.network.node.web.event.ClientRemoveEvent;
 import dev.dotspace.network.node.web.event.RequestResponseEvent;

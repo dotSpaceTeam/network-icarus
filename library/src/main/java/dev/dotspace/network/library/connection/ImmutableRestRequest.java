@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.connection;
 
-import dev.dotspace.network.library.system.IParticipant;
+import dev.dotspace.network.library.system.participant.IParticipant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

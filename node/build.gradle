@@ -12,7 +12,7 @@ version parent.version
 
 dependencies {
   implementation project(":library")
-  implementation project(":rabbitmq")
+  implementation project(":client-rabbitmq")
 
   implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
@@ -48,7 +48,7 @@ springBoot {
 jar {
   enabled = true
   dependsOn(':library:build')
-  dependsOn(':rabbitmq:build')
+  dependsOn(':client-rabbitmq:build')
 
   from {
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }

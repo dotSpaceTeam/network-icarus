@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.velocity.event.AbstractListener;
@@ -86,7 +86,7 @@ public final class LoginHandle extends AbstractListener {
                                 @NotNull final ProfileType profileType) {
     //Create client if present.
     try {
-      Client.client()
+      RestClient.client()
           .profileRequest()
           //Update with player values.
           .updateProfile(uniqueId, username, profileType)
@@ -112,7 +112,7 @@ public final class LoginHandle extends AbstractListener {
     }
 
     try {
-      Client.client()
+      RestClient.client()
           .profileRequest()
           //Update skin.
           .setAttribute(uniqueId, "skin", skin.value())
@@ -130,7 +130,7 @@ public final class LoginHandle extends AbstractListener {
   private boolean openSession(@NotNull final String uniqueId,
                               @NotNull final String address) {
     try {
-      final ISession session = Client.client()
+      final ISession session = RestClient.client()
           .profileRequest()
           .createSession(uniqueId, address)
           .block();

@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     implementation project(":library")
-    implementation project(":client")
+    implementation project(":client-rest")
     implementation project(":library-game")
     implementation project(":library-velocity")
 
@@ -21,7 +21,7 @@ dependencies {
 
 jar {
     dependsOn(':library:build')
-    dependsOn(':client:build')
+    dependsOn(':client-rest:build')
     dependsOn(':library-game:build')
     dependsOn(':library-velocity:build')
 

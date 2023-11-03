@@ -1,10 +1,8 @@
 package dev.dotspace.network.library.spigot.self.listener;
 
-import com.destroystokyo.paper.event.server.PaperServerListPingEvent;
 import com.google.inject.Inject;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.game.bridge.IClientMask;
-import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.mojang.MojangUtils;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.spigot.event.AbstractListener;
@@ -19,9 +17,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Locale;
-import java.util.Optional;
 
 
 /**
@@ -41,7 +36,7 @@ public final class ProviderListener extends AbstractListener {
   @EventHandler(priority=EventPriority.LOWEST)
   public void handle(@NotNull final AsyncPlayerPreLoginEvent event) {
     //Check if connection is valid
-    if (Client.disconnected()) {
+    if (RestClient.disconnected()) {
       //Kick because client is deactivated.
       event.disallow(Result.KICK_OTHER, Message.CLIENT_OFFLINE_KICK);
       return;
@@ -88,7 +83,7 @@ public final class ProviderListener extends AbstractListener {
     }
 
     //Return if client is absent.
-    if (Client.disconnected()) {
+    if (RestClient.disconnected()) {
       return;
     }
 
@@ -121,7 +116,7 @@ public final class ProviderListener extends AbstractListener {
     }
 
     //Return if client is absent.
-    if (Client.disconnected()) {
+    if (RestClient.disconnected()) {
       return;
     }
 

@@ -1,8 +1,7 @@
 package dev.dotspace.network.node.web;
 
 import dev.dotspace.network.library.state.ImmutableBooleanState;
-import dev.dotspace.network.library.system.IParticipant;
-import dev.dotspace.network.node.Node;
+import dev.dotspace.network.library.system.participant.IParticipant;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

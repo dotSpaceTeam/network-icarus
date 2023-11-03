@@ -1,6 +1,6 @@
 package dev.dotspace.network.library.spigot.self;
 
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.client.web.ClientState;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.permission.Permission;
@@ -42,7 +42,7 @@ public final class IcarusPlugin extends AbstractPlugin {
 
   @Override
   public void configure() {
-       
+
     this
         .handle(PluginState.PRE_ENABLE, () -> {
           //Unregister unwanted commands.
@@ -54,12 +54,12 @@ public final class IcarusPlugin extends AbstractPlugin {
         //Handle client.
         .handle(PluginState.POST_ENABLE, () -> {
           //Return if client is not enabled.
-          if (!Client.present()) {
+          if (!RestClient.present()) {
             return;
           }
 
           //Handle client behavior.
-          Client.client()
+          RestClient.client()
               //Handle establish
               .handle(ClientState.ESTABLISHED, () -> {
                 //Run sync -> bukkit

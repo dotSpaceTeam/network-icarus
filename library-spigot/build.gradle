@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   implementation project(":library")
-  implementation project(":client")
+  implementation project(":client-rest")
 
   implementation project(":library-game")
 

@@ -4,19 +4,13 @@ package dev.dotspace.network.library.spigot.self.command;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
-import dev.dotspace.network.client.Client;
+import dev.dotspace.network.client.RestClient;
 import dev.dotspace.network.library.game.message.context.ContextType;
-import dev.dotspace.network.library.jvm.IResourceInfo;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.text.DateFormat;
-import java.util.Date;
 
 
 //Get tick information.
@@ -42,7 +36,7 @@ public final class PlaytimeCommand extends AbstractCommand {
           this.plugin()
               .message(player, ContextType.KEY, "icarus@spigot@playtime");
 
-          Client
+          RestClient
               .client()
               .profileRequest()
               .getPlaytime(player.getUniqueId().toString())
