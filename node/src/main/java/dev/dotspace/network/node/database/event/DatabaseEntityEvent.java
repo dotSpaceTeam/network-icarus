@@ -8,13 +8,18 @@ import org.springframework.context.ApplicationEvent;
 
 
 /**
- * Base of db events.
+ * Post database manipulation.
  */
 @Getter
 @Accessors(fluent=true)
 public final class DatabaseEntityEvent<TYPE, SCHEMA> extends AbstractDatabaseEvent {
+  /**
+   * Entity that was manipulated.
+   */
   private final @NotNull TYPE type;
-
+  /**
+   * Schema to create java class.
+   */
   private final @NotNull Class<SCHEMA> schemaClass;
 
   /**

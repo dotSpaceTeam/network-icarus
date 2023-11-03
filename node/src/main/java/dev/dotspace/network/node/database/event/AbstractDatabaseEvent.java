@@ -13,6 +13,9 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 @Accessors(fluent=true)
 public abstract class AbstractDatabaseEvent extends ApplicationEvent {
+  /**
+   * Type of data manipulation.
+   */
   private final @NotNull DataManipulation manipulation;
 
   /**
