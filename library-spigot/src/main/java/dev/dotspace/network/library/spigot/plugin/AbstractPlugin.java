@@ -78,6 +78,7 @@ public abstract class AbstractPlugin extends JavaPlugin implements GamePlugin<Pl
 
     //Hook spigot events
     this.spigotPlugin.hookEventListener(AbstractListener.class, abstractListener -> {
+      //Register a spigot plugin to server.
       this.getServer().getPluginManager().registerEvents(abstractListener, this);
     });
 

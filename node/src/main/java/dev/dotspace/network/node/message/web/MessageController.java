@@ -1,6 +1,8 @@
 package dev.dotspace.network.node.message.web;
 
 import dev.dotspace.network.library.data.ImmutableListObject;
+import dev.dotspace.network.library.locale.ILocale;
+import dev.dotspace.network.library.locale.ImmutableLocale;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
@@ -9,14 +11,14 @@ import dev.dotspace.network.node.database.exception.EntityException;
 import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.message.MessageService;
 import dev.dotspace.network.node.message.db.PersistentMessageDatabase;
-import dev.dotspace.network.node.web.AbstractRestController;
-import dev.dotspace.network.node.web.ImmutableResponse;
+import dev.dotspace.network.node.web.controller.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.LocaleUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Locale;
 import java.util.Optional;
-
 
 /**
  * Rest controller for messages.
@@ -87,7 +88,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get list of locales.
    */
-  @GetMapping("/locales")
+  @GetMapping("/locale")
   @ResponseBody
   //Swagger
   @Operation(
@@ -111,7 +112,7 @@ public final class MessageController extends AbstractRestController {
   /**
    * Get list of locales.
    */
-  @PostMapping("/locales/validate/{locale}")
+  @PostMapping("/locale/{locale}")
   @ResponseBody
   //Swagger
   @Operation(
@@ -128,19 +129,19 @@ public final class MessageController extends AbstractRestController {
                   )
               })
       })
-  public ResponseEntity<ImmutableResponse> validateLocale(@PathVariable @NotNull final String locale) throws EntityNotPresentException {
+  public ResponseEntity<ILocale> validateLocale(@PathVariable @NotNull final String locale) throws EntityNotPresentException {
     //Get locale instance.
     final Locale instance = Locale.forLanguageTag(locale);
 
     //Check if present -> if not official, not present (empty.)
-    if (instance.getDisplayName() == null || instance.getDisplayName().isEmpty()) {
+    if (!LocaleUtils.isAvailableLocale(instance) ||
+        !instance.toLanguageTag().contains("-")) {
       //Error
       throw new EntityNotPresentException("No locale tag="+locale+" present.");
     }
 
     //Otherwise.
-    return ResponseEntity
-        .ok(new ImmutableResponse("Locale="+locale+" present.", "Requested="+locale, 200));
+    return ResponseEntity.ok(new ImmutableLocale(instance.toLanguageTag()));
   }
 
   /**

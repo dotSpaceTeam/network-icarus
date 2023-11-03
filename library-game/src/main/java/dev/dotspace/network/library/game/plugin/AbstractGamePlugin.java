@@ -14,7 +14,6 @@ import dev.dotspace.network.library.game.event.GameListener;
 import dev.dotspace.network.library.game.message.context.ContextType;
 import dev.dotspace.network.library.game.message.context.IMessageContext;
 import dev.dotspace.network.library.game.message.context.MessageContext;
-import dev.dotspace.network.library.game.plugin.config.PluginConfig;
 import dev.dotspace.network.library.jvm.IResourceInfo;
 import dev.dotspace.network.library.jvm.ImmutableResourceInfo;
 import dev.dotspace.network.library.message.config.MessageConfig;
@@ -36,7 +35,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
 
 /**
  * Implementation for GamePlugin.
@@ -63,10 +61,6 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
    * List modules of system.
    */
   private final @NotNull List<Module> moduleList;
-  /**
-   * Configuartion of plugin.
-   */
-  private @Nullable PluginConfig pluginConfig;
 
   @Getter(AccessLevel.PROTECTED)
   @Setter(AccessLevel.PROTECTED)
@@ -97,7 +91,6 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
     this.listenerConsumer = listenerConsumer;
   }
 
-
   protected void hookCommand(@Nullable final Class<COMMAND> commandClass) {
     this.commandClass = commandClass;
   }
@@ -107,7 +100,10 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
    */
   @Override
   public final @NotNull Injector injector() {
-    return Objects.requireNonNull(this.injector, "No injector defined, check plugin config.");
+    //Null check
+    Objects.requireNonNull(this.injector, "No injector defined, check plugin config.");
+
+    return this.injector;
   }
 
   /**
@@ -208,24 +204,30 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
       this.entryClass = this.getClass();
     }
 
-    //Load config
-    try {
-      this.pluginConfig = Library.configService()
-          .readResource(this.entryClass, PluginConfig.class, "icarus.json")
-          .orElseGet(() -> {
-            log.info("No config present, using default one.");
-
-            //Default config
-            return PluginConfig.defaultConfig();
-          });
-    } catch (final IOException exception) {
-      log.warn("Error while loading icarus.json.");
-      throw new RuntimeException(exception);
-    }
-
     //Reflections of this plugin.
     final Reflections reflections = new Reflections(this.entryClass.getPackageName());
 
+    //Scan system for content.
+    this.scanForListener(reflections);
+    this.scanForCommands(reflections);
+
+    //Configure client.
+    Library.jvmParameter("node")
+        .ifPresentOrElse(this::configureClient, () -> {
+      //Warn -> no parameter present
+      log.info("No parameter for node (-Dicarus-node) present.");
+    });
+
+    //Info
+    log.info("Plugin {} loaded and enabled totally. Took a total of {}ms",
+        name,
+        (System.currentTimeMillis()-loadTime));
+  }
+
+  /**
+   * Scan plugin package for listeners
+   */
+  private void scanForListener(@NotNull final Reflections reflections) {
     //Register listener.
     log.info("Searching for listener. (Variables must be part of the local initializer.)");
     //Search for all Abstract listeners.
@@ -236,7 +238,12 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
           this.listenerConsumer.accept(abstractListener);
         });
     //Registered listener.
+  }
 
+  /**
+   * Scan plugin package for commands
+   */
+  private void scanForCommands(@NotNull final Reflections reflections) {
     //Register commands.
     log.info("Searching for commands. (Variables must be part of the local initializer.)");
     final CommandManager<?> manager = this.injector().getInstance(CommandManager.class);
@@ -252,45 +259,45 @@ public abstract class AbstractGamePlugin<PLAYER, LISTENER extends GameListener<?
           }
         });
     //Registered commands.
+  }
 
-    //Client
-    if (this.pluginConfig.clientAutoConnect()) {
-      log.info("Enabling client.");
-      //Connect.
-      Client.connect(this.pluginConfig.clientApiEndpoint());
+  private void configureClient(@NotNull final String node) {
+    //Connect.
+    Client.connect(node);
+    log.info("Enabling client.");
 
-      log.info("Searching for local message...");
-      try {
-        Library.configService()
-            .readResource(this.entryClass, MessageConfig.class, "message.json")
-            .ifPresentOrElse(messageConfig -> {
-              log.info("Messages present, sending requests.");
+  }
 
-              //Loop trough every locale - key message pair.
-              messageConfig.messageMap().forEach((locale, keyMessageMap) -> {
-                //Loop trough every key message pair.
-                keyMessageMap.forEach((key, message) -> {
-                  //Log
-                  log.info("Requesting persistent message={} for locale={}", locale.toLanguageTag(), key);
+  /**
+   * Load message from config.
+   */
+  private void initMessages() {
+    log.info("Searching for local message...");
+    try {
+      Library.configService()
+          .readResource(this.entryClass, MessageConfig.class, "message.json")
+          .ifPresentOrElse(messageConfig -> {
+            log.info("Messages present, sending requests.");
 
-                  //Send request
-                  Client.client().messageRequest().updateMessage(locale, key, message, true);
-                });
+            //Loop trough every locale - key message pair.
+            messageConfig.messageMap().forEach((locale, keyMessageMap) -> {
+              //Loop trough every key message pair.
+              keyMessageMap.forEach((key, message) -> {
+                //Log
+                log.info("Requesting persistent message={} for locale={}", locale.toLanguageTag(), key);
+
+                //Send request
+                Client.client().messageRequest().updateMessage(locale, key, message, true);
               });
-
-            }, () -> {
-              log.info("No message.json present.");
             });
-      } catch (final IOException exception) {
-        exception.printStackTrace();
-        log.warn("Error while loading message.json.");
-      }
-    }
 
-    //Info
-    log.info("Plugin {} loaded and enabled totally. Took a total of {}ms",
-        name,
-        (System.currentTimeMillis()-loadTime));
+          }, () -> {
+            log.info("No message.json present.");
+          });
+    } catch (final IOException exception) {
+      exception.printStackTrace();
+      log.warn("Error while loading message.json.");
+    }
   }
 
   /**

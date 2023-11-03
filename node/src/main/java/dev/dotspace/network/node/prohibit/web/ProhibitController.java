@@ -5,7 +5,7 @@ import dev.dotspace.network.library.prohibit.ImmutableProhibitReason;
 import dev.dotspace.network.node.database.exception.IllegalEntityException;
 import dev.dotspace.network.node.database.request.ListSplitter;
 import dev.dotspace.network.node.prohibit.db.ProhibitDatabase;
-import dev.dotspace.network.node.web.AbstractRestController;
+import dev.dotspace.network.node.web.controller.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

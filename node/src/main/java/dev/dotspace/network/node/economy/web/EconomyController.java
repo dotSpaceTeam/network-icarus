@@ -4,6 +4,9 @@ import dev.dotspace.network.library.economy.ICurrency;
 import dev.dotspace.network.library.economy.ImmutableCurrency;
 import dev.dotspace.network.node.economy.db.EconomyDatabase;
 import dev.dotspace.network.node.database.exception.EntityNotPresentException;
+import dev.dotspace.network.node.web.controller.AbstractRestController;
+import dev.dotspace.network.node.web.controller.IBodyResponse;
+import dev.dotspace.network.node.web.controller.ImmutableBodyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,7 +31,7 @@ import java.util.List;
 @RequestMapping("/api/v1/economy")
 //Swagger
 @Tag(name="Economy Endpoint", description="Manipulate and get currencies.")
-public final class EconomyController {
+public final class EconomyController extends AbstractRestController {
   /**
    * Economy database.
    */
@@ -75,12 +78,13 @@ public final class EconomyController {
               content={
                   @Content(
                       mediaType=MediaType.APPLICATION_JSON_VALUE,
-                      schema=@Schema(implementation=ImmutableCurrency.class)
+                      schema=@Schema(implementation=IBodyResponse.class)
                   )
               })
       })
-  public ResponseEntity<ICurrency> createCurrency(@RequestBody @NotNull final ImmutableCurrency immutableCurrency) {
-    return ResponseEntity.ok(this.economyDatabase.createCurrency(immutableCurrency.name(),
+  public @NotNull ResponseEntity<ICurrency> updateCurrency(@RequestBody @NotNull final ImmutableCurrency immutableCurrency) {
+    return ResponseEntity.ok(this.economyDatabase.createCurrency(
+        immutableCurrency.name(),
         immutableCurrency.symbol(),
         immutableCurrency.display(),
         immutableCurrency.displayPlural()));
@@ -102,7 +106,7 @@ public final class EconomyController {
               content={
                   @Content(
                       mediaType=MediaType.APPLICATION_JSON_VALUE,
-                      schema=@Schema(implementation=ImmutableCurrency.class)
+                      schema=@Schema(implementation=IBodyResponse.class)
                   )
               })
       })

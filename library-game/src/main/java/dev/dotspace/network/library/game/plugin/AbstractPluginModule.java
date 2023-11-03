@@ -17,7 +17,6 @@ import java.util.Objects;
 @Log4j2
 @Accessors(fluent = true)
 public abstract class AbstractPluginModule<PLUGIN> extends AbstractModule {
-
     /**
      * Plugin of module.
      */

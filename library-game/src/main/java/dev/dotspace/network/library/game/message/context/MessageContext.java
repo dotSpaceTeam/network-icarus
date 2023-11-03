@@ -14,11 +14,11 @@ public final class MessageContext extends AbstractMessageContext {
   }
 
   //static
-  public static @NotNull MessageContext formatOffline(@Nullable final String message) {
+  public static @NotNull MessageContext offline(@Nullable final String message) {
     return new MessageContext(ContextType.OFFLINE, message, Locale.getDefault());
   }
 
-  public static @NotNull MessageContext format(@Nullable final String message,
+  public static @NotNull MessageContext online(@Nullable final String message,
                                                @Nullable final Locale locale) {
     return new MessageContext(ContextType.ONLINE, message, locale);
   }

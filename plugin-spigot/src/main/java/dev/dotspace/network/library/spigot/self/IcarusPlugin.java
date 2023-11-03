@@ -42,6 +42,7 @@ public final class IcarusPlugin extends AbstractPlugin {
 
   @Override
   public void configure() {
+       
     this
         .handle(PluginState.PRE_ENABLE, () -> {
           //Unregister unwanted commands.

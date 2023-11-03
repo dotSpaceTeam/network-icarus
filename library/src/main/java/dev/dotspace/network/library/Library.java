@@ -8,6 +8,7 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 
 
@@ -31,6 +32,16 @@ public final class Library {
   @Getter
   @Accessors(fluent=true)
   private final static @NotNull LibraryModule module = new LibraryModule();
+
+  /**
+   * Get parameter of system (-Dicarus-[name]).
+   *
+   * @param name to get parameter from.
+   * @return value of parameter. {@link Optional#empty()} if key is not present.
+   */
+  public static @NotNull Optional<String> jvmParameter(@NotNull final String name) {
+    return Optional.ofNullable(System.getProperty("icarus-"+name));
+  }
 
   static {
     final List<String> SILENT = List.of(

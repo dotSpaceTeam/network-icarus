@@ -1,4 +1,4 @@
-package dev.dotspace.network.node.web;
+package dev.dotspace.network.node.web.controller;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;

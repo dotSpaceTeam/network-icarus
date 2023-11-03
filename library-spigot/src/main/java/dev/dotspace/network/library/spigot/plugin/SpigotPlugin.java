@@ -1,5 +1,6 @@
 package dev.dotspace.network.library.spigot.plugin;
 
+import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.plugin.AbstractGamePlugin;
 import dev.dotspace.network.library.game.plugin.PluginState;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;

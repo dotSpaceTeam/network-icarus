@@ -7,7 +7,7 @@ import dev.dotspace.network.library.position.ImmutableViewPosition;
 import dev.dotspace.network.node.database.exception.EntityException;
 import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.position.db.PositionDatabase;
-import dev.dotspace.network.node.web.AbstractRestController;
+import dev.dotspace.network.node.web.controller.AbstractRestController;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

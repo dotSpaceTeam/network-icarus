@@ -36,6 +36,7 @@ public abstract class AbstractPlugin extends AbstractGamePlugin<Player, Abstract
 
     //Create listener register.
     this.hookEventListener(AbstractListener.class, abstractListener -> {
+      //Register a velocity listener to plugin.
       this.server.getEventManager().register(this, abstractListener);
     });
 

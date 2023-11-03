@@ -3,7 +3,9 @@ package dev.dotspace.network.node.web.error;
 import dev.dotspace.network.node.database.exception.EntityException;
 import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.database.exception.IllegalEntityException;
-import dev.dotspace.network.node.web.ImmutableResponse;
+import dev.dotspace.network.node.web.controller.AbstractRestController;
+import dev.dotspace.network.node.web.controller.IResponse;
+import dev.dotspace.network.node.web.controller.ImmutableErrorResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 @ControllerAdvice
-public final class ErrorHandling {
+public final class ErrorHandling extends AbstractRestController {
   /**
    * Handle null pointer errors.
    */
@@ -32,12 +34,12 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableResponse.class)
+              schema=@Schema(implementation=ImmutableErrorResponse.class)
           )
       }
   )
-  private ImmutableResponse authenticationHandler(@NotNull final AuthenticationException exception) {
-    return new ImmutableResponse("Access denied!", exception.getMessage(), HttpStatus.UNAUTHORIZED.value());
+  private IResponse authenticationHandler(@NotNull final AuthenticationException exception) {
+    return ImmutableErrorResponse.create(HttpStatus.UNAUTHORIZED, "Access denied! ("+exception.getMessage()+")");
   }
 
   /**
@@ -53,12 +55,12 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableResponse.class)
+              schema=@Schema(implementation=ImmutableErrorResponse.class)
           )
       }
   )
-  private @NotNull ImmutableResponse elementNotPresentException(@NotNull final EntityNotPresentException exception) {
-    return new ImmutableResponse("Entity is not present.", exception.getMessage(), HttpStatus.NOT_FOUND.value());
+  private @NotNull IResponse elementNotPresentException(@NotNull final EntityNotPresentException exception) {
+    return ImmutableErrorResponse.create(HttpStatus.NOT_FOUND, "Entity is not present. ("+exception.getMessage()+")");
   }
 
   /**
@@ -74,12 +76,12 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableResponse.class)
+              schema=@Schema(implementation=ImmutableErrorResponse.class)
           )
       }
   )
-  private @NotNull ImmutableResponse elementIllegalException(@NotNull final IllegalEntityException exception) {
-    return new ImmutableResponse("Error with given entity.", exception.getMessage(), HttpStatus.CONFLICT.value());
+  private @NotNull IResponse elementIllegalException(@NotNull final IllegalEntityException exception) {
+    return ImmutableErrorResponse.create(HttpStatus.CONFLICT, "Error with given entity. ("+exception.getMessage()+")");
   }
 
   /**
@@ -95,11 +97,11 @@ public final class ErrorHandling {
       content={
           @Content(
               mediaType=MediaType.APPLICATION_JSON_VALUE,
-              schema=@Schema(implementation=ImmutableResponse.class)
+              schema=@Schema(implementation=ImmutableErrorResponse.class)
           )
       }
   )
-  private @NotNull ImmutableResponse elementException(@NotNull final EntityException exception) {
-    return new ImmutableResponse("Something went wrong.", exception.getMessage(), HttpStatus.CONFLICT.value());
+  private @NotNull IResponse elementException(@NotNull final EntityException exception) {
+    return ImmutableErrorResponse.create(HttpStatus.CONFLICT, "Something went wrong. ("+exception.getMessage()+")");
   }
 }
