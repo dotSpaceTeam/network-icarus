@@ -7,7 +7,7 @@ import dev.dotspace.common.function.ThrowableConsumer;
 import dev.dotspace.common.function.ThrowableFunction;
 import dev.dotspace.common.function.ThrowableSupplier;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.game.message.ComponentUtils;
 import dev.dotspace.network.library.message.IMessage;

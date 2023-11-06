@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.util.GameProfile;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.profile.ProfileType;
 import dev.dotspace.network.library.profile.session.ISession;
 import dev.dotspace.network.library.velocity.event.AbstractListener;

@@ -4,7 +4,7 @@ package dev.dotspace.network.library.spigot.self.command;
 import cloud.commandframework.ArgumentDescription;
 import cloud.commandframework.CommandManager;
 import cloud.commandframework.arguments.standard.StringArgument;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.game.message.context.ContextType;
 import dev.dotspace.network.library.spigot.command.AbstractCommand;
 import net.kyori.adventure.text.Component;

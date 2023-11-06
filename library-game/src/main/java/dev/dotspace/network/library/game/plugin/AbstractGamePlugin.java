@@ -6,7 +6,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import dev.dotspace.common.function.ThrowableRunnable;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.game.command.AbstractCloudCommand;

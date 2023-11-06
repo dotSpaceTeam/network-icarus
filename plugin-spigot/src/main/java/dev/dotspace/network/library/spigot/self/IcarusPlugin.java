@@ -1,7 +1,7 @@
 package dev.dotspace.network.library.spigot.self;
 
-import dev.dotspace.network.client.RestClient;
-import dev.dotspace.network.client.web.ClientState;
+import dev.dotspace.network.client.rest.RestClient;
+import dev.dotspace.network.client.rest.web.ClientState;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;

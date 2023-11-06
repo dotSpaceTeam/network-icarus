@@ -6,7 +6,6 @@ import dev.dotspace.network.node.economy.db.EconomyDatabase;
 import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.web.controller.AbstractRestController;
 import dev.dotspace.network.node.web.controller.IBodyResponse;
-import dev.dotspace.network.node.web.controller.ImmutableBodyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

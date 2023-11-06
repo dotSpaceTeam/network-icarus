@@ -1,7 +1,7 @@
 package dev.dotspace.network.library.spigot.self.listener;
 
 import com.google.inject.Inject;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.game.bridge.IClientMask;
 import dev.dotspace.network.library.game.mojang.MojangUtils;
 import dev.dotspace.network.library.profile.ProfileType;

@@ -2,7 +2,7 @@ package dev.dotspace.network.library.game.bridge;
 
 import com.google.inject.Singleton;
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.RestClient;
+import dev.dotspace.network.client.rest.RestClient;
 import dev.dotspace.network.library.Library;
 import dev.dotspace.network.library.exception.LibraryException;
 import dev.dotspace.network.library.profile.ProfileType;

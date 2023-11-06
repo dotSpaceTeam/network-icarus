@@ -118,7 +118,7 @@ public final class ProfileController extends AbstractRestController {
 
 
   /**
-   * Insert an new profile from unique id.
+   * Get multiple profiles.
    */
   @GetMapping
   @ResponseBody
@@ -137,7 +137,8 @@ public final class ProfileController extends AbstractRestController {
                   )
               })
       })
-  public @NotNull ResponseEntity<List<IProfile>> getProfileList(@RequestParam(required=false) @Nullable final String listPattern) {
+  public @NotNull ResponseEntity<List<IProfile>> getProfileList(
+      @RequestParam(required=false) @Nullable final String listPattern) {
     return ResponseEntity.ok(new ListSplitter<IProfile>(listPattern)
         //Handle if patern is pagination with or without sort
         .pagination(this.profileDatabase::getProfileList)
