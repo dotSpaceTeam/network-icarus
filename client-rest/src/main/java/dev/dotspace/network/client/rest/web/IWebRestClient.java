@@ -1,10 +1,12 @@
 package dev.dotspace.network.client.rest.web;
 
+import dev.dotspace.network.client.rest.web.request.IRestRequest;
+import dev.dotspace.network.client.rest.web.response.ResponseState;
 import dev.dotspace.network.library.common.StateHandler;
 import org.jetbrains.annotations.NotNull;
 
 
-public interface IWebRestClient extends IRequest, StateHandler<ClientState> {
+public interface IWebRestClient extends IRestRequest, StateHandler<ResponseState> {
   /**
    * Ping endpoint of client.
    *
@@ -12,7 +14,7 @@ public interface IWebRestClient extends IRequest, StateHandler<ClientState> {
    */
   @NotNull Long ping();
 
-  @NotNull ClientState state();
+  @NotNull ResponseState state();
 
   @NotNull IWebRestClient shutdown();
 

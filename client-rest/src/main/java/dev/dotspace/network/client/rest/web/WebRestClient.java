@@ -1,6 +1,7 @@
 package dev.dotspace.network.client.rest.web;
 
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.network.client.rest.web.response.ResponseState;
 import dev.dotspace.network.library.common.StateHandler;
 import dev.dotspace.network.library.common.StateMap;
 import dev.dotspace.network.library.field.RequestField;
@@ -54,11 +55,11 @@ public final class WebRestClient implements IWebRestClient {
   private boolean active;
 
   @Getter
-  private @NotNull ClientState state;
+  private @NotNull ResponseState state;
   /**
    * Store values of state runnable.
    */
-  private final @NotNull StateMap<ClientState> stateMap;
+  private final @NotNull StateMap<ResponseState> stateMap;
 
   @SuppressWarnings("busy-waiting")
   public WebRestClient(@Nullable final String clientId,
@@ -70,7 +71,7 @@ public final class WebRestClient implements IWebRestClient {
     Objects.requireNonNull(timeoutDuration);
 
     //Set first state to failed.
-    this.state = ClientState.FAILED;
+    this.state = ResponseState.FAILED;
     this.stateMap = StateMap.createMap();
 
     /*
@@ -246,7 +247,7 @@ public final class WebRestClient implements IWebRestClient {
           if (this.validResponse(clientResponse)) {
             final long responseTime = System.currentTimeMillis()-start;
             //If client monitoring is active reset.
-            this.lastState(ClientState.ESTABLISHED);
+            this.lastState(ResponseState.SUCCESS);
 
             //Check for longest response
             if (this.longestResponseTime<responseTime) {
@@ -258,7 +259,7 @@ public final class WebRestClient implements IWebRestClient {
             return clientResponse.bodyToMono(typeClass);
           }
           //If client monitoring is active error.
-          this.lastState(ClientState.FAILED);
+          this.lastState(ResponseState.FAILED);
 
           return clientResponse.createError();
         })
@@ -293,7 +294,7 @@ public final class WebRestClient implements IWebRestClient {
     //Time enabled.
     final long start = System.currentTimeMillis();
 
-    ClientState state;
+    ResponseState state;
     try {
       state = this
           //Ping any node.
@@ -303,27 +304,27 @@ public final class WebRestClient implements IWebRestClient {
             //Check if response was success.
             if (clientResponse.statusCode().is2xxSuccessful()) {
               //Ok
-              return Mono.just(ClientState.ESTABLISHED);
+              return Mono.just(ResponseState.SUCCESS);
             }
             //Error code -> error in communication, wrong coding or server down.
-            return Mono.just(ClientState.FAILED);
+            return Mono.just(ResponseState.FAILED);
           })
           //Block thread until server response.
           .block();
     } catch (final Exception exception) {
       //If connections fails (no server) an error will be thrown.
-      state = ClientState.FAILED;
+      state = ResponseState.FAILED;
     }
 
     //Calculate time request took.
     final long duration = (System.currentTimeMillis()-start);
 
-    if (state == ClientState.ESTABLISHED) {
+    if (state == ResponseState.SUCCESS) {
       log.info("API endpoint available Took {}ms.", duration);
-      this.lastState(ClientState.ESTABLISHED);
+      this.lastState(ResponseState.SUCCESS);
     } else {
       log.warn("No response from API endpoint. Took {}ms.", duration);
-      this.lastState(ClientState.FAILED);
+      this.lastState(ResponseState.FAILED);
     }
 
     return duration;
@@ -340,18 +341,18 @@ public final class WebRestClient implements IWebRestClient {
   }
 
   @Override
-  public @NotNull StateHandler<ClientState> handle(@Nullable ClientState clientState,
-                                                   @Nullable ThrowableRunnable runnable) {
+  public @NotNull StateHandler<ResponseState> handle(@Nullable ResponseState responseState,
+                                                     @Nullable ThrowableRunnable runnable) {
     //Null check
-    Objects.requireNonNull(clientState);
+    Objects.requireNonNull(responseState);
     Objects.requireNonNull(runnable);
 
     //Add state.
-    this.stateMap.append(clientState, runnable);
+    this.stateMap.append(responseState, runnable);
     return this;
   }
 
-  private void lastState(@NotNull final ClientState lastState) {
+  private void lastState(@NotNull final ResponseState lastState) {
     this.lastStateChange = System.currentTimeMillis()+DEFAULT_PING_INTERVAL;
     //Ignore change
     if (this.state == lastState && this.totalPingCount>0) {
@@ -359,13 +360,13 @@ public final class WebRestClient implements IWebRestClient {
     }
     this.state = lastState;
 
-    if (this.state == ClientState.ESTABLISHED) {
+    if (this.state == ResponseState.SUCCESS) {
       log.info("Client connection established.");
 
-      this.stateMap.executeRunnable(ClientState.ESTABLISHED);
+      this.stateMap.executeRunnable(ResponseState.SUCCESS);
       return;
     }
     log.warn("Client connection failed.");
-    this.stateMap.executeRunnable(ClientState.FAILED);
+    this.stateMap.executeRunnable(ResponseState.FAILED);
   }
 }

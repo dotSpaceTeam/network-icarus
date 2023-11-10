@@ -1,7 +1,8 @@
-package dev.dotspace.network.client.rest.web;
+package dev.dotspace.network.client.rest.web.request;
 
 import com.google.inject.Inject;
 import dev.dotspace.common.response.ResponseService;
+import dev.dotspace.network.client.rest.web.IWebRestClient;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -14,7 +15,7 @@ public abstract class AbstractRequest {
    */
   @Getter(AccessLevel.PROTECTED)
   @Inject
-  private IWebRestClient client;
+  private IRestRequest request;
 
   /**
    * Response service to handle responses.

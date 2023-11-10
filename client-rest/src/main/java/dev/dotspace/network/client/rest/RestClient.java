@@ -3,9 +3,12 @@ package dev.dotspace.network.client.rest;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import dev.dotspace.common.function.ThrowableRunnable;
+import dev.dotspace.common.response.Response;
 import dev.dotspace.network.client.rest.position.IPositionRequest;
 import dev.dotspace.network.client.rest.profile.IProfileRequest;
-import dev.dotspace.network.client.rest.web.ClientState;
+import dev.dotspace.network.client.rest.web.request.IRestRequest;
+import dev.dotspace.network.client.rest.web.request.RestRequest;
+import dev.dotspace.network.client.rest.web.response.ResponseState;
 import dev.dotspace.network.client.rest.web.IWebRestClient;
 import dev.dotspace.network.library.exception.ClientNotActiveException;
 import dev.dotspace.network.client.rest.message.IMessageRequest;
@@ -18,6 +21,8 @@ import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -49,10 +54,30 @@ public final class RestClient implements IRestClient {
    * Pass to {@link IWebRestClient#handle(Object, ThrowableRunnable)} .
    */
   @Override
-  public @NotNull IRestClient handle(@Nullable ClientState clientState,
+  public @NotNull IRestClient handle(@Nullable ResponseState responseState,
                                      @Nullable ThrowableRunnable runnable) {
-    this.injector.getInstance(IWebRestClient.class).handle(clientState, runnable);
+    this.injector.getInstance(IWebRestClient.class).handle(responseState, runnable);
     return this;
+  }
+
+  @Override
+  public @NotNull Long ping() {
+    return null;
+  }
+
+  @Override
+  public @NotNull ResponseState state() {
+    return null;
+  }
+
+  @Override
+  public @NotNull IWebRestClient shutdown() {
+    return null;
+  }
+
+  @Override
+  public boolean active() {
+    return false;
   }
 
   /**
@@ -143,13 +168,13 @@ public final class RestClient implements IRestClient {
    * Check if client is connected.
    */
   public static boolean connected() {
-    return client != null && client.injector.getInstance(IWebRestClient.class).state() == ClientState.ESTABLISHED;
+    return client != null && client.injector.getInstance(IWebRestClient.class).state() == ResponseState.SUCCESS;
   }
 
   /**
    * Check if client is disconnected, only so if enabled and last connections failed.
    */
   public static boolean disconnected() {
-    return client != null && client.injector.getInstance(IWebRestClient.class).state() == ClientState.FAILED;
+    return client != null && client.injector.getInstance(IWebRestClient.class).state() == ResponseState.FAILED;
   }
 }

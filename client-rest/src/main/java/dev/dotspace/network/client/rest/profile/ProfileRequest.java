@@ -1,7 +1,7 @@
 package dev.dotspace.network.client.rest.profile;
 
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.rest.web.AbstractRequest;
+import dev.dotspace.network.client.rest.web.request.AbstractRequest;
 import dev.dotspace.network.library.connection.ImmutableAddressName;
 import dev.dotspace.network.library.economy.ITransaction;
 import dev.dotspace.network.library.key.ImmutableKey;

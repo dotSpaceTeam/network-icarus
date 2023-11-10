@@ -1,7 +1,7 @@
 package dev.dotspace.network.client.rest.message;
 
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.rest.web.AbstractRequest;
+import dev.dotspace.network.client.rest.web.request.AbstractRequest;
 import dev.dotspace.network.library.message.IMessage;
 import dev.dotspace.network.library.message.ImmutableMessage;
 import dev.dotspace.network.library.message.content.IPersistentMessage;
@@ -25,9 +25,11 @@ public final class MessageRequest extends AbstractRequest implements IMessageReq
           //Null check
           Objects.requireNonNull(message);
 
-          return this.client().post("/api/v1/message",
+          return this.request()
+              .post("/api/v1/message",
               ImmutableMessage.class,
-              /*Create instance to send*/ImmutableMessage.of(message));
+              /*Create instance to send*/ImmutableMessage.of(message))
+              .body();
         });
   }
 

@@ -1,7 +1,7 @@
 package dev.dotspace.network.library.spigot.self;
 
 import dev.dotspace.network.client.rest.RestClient;
-import dev.dotspace.network.client.rest.web.ClientState;
+import dev.dotspace.network.client.rest.web.response.ResponseState;
 import dev.dotspace.network.library.game.message.context.MessageContext;
 import dev.dotspace.network.library.game.permission.Permission;
 import dev.dotspace.network.library.game.plugin.PluginState;
@@ -61,7 +61,7 @@ public final class IcarusPlugin extends AbstractPlugin {
           //Handle client behavior.
           RestClient.client()
               //Handle establish
-              .handle(ClientState.ESTABLISHED, () -> {
+              .handle(ResponseState.SUCCESS, () -> {
                 //Run sync -> bukkit
                 this.sync(() -> {
                   Bukkit
@@ -77,7 +77,7 @@ public final class IcarusPlugin extends AbstractPlugin {
 
               })
               //Handle failed
-              .handle(ClientState.FAILED, () -> {
+              .handle(ResponseState.FAILED, () -> {
                 //Run sync -> bukkit
                 this.sync(() -> {
                   Bukkit

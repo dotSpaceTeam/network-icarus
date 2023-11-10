@@ -1,7 +1,7 @@
 package dev.dotspace.network.client.rest.position;
 
 import dev.dotspace.common.response.Response;
-import dev.dotspace.network.client.rest.web.AbstractRequest;
+import dev.dotspace.network.client.rest.web.request.AbstractRequest;
 import dev.dotspace.network.library.position.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
