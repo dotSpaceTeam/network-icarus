@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+
 @Entity
 @Table(name = "Position")
+@Getter
 @NoArgsConstructor
 @Accessors(fluent = true)
 public final class PositionElement implements IPosition {
@@ -17,31 +19,26 @@ public final class PositionElement implements IPosition {
    */
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Getter
   private Long id;
 
   @Column(name = "Key", nullable = false, unique = true)
-  @Getter
   private String key;
 
   @Column(name = "x", nullable = false)
-  @Getter
   @Setter
-  private long x;
+  private double x;
   @Column(name = "y", nullable = false)
-  @Getter
   @Setter
-  private long y;
+  private double y;
 
   @Column(name = "z", nullable = false)
-  @Getter
   @Setter
-  private long z;
+  private double z;
 
   public PositionElement(final String key,
-                         final long x,
-                         final long y,
-                         final long z) {
+                         final double x,
+                         final double y,
+                         final double z) {
     this.key = key;
     this.x = x;
     this.y = y;

@@ -1,13 +1,22 @@
 package dev.dotspace.network.library.economy;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public record ImmutableCurrency(@NotNull String symbol,
-                                @NotNull String name,
-                                @Nullable String pluralName) implements ICurrency {
+
+//Swagger
+@Schema(
+    name="Currency",
+    description="Currency to store information."
+)
+public record ImmutableCurrency(@NotNull String name,
+                                @NotNull String symbol,
+                                @NotNull String display,
+                                @Nullable String displayPlural
+) implements ICurrency {
   /**
    * Convert {@link ICurrency} to {@link ImmutableCurrency}.
    *
@@ -18,6 +27,6 @@ public record ImmutableCurrency(@NotNull String symbol,
     //Null check
     Objects.requireNonNull(currency);
 
-    return new ImmutableCurrency(currency.symbol(), currency.name(), currency.pluralName());
+    return new ImmutableCurrency(currency.name(), currency.symbol(), currency.display(), currency.displayPlural());
   }
 }

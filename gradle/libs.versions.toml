@@ -1,0 +1,39 @@
+[libraries]
+annotations = "org.jetbrains:annotations:24.0.1"
+common = "dev.dotspace:common:1.0.8.3"
+log4j = "org.apache.logging.log4j:log4j-core:2.20.0"
+guice = "com.google.inject:guice:7.0.0"
+guava = "com.google.guava:guava:32.1.1-jre"
+jackson-databind = "com.fasterxml.jackson.core:jackson-databind:2.15.2"
+jackson-core = "com.fasterxml.jackson.core:jackson-core:2.15.2"
+paper = "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
+
+spring-boot-starter-parent = "org.springframework.boot:spring-boot-starter-parent:3.1.4"
+spring-boot-starter-web = "org.springframework.boot:spring-boot-starter-web:3.1.4"
+spring-boot-starter-webflux = "org.springframework.boot:spring-boot-starter-webflux:3.1.4"
+spring-boot-autoconfigure = "org.springframework.boot:spring-boot-autoconfigure:3.1.4"
+spring-boot-starter-data-jpa = "org.springframework.boot:spring-boot-starter-data-jpa:3.1.4"
+spring-boot-starter-security = "org.springframework.boot:spring-boot-starter-security:3.1.4"
+spring-boot-starter-validation = "org.springframework.boot:spring-boot-starter-validation:3.1.4"
+
+hikari = 'com.zaxxer:HikariCP:5.0.1'
+rabbitmq = 'com.rabbitmq:amqp-client:5.19.0'
+
+spring-doc = "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.0"
+
+junit-jupiter-api = "org.junit.jupiter:junit-jupiter-api:5.8.1"
+junit-jupiter-engine = "org.junit.jupiter:junit-jupiter-engine:5.8.1"
+junit-bom = "org.junit:junit-bom:5.9.1"
+junit-jupiter = "org.junit.jupiter:junit-jupiter:5.10.0"
+cloud-paper = "cloud.commandframework:cloud-paper:1.8.3"
+cloud-velocity = "cloud.commandframework:cloud-velocity:1.8.3"
+kyori-minimessage = "net.kyori:adventure-text-minimessage:4.14.0"
+
+postgresql = "org.postgresql:postgresql:42.6.0"
+reflections = "org.reflections:reflections:0.10.2"
+velocity = { module = "com.velocitypowered:velocity-api", version = "3.2.0-SNAPSHOT" }
+
+[plugins]
+lombok = "io.freefair.lombok:8.1.0"
+boot = "org.springframework.boot:3.1.0"
+dependencymanagement = "io.spring.dependency-management:1.1.2"

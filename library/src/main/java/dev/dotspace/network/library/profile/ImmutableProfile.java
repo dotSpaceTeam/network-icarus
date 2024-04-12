@@ -1,12 +1,31 @@
 package dev.dotspace.network.library.profile;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+
+//Swagger
+@Schema(
+    name="Profile",
+    description="Base profile. Pair of id and type of profile."
+)
 public record ImmutableProfile(@NotNull String uniqueId,
-                               @NotNull ProfileType profileType) implements IProfile {
+                               @NotNull String name,
+                               @NotNull ProfileType profileType
+) implements IProfile {
+  /**
+   * Empty profile -> use if not present.
+   */
+  private static final @NotNull IProfile SYSTEM = new ImmutableProfile("~SYSTEM~", "~SYSTEM~", ProfileType.JAVA);
+
+  //static
+  public static @NotNull IProfile system() {
+    return SYSTEM;
+  }
+
   /**
    * Convert {@link IProfile} to {@link ImmutableProfile}.
    *
@@ -17,6 +36,6 @@ public record ImmutableProfile(@NotNull String uniqueId,
     //Null check
     Objects.requireNonNull(profile);
 
-    return new ImmutableProfile(profile.uniqueId(), profile.profileType());
+    return new ImmutableProfile(profile.uniqueId(), profile.name(), profile.profileType());
   }
 }

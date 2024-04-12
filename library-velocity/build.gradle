@@ -1,0 +1,18 @@
+plugins {
+  id 'java'
+}
+
+dependencies {
+  implementation project(":library")
+  implementation project(":client-rest")
+
+  implementation project(":library-game")
+
+  implementation libs.cloud.velocity
+
+  compileOnly libs.velocity
+  annotationProcessor libs.velocity
+
+  testImplementation platform(libs.junit.bom)
+  testImplementation libs.junit.jupiter
+}

@@ -1,0 +1,10 @@
+plugins {
+  id 'java'
+}
+
+dependencies {
+  implementation project(":library")
+
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.webflux
+}

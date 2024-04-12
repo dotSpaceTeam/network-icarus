@@ -1,19 +1,27 @@
 package dev.dotspace.network.library.position;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
+
 /**
  * Immutable instance of {@link IViewPosition}.
  */
+//Swagger
+@Schema(
+    name="ViewPosition",
+    description="Position with view angle."
+)
 public record ImmutableViewPosition(@NotNull String key,
-                                    long x,
-                                    long y,
-                                    long z,
-                                    long yaw,
-                                    long pitch) implements IViewPosition {
+                                    double x,
+                                    double y,
+                                    double z,
+                                    double yaw,
+                                    double pitch
+) implements IViewPosition {
   /**
    * Convert {@link IViewPosition} to {@link ImmutableViewPosition}.
    *
@@ -24,6 +32,12 @@ public record ImmutableViewPosition(@NotNull String key,
     //Null check
     Objects.requireNonNull(viewPosition);
 
-    return new ImmutableViewPosition(viewPosition.key(), viewPosition.x(), viewPosition.y(), viewPosition.z(), viewPosition.yaw(), viewPosition.pitch());
+    //Clone
+    return new ImmutableViewPosition(viewPosition.key(),
+        viewPosition.x(),
+        viewPosition.y(),
+        viewPosition.z(),
+        viewPosition.yaw(),
+        viewPosition.pitch());
   }
 }

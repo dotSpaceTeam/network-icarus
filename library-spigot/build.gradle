@@ -1,0 +1,17 @@
+plugins {
+  id 'java'
+}
+
+dependencies {
+  implementation project(":library")
+  implementation project(":client-rest")
+
+  implementation project(":library-game")
+
+  compileOnly libs.paper
+  implementation libs.cloud.paper
+
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.web
+  implementation libs.spring.boot.autoconfigure
+}

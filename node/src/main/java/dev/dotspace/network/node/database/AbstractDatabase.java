@@ -1,26 +1,41 @@
 package dev.dotspace.network.node.database;
 
+import dev.dotspace.network.node.database.event.DatabaseEntityEvent;
+import dev.dotspace.network.library.data.DataManipulation;
+import jakarta.annotation.PostConstruct;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
-import java.util.Optional;
-import java.util.function.Supplier;
 
+@Getter
 @Log4j2
+@Accessors(fluent=true)
 public abstract class AbstractDatabase {
   /**
-   * Used as the {@link Optional#orElseThrow(Supplier)} supplier with {@link NullPointerException}.
-   *
-   * @param message to set as error message.
-   * @return supplier with error.
+   * Spring event driver.
    */
-  protected Supplier<NullPointerException> failOptional(@NotNull final String message) {
-    return () -> {
-      //Error message for logger.
-      log.error(message);
-      //Exception to fail optional.
-      return new NullPointerException(message);
-    };
+  @Autowired
+  private ApplicationEventPublisher applicationEventPublisher;
+
+  /**
+   * Initialize database.
+   */
+  @PostConstruct
+  public void init() {
+    log.info("Initialized database name={}.", this.getClass().getSimpleName());
   }
 
+  /**
+   * Run event.
+   */
+  protected <TYPE, SCHEMA> void publishEvent(@NotNull final TYPE type,
+                                             @NotNull final Class<SCHEMA> schemaClass,
+                                             @NotNull final DataManipulation manipulation) {
+    //Publish event.
+    this.applicationEventPublisher.publishEvent(new DatabaseEntityEvent<>(this, manipulation, type, schemaClass));
+  }
 }

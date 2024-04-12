@@ -1,0 +1,10 @@
+{
+  "messageMap": {
+    "en-US": {
+      "icarus@prefix": "[System]",
+      "icarus@spigot@tps": "{{ KEY:icarus@prefix }} Current server information:\n Memory: {{ PLACEHOLDER:memory.used }} megabyte/{{ PLACEHOLDER:memory.total }} megabyte [{{ PLACEHOLDER:memory.use }} percent]\n\n CPU: {{ PLACEHOLDER:cpu.use }} percent load spread over {{ PLACEHOLDER:cpu.cores }} cores\n Threads: {{ PLACEHOLDER:cpu.threads }} threads total\n TPS [1m 5m 15m]: {{ PLACEHOLDER:tps.1 }}, {{ PLACEHOLDER:tps.5 }}, {{ PLACEHOLDER:tps.15 }}\n\n Total client requests: {{ PLACEHOLDER:client.request }}\n Longest client request: {{ PLACEHOLDER:client.request.longest }}\n\n Players: {{ PLACEHOLDER:server.players }}",
+      "icarus@spigot@playtime": "{{ KEY:icarus@prefix }} Your current play time is {{ PLACEHOLDER:time.hour }} hours {{ PLACEHOLDER:time.minute }} minutes.",
+      "icarus@spigot@playtime@self": "{{ KEY:icarus@prefix }} : The play time of {{ PLACEHOLDER:name }} is {{ PLACEHOLDER:time.hour }} hours {{ PLACEHOLDER:time.minute }} minutes."
+    }
+  }
+}

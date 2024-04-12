@@ -1,10 +1,10 @@
 package dev.dotspace.network.node.economy.db;
 
-import dev.dotspace.common.SpaceLibrary;
-import dev.dotspace.common.response.CompletableResponse;
-import dev.dotspace.network.library.economy.*;
+import dev.dotspace.network.library.data.DataManipulation;
+import dev.dotspace.network.library.economy.ICurrency;
+import dev.dotspace.network.library.economy.ImmutableCurrency;
 import dev.dotspace.network.node.database.AbstractDatabase;
-import dev.dotspace.network.node.profile.db.ProfileEntity;
+import dev.dotspace.network.node.database.exception.EntityNotPresentException;
 import dev.dotspace.network.node.profile.db.ProfileRepository;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -12,77 +12,87 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+
 
 @Component("economyDatabase")
 @Log4j2
-public final class EconomyDatabase extends AbstractDatabase implements IEconomyDatabase {
+public final class EconomyDatabase extends AbstractDatabase {
   /**
    * Instance to communicate tp profiles.
    */
   @Autowired
   private CurrencyRepository currencyRepository;
-
-  /**
-   * Repository to manipulates transaction.
-   */
-  @Autowired
-  private TransactionRepository transactionRepository;
-
   /**
    * Repository to manipulates profiles.
    */
   @Autowired
   private ProfileRepository profileRepository;
 
-  @Override
-  public @NotNull CompletableResponse<ICurrency> createCurrency(@Nullable String symbol,
-                                                                @Nullable String name,
-                                                                @Nullable String pluralName) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null checks
-      Objects.requireNonNull(symbol);
-      Objects.requireNonNull(name);
-
-      /*
-       * Check if symbol is already existing
-       */
-      if (this.currencyRepository.existsBySymbol(symbol)) {
-        log.info("Currency with symbol='{}', already present.", symbol);
-        return null;
-      }
-
-      return ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(symbol, name, pluralName)));
-    });
+  public @NotNull List<ICurrency> getCurrencyList() {
+    return this.currencyRepository.findAll()
+        .stream()
+        .map(ImmutableCurrency::of)
+        .toList();
   }
 
-  @Override
-  public @NotNull CompletableResponse<ITransaction> createTransaction(@Nullable String uniqueId,
-                                                                      @Nullable String symbol,
-                                                                      int amount,
-                                                                      @Nullable TransactionType transactionType) {
-    return SpaceLibrary.completeResponseAsync(() -> {
-      //Null check
-      Objects.requireNonNull(uniqueId);
-      Objects.requireNonNull(symbol);
-      Objects.requireNonNull(transactionType);
+  public @NotNull ICurrency createCurrency(@Nullable String name,
+                                           @Nullable final String symbol,
+                                           @Nullable final String display,
+                                           @Nullable final String displayPlural) {
+    //Null checks
+    Objects.requireNonNull(name);
+    Objects.requireNonNull(symbol);
+    Objects.requireNonNull(display);
 
-      //Get profile of transaction
-      final ProfileEntity profile = this.profileRepository
-        .findByUniqueId(uniqueId)
-        .orElseThrow(this.failOptional("No profile with uniqueId='%s' found to set transaction for.".formatted(uniqueId)));
+    //Set name of currency as lower
+    name = name.toLowerCase(Locale.ROOT);
 
-      //Get currency
-      final CurrencyEntity currency = this.currencyRepository
-        .findBySymbol(symbol)
-        .orElseThrow(this.failOptional("No currency with symbol='%s' found to set transaction for.".formatted(symbol)));
+    @Nullable final CurrencyEntity currencyEntity = this.currencyRepository
+        //Get from name
+        .findByName(name)
+        //Else null.
+        .orElse(null);
 
-      //Convert amount to positive if deposited, negative if withdrawn.
-      final int transactionAmount = Math.abs(amount) * (transactionType == TransactionType.WITHDRAW ? -1 : 1);
-      log.debug("Converted transaction amount from={} to={}.", amount, transactionAmount);
+    //edit
+    if (currencyEntity != null) {
+      currencyEntity
+          //Update parameter
+          .symbol(symbol)
+          .display(display)
+          .displayPlural(displayPlural);
 
-      return ImmutableTransaction
-        .of(this.transactionRepository.save(new TransactionEntity(profile, currency, transactionAmount, transactionType)));
-    });
+      //Update db.
+      final ICurrency updatedCurrency = ImmutableCurrency.of(this.currencyRepository.save(currencyEntity));
+
+      //Fire event -> Update currency.
+      this.publishEvent(updatedCurrency, ImmutableCurrency.class, DataManipulation.UPDATE);
+
+      //Return
+      return updatedCurrency;
+    }
+
+    //Create new currency
+    final ICurrency createCurrency =
+        ImmutableCurrency.of(this.currencyRepository.save(new CurrencyEntity(name, symbol, display, displayPlural)));
+
+    //Fire event -> Create currency.
+    this.publishEvent(createCurrency, ImmutableCurrency.class, DataManipulation.CREATE);
+
+    //Return
+    return createCurrency;
+  }
+
+  public @NotNull ICurrency getCurrency(@Nullable String name) throws EntityNotPresentException {
+    //Null checks
+    Objects.requireNonNull(name);
+
+    //lower
+    name = name.toLowerCase(Locale.ROOT);
+
+    //Get currency
+    return ImmutableCurrency.of(this.currencyRepository.nameElseThrow(name));
   }
 }

@@ -1,0 +1,185 @@
+/* Imports fonts */
+@font-face {
+  font-family: Poppins;
+  src: url("../fonts/Poppins-SemiBold.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: Signika;
+  src: url("../fonts/Signika-Regular.ttf");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: Signika;
+  src: url("../fonts/Signika-SemiBold.ttf");
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: SourceCodePro;
+  src: url("../fonts/SourceCodePro-Light.ttf");
+  font-weight: 300;
+}
+
+/* General style */
+* {
+  margin: 0;
+  padding: 0;
+
+  color: var(--HEADLINE-COLOR);
+  scrollbar-width: none;
+}
+
+/*
+ * Hide scrolbard on webkit browsers.
+ */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * General design
+ */
+body {
+  /* Default font for texts */
+  font-family: "signika", sans-serif;
+
+  /* Full height */
+  height: 100%;
+
+  font-size: 20px;
+
+  /* Add background img */
+  background-image: var(--BACKGROUND);
+
+  height: 100%;
+
+  /* Center the image */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  position: absolute;
+  width: 100%;
+
+  top: 0;
+
+  margin: auto;
+
+  z-index: 1;
+}
+
+/* Style the text */
+.text {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* Black partially transparent background */
+  color: #ffffff;
+  font-weight: bold;
+  border: 3px solid #ffffff;
+  width: 75%;
+  padding: 20px;
+  margin: 25px;
+  text-align: center;
+
+  user-select: none;
+  border-radius: 25px;
+
+  transition: 0.5s;
+}
+
+.text:hover {
+  border-radius: 0px;
+
+  transform: scale(101%);
+}
+
+.code-doc {
+  padding-top: 10px;
+  border-top-style: solid;
+  border-color: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.code-doc > h3,
+.code-doc > div {
+  text-align: left;
+}
+
+.code-doc > * {
+  margin: 7px;
+}
+
+.code-doc ul.code-list {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+
+  background-color: rgba(0, 0, 0, 0.7);
+
+  list-style-type: none;
+  user-select: text;
+}
+
+.code-list li {
+  margin: 10px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.code-list .code-list-key,
+.code-list .code-list-value {
+  max-width: 50%;
+  width: 50%;
+  padding: 0px 10px;
+}
+
+.code-list .code-list-key {
+  /* Default font for texts */
+  font-family: "sourcecodepro", sans-serif;
+
+  text-align: right;
+}
+
+.code-list .code-list-value {
+  text-align: left;
+}
+
+/*
+ * General headlines
+ */
+h1,
+h2 {
+  font-family: "poppins", sans-serif;
+
+  font-size: 2.5em;
+}
+
+h1 {
+  font-size: 4em;
+}
+
+span {
+  font-weight: 600;
+}

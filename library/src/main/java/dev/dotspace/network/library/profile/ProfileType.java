@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@AllArgsConstructor()
+@AllArgsConstructor
 @Accessors(fluent = true)
 public enum ProfileType {
   /**

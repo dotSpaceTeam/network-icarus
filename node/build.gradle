@@ -1,16 +1,63 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
   id 'java'
 }
+
+apply plugin: libs.plugins.dependencymanagement.get().pluginId
+apply plugin: libs.plugins.boot.get().pluginId
+
+//Version of parent to use in display.
+version parent.version
+
 dependencies {
   implementation project(":library")
+  implementation project(":client-rabbitmq")
 
-  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-security:${springVersion}"
+  implementation platform(SpringBootPlugin.BOM_COORDINATES)
 
-  implementation "org.postgresql:postgresql:${postgresVersion}"
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.web
+  implementation libs.spring.boot.autoconfigure
+  implementation libs.spring.boot.starter.data.jpa
+  implementation libs.spring.boot.starter.security
+  implementation libs.spring.boot.starter.validation
 
-  implementation 'org.reflections:reflections:0.10.2'
+  implementation libs.spring.doc
+
+  implementation libs.hikari
+
+  implementation libs.log4j
+
+  implementation libs.postgresql
+
+  implementation libs.reflections
+}
+
+dependencyManagement {
+  imports {
+    mavenBom(SpringBootPlugin.BOM_COORDINATES)
+  }
+}
+
+springBoot {
+  mainClass = 'dev.dotspace.network.node.Driver'
+  buildInfo()
+}
+
+jar {
+  enabled = true
+  dependsOn(':library:build')
+  dependsOn(':client-rabbitmq:build')
+
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+
+  //exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+  duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
+  manifest {
+    attributes('Main-Class': 'dev.dotspace.network.node.Driver')
+  }
 }

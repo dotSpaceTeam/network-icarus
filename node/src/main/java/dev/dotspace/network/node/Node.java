@@ -1,43 +1,43 @@
 package dev.dotspace.network.node;
 
-import dev.dotspace.network.library.runtime.IRuntime;
-import dev.dotspace.network.library.runtime.ImmutableRuntime;
-import dev.dotspace.network.library.runtime.RuntimeType;
+import dev.dotspace.network.library.system.participant.IParticipant;
+import dev.dotspace.network.library.system.participant.ISystem;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.stereotype.Component;
 
-import java.util.Objects;
 import java.util.Optional;
 
+
+@Component
 @Log4j2
-@Accessors(fluent = true)
+@Accessors(fluent=true)
 public final class Node implements INode {
   /**
-   * Runtime info.
+   * Spring context.
    */
-  private final @NotNull IRuntime runtime;
+  @Autowired
+  private ConfigurableApplicationContext applicationContext;
 
-  /**
-   * Srping context.-
-   */
-  private final @NotNull ConfigurableApplicationContext applicationContext;
-
-  public Node(@Nullable final ConfigurableApplicationContext applicationContext) {
-    //Null check
-    Objects.requireNonNull(applicationContext);
-
-    //Runtime
-    this.runtime = ImmutableRuntime.randomOfType(RuntimeType.NODE);
-    //Insert local runtime in database.
-
-    this.applicationContext = applicationContext;
-
-    log.info("Node is running under id={}.", this.runtime.runtimeId());
+  public Node() {
     instance = this;
+  }
+
+  @PostConstruct
+  private void init() {
+    //--
+  }
+
+  @PreDestroy
+  private void shutdown() {
+    //--
   }
 
   /**
@@ -46,21 +46,21 @@ public final class Node implements INode {
   @Override
   public @NotNull <T> Optional<T> bean(@Nullable Class<T> beanClass) {
     return Optional
-      //Wrap in optional
-      .ofNullable(beanClass)
-      //Get bean of class.
-      .map(this.applicationContext::getBean);
+        //Wrap in optional
+        .ofNullable(beanClass)
+        //Get bean of class.
+        .map(this.applicationContext::getBean);
   }
 
   @Override
   public @NotNull <T> T beanElseThrow(@Nullable Class<T> beanClass) {
     return this.bean(beanClass)
-      .orElseThrow(() -> {
-        final String beanName = Optional.ofNullable(beanClass).map(Class::getSimpleName).orElse(null);
-        final String message = "No bean for class='" + beanName + "' found!";
-        log.error(message);
-        return new NullPointerException(message);
-      });
+        .orElseThrow(() -> {
+          final String beanName = Optional.ofNullable(beanClass).map(Class::getSimpleName).orElse(null);
+          final String message = "No bean for class='"+beanName+"' found!";
+          log.error(message);
+          return new NullPointerException(message);
+        });
   }
 
   /**
@@ -80,8 +80,17 @@ public final class Node implements INode {
     return this;
   }
 
+  /**
+   * See {@link ISystem#participant()}
+   */
+  @Override
+  public @NotNull IParticipant participant() {
+    //Get from bean
+    return this.beanElseThrow(IParticipant.class);
+  }
+
   //static
   @Getter
-  @Accessors(fluent = true)
+  @Accessors(fluent=true)
   private static INode instance;
 }

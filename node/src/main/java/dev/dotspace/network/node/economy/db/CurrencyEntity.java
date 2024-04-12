@@ -4,49 +4,60 @@ import dev.dotspace.network.library.economy.ICurrency;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+
+@Getter
 @Entity
-@Table(name = "Currency",
-  uniqueConstraints = {@UniqueConstraint(columnNames = {"Symbol", "Name", "Plural"})})
+@Table(name="Currency",
+    uniqueConstraints={@UniqueConstraint(columnNames={"Name", "Symbol", "Display", "DisplayPlural"})})
 @NoArgsConstructor
-@Accessors(fluent = true)
+@Accessors(fluent=true)
 public final class CurrencyEntity implements ICurrency {
   /**
    * Identity of element
    */
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Getter
+  @GeneratedValue(strategy=GenerationType.IDENTITY)
   private Long id;
+
   /**
    * See {@link ICurrency#symbol()}.
    */
-  @Column(name = "Symbol", nullable = false, unique = true)
-  @Getter
-  private String symbol;
-
-  /**
-   * See {@link ICurrency#name()}.
-   */
-  @Column(name = "Name", nullable = false)
-  @Getter
+  @Column(name="Name", nullable=false, unique=true)
   private String name;
 
   /**
-   * See {@link ICurrency#pluralName()}.
+   * See {@link ICurrency#symbol()}.
    */
-  @Column(name = "Plural", nullable = false)
-  @Getter
-  private String pluralName;
+  @Column(name="Symbol", nullable=false)
+  @Setter
+  private String symbol;
 
-  public CurrencyEntity(@NotNull final String symbol,
-                        @NotNull String name,
-                        @Nullable String pluralName) {
+  /**
+   * See {@link ICurrency#display()}.
+   */
+  @Column(name="Display", nullable=false)
+  @Setter
+  private String display;
+
+  /**
+   * See {@link ICurrency#displayPlural()}.
+   */
+  @Column(name="DisplayPlural")
+  @Setter
+  private String displayPlural;
+
+  public CurrencyEntity(@NotNull final String name,
+                        @NotNull final String symbol,
+                        @NotNull final String display,
+                        @Nullable final String displayPlural) {
     this.symbol = symbol;
     this.name = name;
-    this.pluralName = pluralName;
+    this.display = display;
+    this.displayPlural = displayPlural;
   }
 }

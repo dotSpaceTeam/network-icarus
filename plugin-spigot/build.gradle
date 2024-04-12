@@ -11,22 +11,23 @@ repositories {
 
 dependencies {
   implementation project(":library")
-  implementation project(":client")
-  implementation project(":content-game")
-  implementation project(":content-spigot")
+  implementation project(":client-rest")
+  implementation project(":library-game")
+  implementation project(":library-spigot")
 
-  compileOnly "io.papermc.paper:paper-api:${paperVersion}"
+  compileOnly libs.paper
 
-  implementation "org.springframework.boot:spring-boot-starter-parent:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-starter-webflux:${springVersion}"
-  implementation "org.springframework.boot:spring-boot-autoconfigure:${springVersion}"
+  implementation libs.cloud.paper
+  implementation libs.spring.boot.starter.parent
+  implementation libs.spring.boot.starter.webflux
+  implementation libs.spring.boot.autoconfigure
 }
 
 jar {
   dependsOn(':library:build')
-  dependsOn(':client:build')
-  dependsOn(':content-game:build')
-  dependsOn(':content-spigot:build')
+  dependsOn(':client-rest:build')
+  dependsOn(':library-game:build')
+  dependsOn(':library-spigot:build')
 
   from {
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }

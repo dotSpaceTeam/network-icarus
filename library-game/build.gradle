@@ -1,0 +1,26 @@
+plugins {
+  id 'java'
+}
+
+group 'dev.dotspace'
+version '1.0.0'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation project(":library")
+  implementation project(":client-rest")
+
+  implementation libs.jackson.core
+  implementation libs.jackson.databind
+  implementation libs.cloud.paper
+  implementation libs.kyori.minimessage
+  testImplementation libs.junit.jupiter.api
+  testRuntimeOnly libs.junit.jupiter.engine
+}
+
+test {
+  useJUnitPlatform()
+}

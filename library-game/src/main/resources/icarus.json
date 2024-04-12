@@ -1,0 +1,4 @@
+{
+  "clientAutoConnect": true,
+  "clientApiEndpoint": "http://localhost:8443"
+}

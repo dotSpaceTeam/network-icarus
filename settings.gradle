@@ -1,9 +1,20 @@
 rootProject.name = 'network-icarus'
 include 'library'
+include 'library-game'
+include 'library-spigot'
+include 'library-velocity'
+
 include 'node'
 include 'node-setup'
-include 'client'
-include 'content-spigot'
-include 'content-game'
+include 'node-benchmark'
+
+include 'client-rabbitmq'
+include 'client-rest'
+
 include 'plugin-spigot'
+include 'plugin-velocity'
+include 'plugin-minstom'
+
+include 'file-server'
+
 
